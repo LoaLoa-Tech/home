@@ -1,0 +1,90 @@
+<header>
+  <img
+    data-aos="fade-down"
+    class="img-wave"
+    src="/assets/img/wave(1).svg?h=7137c98ce92618b144daf992371d8838"
+    alt="Nền"
+  /><!-- Start: Navigation Clean -->
+  <nav class="navbar navbar-light navbar-expand-md navigation-clean py-2">
+    <div class="container">
+      <img
+        class="mr-3"
+        src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"
+        alt="logo"
+      /><a class="navbar-brand p-0" href="/">
+        <h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a
+      ><button
+        data-toggle="collapse"
+        class="navbar-toggler"
+        data-target="#navcol-1"
+      >
+        <span class="sr-only">Toggle navigation</span
+        ><span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navcol-1">
+        <ul class="nav navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Trang chủ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/standard">Web bán hàng</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/projects">Dự án</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/docs">Tài liệu</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/blogs">Bài viết</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- End: Navigation Clean --><!-- Global site tag (gtag.js) - Google Analytics -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=UA-145951123-2"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "UA-145951123-2");
+  </script>
+
+  <!-- Load Facebook SDK for JavaScript -->
+  <div id="fb-root"></div>
+  <script>
+    window.fbAsyncInit = function () {
+      FB.init({
+        xfbml: true,
+        version: "v9.0",
+      });
+    };
+
+    (function (d, s, id) {
+      var js,
+        fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    })(document, "script", "facebook-jssdk");
+  </script>
+
+  <!-- Your Chat Plugin code -->
+  <div
+    class="fb-customerchat"
+    attribution="setup_tool"
+    page_id="395622761034219"
+    theme_color="#ff895a"
+    logged_in_greeting="Tư vấn ngay, giúp bạn hiểu hơn về Website/Phần mềm. ^_^"
+    logged_out_greeting="Tư vấn ngay, giúp bạn hiểu hơn về Website/Phần mềm. ^_^"
+  ></div>
+</header>

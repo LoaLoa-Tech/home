@@ -1,0 +1,17 @@
+{
+  "name": "home",
+  "version": "1.0.0",
+  "private": false,
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "ejs": "~2.6.1",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "markdown-it": "^12.0.3",
+    "morgan": "~1.9.1",
+    "remarkable": "^2.0.1",
+    "showdown": "^1.9.1",
+    "sitemap": "^6.3.3"
+  }
+}
