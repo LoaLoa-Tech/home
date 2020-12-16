@@ -7,25 +7,47 @@ var md = new Remarkable("full", { breakes: true, html: true });
 var getCategories = require("../models/bo/getCategories");
 
 router.get("/:blog/:category", (req, res) => {
+  var categories;
+  try {
+    categories = getCategories("blogs", req.params.blog, null);
+  } catch {
+    categories = getCategories("SEO", req.params.blog, null);
+  }
   res.render("pages/posts", {
-    categories: getCategories("blogs", req.params.blog, null),
+    categories,
   });
 });
 router.get("/:blog/:category/:post", (req, res) => {
-  var content = fs.readFileSync(
-    path.join(
-      __dirname,
-      "../blogs",
-      req.params.blog,
-      req.params.category,
-      req.params.post + ".md"
-    ),
-    { encoding: "utf-8" }
-  );
-
+  var content;
+  var categories;
+  try {
+    content = fs.readFileSync(
+      path.join(
+        __dirname,
+        "../blogs",
+        req.params.blog,
+        req.params.category,
+        req.params.post + ".md"
+      ),
+      { encoding: "utf-8" }
+    );
+    categories = getCategories("blogs", req.params.blog, null);
+  } catch {
+    content = fs.readFileSync(
+      path.join(
+        __dirname,
+        "../SEO",
+        req.params.blog,
+        req.params.category,
+        req.params.post + ".md"
+      ),
+      { encoding: "utf-8" }
+    );
+    categories = getCategories("SEO", req.params.blog, null);
+  }
   res.render("pages/post", {
     content: md.render(content),
-    categories: getCategories("blogs", req.params.blog, null),
+    categories,
     title: req.params.post,
   });
 });

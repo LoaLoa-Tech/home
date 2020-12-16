@@ -17,4 +17,7 @@ router.get("/docs", (req, res) => {
 router.get("/blogs", (req, res) => {
   res.render("pages/docs", { tree: getTree("blogs", null) });
 });
+router.get("/SEO", (req, res) => {
+  res.render("pages/docs", { tree: getTree("SEO", null) });
+});
 module.exports = router;
