@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: blog
+title: Introduction to GraphQL
+date: 2020-09-01
+author: Mike Riethmuller
+order: 2
+[meta]-->
+<p>In this tutorial we're going to discuss some of the key differences between REST and GraphQL APIs then create a GraphQL server with Node.js. You will need to know basic HTML and JavaScript, how to run a few commands in a terminal, as well as have Node and NPM installed.</p>
+<h2>What is an API?</h2>
+<p>Broadly speaking an API can be defined as a way for programmers to interface with an application. This often means an API describes the functions and methods available to developers within a specific development environment. If that development environment is the public web, an API will usually refer to URL &quot;end-points&quot; used for sending and receiving data.</p>
+<h2>Rest APIs</h2>
+<p>The traditional method for interfacing with applications on the web is a REST API. One defining characteristic of REST APIs is they use <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">HTTP request methods</a>, such as <code>GET</code>, <code>PUT</code>, <code>POST</code> &amp;<code>DELETE</code> to &quot;CRUD&quot; operations. Typically, <code>PUT</code> for Create, <code>GET</code> for Read, <code>POST</code> for Update and <code>DELETE</code> for Delete.</p>
+<p>This structure makes REST predictable but also highlights some limitations. Since a request method is limited to a single <code>CRUD</code> operation, it encourages API design that has a single end-point for each entity in the system. For example, a simple website might have the following end-points:</p>
+<ul>
+<li><a href="http://my-api.com/user">http://my-api.com/user</a></li>
+<li><a href="http://my-api.com/post">http://my-api.com/post</a></li>
+<li><a href="http://my-api.com/comment">http://my-api.com/comment</a></li>
+<li><a href="http://my-api.com/page">http://my-api.com/page</a></li>
+</ul>
+<p>In large systems, this can lead to APIs with many dozen or even hundreds of end-points. This is a common criticism of REST.</p>
+<p>Another criticism of REST is that a lot of APIs return a specific predefined shape. This means when you successfully &quot;hit&quot; an end-point, the data returned is determined by that end-point, not the request. This results in either fetching more data than you want, or perhaps more often, considerably less data than is required. Either outcome is not efficient.</p>
+<p>These are some of the problems that GraphQL aims to solve.</p>
+<h2>GraphQL APIs</h2>
+<p>GraphQL APIs usually have a single endpoint and allow the client to specify a <code>query</code> that returns only required data.</p>
+<p>A GraphQL query looks something like a this:</p>
+<pre><code class="language-js">query getPage($id: Int!) {
+  Page(id: $id) {
+    author {
+      name
+    }
+  }
+}
+</code></pre>
+<p>This query is fetching the <code>name</code> of a <code>User</code>, that is attached to the <code>author</code> field of a <code>Page</code>.</p>
+<p>For GraphQL to validate and execute this query, it must know what fields available for a <code>Page</code>, that the <code>author</code> field is a reference to a <code>User</code>, what fields are available for a <code>User</code> and finally how to resolve the data.</p>
+<p>It achieves this through <code>schema</code> definitions and resolvers. Schemas and types are an essential part of a GraphQL API. To create a GraphQL API, you need a server with a complete set of <code>types</code> that describe every possible input and return value for the API. You also need resolver functions that return values that match the <code>schema</code> definition.</p>
+<h2>Creating a GraphQL server</h2>
+<p>Let's create a GraphQL server that will handle queries and mutations for <code>Posts</code> and <code>Users</code>.</p>
+<p>Start by creating a directory for the project with the following commands:</p>
+<pre><code>mkdir graphql-server-tutorial
+cd graphql-server-tutorial
+npm init --yes
+</code></pre>
+<p>We're going to use <code>apollo-server</code> to generate our API service and <code>http-server</code> to serve a static front-end. Run the following command to install these packages:</p>
+<pre><code>npm install apollo-server http-server
+</code></pre>
+<h3>Defining a GraphQL schema</h3>
+<p>The first thing we need to do is define the schema for our API. Start by creating an <code>index.js</code> file in the root of the project directory. At the top of the file add the following:</p>
+<pre><code class="language-js">const { ApolloServer, gql } = require('apollo-server');
+
+const schema = gql`
+  type User {
+    id: ID!
+    name: String
+  }
+
+  type Page {
+    id: ID!
+    title: String
+    author: User
+    content: String
+  }
+
+  type Query {
+    Page(id: ID!): Page
+    User(id: ID!): User
+  }
+`;
+</code></pre>
+<p>Both <code>String</code> and <code>ID</code> are built-in types GraphQL understands. We've created additional types for <code>User</code> and <code>Page</code>. You can probably see how types can be made up of nested types. This is how GraphQL queries can request deeply nested, related data in a way that REST APIs typically can't.</p>
+<p><strong>Note:</strong> We're creating a really simple schema here with just a <code>User</code> and a <code>Page</code>. It's useful to understand how this works but in a larger system, you might not want to define every part of the GraphQL schema by hand. Keystone generates a GraphQL schema and resolvers for you while allowing you to manually extend the generated graphQL schema.</p>
+<h3>Defining resolvers</h3>
+<p>Resolvers fetch and return data for queries. The returned data must match the shape we defined in the schema.</p>
+<p>The first thing we need is a data source. For the sake of this tutorial we're going to work with a fixed set of data. Add the following to <code>index.js</code>:</p>
+<pre><code class="language-js">const users = [
+  {
+    id: '1',
+    name: 'Mike',
+  },
+];
+
+const pages = [
+  {
+    id: '1',
+    name: 'Hello World',
+    author: users[0],
+    content: 'Lorem ipsum...',
+  },
+];
+</code></pre>
+<p>Now let's write some resolvers that return this data:</p>
+<pre><code class="language-js">const resolvers = {
+  Query: {
+    Page: (_, args) =&gt; {
+      return pages.find(page =&gt; page.id === args.id);
+    },
+    User: (_, args) =&gt; {
+      return users.find(user =&gt; user.id === args.id);
+    },
+  },
+};
+</code></pre>
+<p>Understanding <code>types</code> and <code>resolvers</code> can be one of the biggest stumbling blocks when getting started with GraphQL. This can be particularly difficult if you are not already familiar with typed languages however the GraphQL schema syntax can be a good introduction to these concepts.</p>
+<h3>Starting Apollo</h3>
+<p>To start the server all we need to do is pass <code>ApolloServer</code> our complete schema and resolvers. Add the following to the bottom of <code>index.js</code>:</p>
+<pre><code class="language-js">const server = new ApolloServer({ typeDefs: schema, resolvers });
+
+server.listen().then(({ url }) =&gt; {
+  console.log(`🚀 GraphQL server started at: ${url}`);
+});
+</code></pre>
+<p>Open the generated <code>package.json</code> file and add a <code>start:server</code> command in the <code>scripts</code> section:</p>
+<pre><code class="language-json">&quot;scripts&quot;: {
+  &quot;start:server&quot;: &quot;node index.js&quot;
+}
+</code></pre>
+<p>Then run:</p>
+<pre><code>npm run start:server
+</code></pre>
+<p>Congratulations! You should have a GraphQL server up and running.</p>
+<h3>Executing a GraphQL query</h3>
+<p>The query we wrote earlier should now work. Before we learn how to execute GraphQL queries in our own application let's test it out using the GraphQL Playground Apollo provides. Visit <code>http://localhost:4000</code> and paste the following query:</p>
+<pre><code class="language-js">query getPage($id: ID!) {
+  Page(id: $id) {
+    author {
+      name
+    }
+  }
+}
+</code></pre>
+<p>We still need to provide the <code>id</code>, so select &quot;QUERY VARIABLES&quot; in the bottom right and add the following JSON:</p>
+<pre><code>{
+  &quot;id&quot;:&quot;1&quot;
+}
+</code></pre>
+<p>Now run the query and you should get the following result:</p>
+<pre><code>{
+  author: {
+    name: &quot;Mike&quot;
+  }
+}
+</code></pre>
+<video style="max-width:100%;" autoplay>
+  <source src="/gql-demo.mp4"  type="video/mp4"/>
+</video>
+<p>To send this query in a client application we need to use a <code>POST</code> request. The POST request should be sent to our GraphQL server with a content type of <code>application/json</code> and a JSON-encoded body similar to:</p>
+<pre><code class="language-js">{
+  &quot;query&quot;: &quot;...&quot;,
+  &quot;variables&quot;: { &quot;id&quot;: &quot;1&quot; }
+}
+</code></pre>
+<p>There are many client libraries that can make sending and receiving GraphQL queries easier, however, you don't need a client library to send a simple GraphQL request. We can send a GraphQL request using the browsers <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">Fetch API</a>.</p>
+<p>Create a file called <code>index.html</code>. In that file place the following:</p>
+<pre><code class="language-html">&lt;html&gt;
+  &lt;body&gt;
+    &lt;pre id=&quot;result&quot;&gt;&lt;/pre&gt;
+    &lt;script&gt;
+      // write code here
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>We'll write code directly in script tag inside this HTML file - just to demonstrate the concept.</p>
+<p>Add the following script to the page:</p>
+<pre><code class="language-js">fetch('http://localhost:4000', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    query: 'query getPage($id: ID!) { Page(id: $id) { author { name } } }',
+    variables: '{ &quot;id&quot;: &quot;1&quot;}',
+  }),
+})
+  .then(res =&gt; res.json())
+  .then(res =&gt; {
+    // render the data on the page and console
+    console.log(res.data);
+    document.querySelector('#result').innerHTML = JSON.stringify(res.data, null, 2);
+  });
+</code></pre>
+<p>Let's add a start command for the client to our <code>package.json</code>:</p>
+<pre><code class="language-json">&quot;scripts&quot;: {
+  &quot;start:server&quot;: &quot;node index.js&quot;,
+  &quot;start:client&quot;: &quot;npx http-server .&quot;
+}
+</code></pre>
+<p>With the server running, open new terminal window and run:</p>
+<pre><code>npm run start:client
+</code></pre>
+<p>Visit <code>http://localhost:8080</code> in your browser and you should see the result of the query rendered to the console and on the page.</p>
+<p>This is just one of the ways you can fetch data in a client application. Tools like <code>graphql-tag</code> or <code>apollo-fetch</code> make formatting variables and sending requests easier. For larger applications something like <code>apollo-client</code> might be useful.</p>
+<p>We hope this introduction has demystified some aspect of GraphQL for you or given you a better understanding of how Keystone generates its GraphQL server.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: blog\ntitle: Introduction to GraphQL\ndate: 2020-09-01\nauthor: Mike Riethmuller\norder: 2\n[meta]--\u003e\n\nIn this tutorial we're going to discuss some of the key differences between REST and GraphQL APIs then create a GraphQL server with Node.js. You will need to know basic HTML and JavaScript, how to run a few commands in a terminal, as well as have Node and NPM installed.\n\n## What is an API?\n\nBroadly speaking an API can be defined as a way for programmers to interface with an application. This often means an API describes the functions and methods available to developers within a specific development environment. If that development environment is the public web, an API will usually refer to URL \"end-points\" used for sending and receiving data.\n\n## Rest APIs\n\nThe traditional method for interfacing with applications on the web is a REST API. One defining characteristic of REST APIs is they use [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods), such as `GET`, `PUT`, `POST` \u0026`DELETE` to \"CRUD\" operations. Typically, `PUT` for Create, `GET` for Read, `POST` for Update and `DELETE` for Delete.\n\nThis structure makes REST predictable but also highlights some limitations. Since a request method is limited to a single `CRUD` operation, it encourages API design that has a single end-point for each entity in the system. For example, a simple website might have the following end-points:\n\n- \u003chttp://my-api.com/user\u003e\n- \u003chttp://my-api.com/post\u003e\n- \u003chttp://my-api.com/comment\u003e\n- \u003chttp://my-api.com/page\u003e\n\nIn large systems, this can lead to APIs with many dozen or even hundreds of end-points. This is a common criticism of REST.\n\nAnother criticism of REST is that a lot of APIs return a specific predefined shape. This means when you successfully \"hit\" an end-point, the data returned is determined by that end-point, not the request. This results in either fetching more data than you want, or perhaps more often, considerably less data than is required. Either outcome is not efficient.\n\nThese are some of the problems that GraphQL aims to solve.\n\n## GraphQL APIs\n\nGraphQL APIs usually have a single endpoint and allow the client to specify a `query` that returns only required data.\n\nA GraphQL query looks something like a this:\n\n```js\nquery getPage($id: Int!) {\n  Page(id: $id) {\n    author {\n      name\n    }\n  }\n}\n```\n\nThis query is fetching the `name` of a `User`, that is attached to the `author` field of a `Page`.\n\nFor GraphQL to validate and execute this query, it must know what fields available for a `Page`, that the `author` field is a reference to a `User`, what fields are available for a `User` and finally how to resolve the data.\n\nIt achieves this through `schema` definitions and resolvers. Schemas and types are an essential part of a GraphQL API. To create a GraphQL API, you need a server with a complete set of `types` that describe every possible input and return value for the API. You also need resolver functions that return values that match the `schema` definition.\n\n## Creating a GraphQL server\n\nLet's create a GraphQL server that will handle queries and mutations for `Posts` and `Users`.\n\nStart by creating a directory for the project with the following commands:\n\n```\nmkdir graphql-server-tutorial\ncd graphql-server-tutorial\nnpm init --yes\n```\n\nWe're going to use `apollo-server` to generate our API service and `http-server` to serve a static front-end. Run the following command to install these packages:\n\n```\nnpm install apollo-server http-server\n```\n\n### Defining a GraphQL schema\n\nThe first thing we need to do is define the schema for our API. Start by creating an `index.js` file in the root of the project directory. At the top of the file add the following:\n\n```js\nconst { ApolloServer, gql } = require('apollo-server');\n\nconst schema = gql`\n  type User {\n    id: ID!\n    name: String\n  }\n\n  type Page {\n    id: ID!\n    title: String\n    author: User\n    content: String\n  }\n\n  type Query {\n    Page(id: ID!): Page\n    User(id: ID!): User\n  }\n`;\n```\n\nBoth `String` and `ID` are built-in types GraphQL understands. We've created additional types for `User` and `Page`. You can probably see how types can be made up of nested types. This is how GraphQL queries can request deeply nested, related data in a way that REST APIs typically can't.\n\n**Note:** We're creating a really simple schema here with just a `User` and a `Page`. It's useful to understand how this works but in a larger system, you might not want to define every part of the GraphQL schema by hand. Keystone generates a GraphQL schema and resolvers for you while allowing you to manually extend the generated graphQL schema.\n\n### Defining resolvers\n\nResolvers fetch and return data for queries. The returned data must match the shape we defined in the schema.\n\nThe first thing we need is a data source. For the sake of this tutorial we're going to work with a fixed set of data. Add the following to `index.js`:\n\n```js\nconst users = [\n  {\n    id: '1',\n    name: 'Mike',\n  },\n];\n\nconst pages = [\n  {\n    id: '1',\n    name: 'Hello World',\n    author: users[0],\n    content: 'Lorem ipsum...',\n  },\n];\n```\n\nNow let's write some resolvers that return this data:\n\n```js\nconst resolvers = {\n  Query: {\n    Page: (_, args) =\u003e {\n      return pages.find(page =\u003e page.id === args.id);\n    },\n    User: (_, args) =\u003e {\n      return users.find(user =\u003e user.id === args.id);\n    },\n  },\n};\n```\n\nUnderstanding `types` and `resolvers` can be one of the biggest stumbling blocks when getting started with GraphQL. This can be particularly difficult if you are not already familiar with typed languages however the GraphQL schema syntax can be a good introduction to these concepts.\n\n### Starting Apollo\n\nTo start the server all we need to do is pass `ApolloServer` our complete schema and resolvers. Add the following to the bottom of `index.js`:\n\n```js\nconst server = new ApolloServer({ typeDefs: schema, resolvers });\n\nserver.listen().then(({ url }) =\u003e {\n  console.log(`🚀 GraphQL server started at: ${url}`);\n});\n```\n\nOpen the generated `package.json` file and add a `start:server` command in the `scripts` section:\n\n```json\n\"scripts\": {\n  \"start:server\": \"node index.js\"\n}\n```\n\nThen run:\n\n```\nnpm run start:server\n```\n\nCongratulations! You should have a GraphQL server up and running.\n\n### Executing a GraphQL query\n\nThe query we wrote earlier should now work. Before we learn how to execute GraphQL queries in our own application let's test it out using the GraphQL Playground Apollo provides. Visit `http://localhost:4000` and paste the following query:\n\n```js\nquery getPage($id: ID!) {\n  Page(id: $id) {\n    author {\n      name\n    }\n  }\n}\n```\n\nWe still need to provide the `id`, so select \"QUERY VARIABLES\" in the bottom right and add the following JSON:\n\n```\n{\n  \"id\":\"1\"\n}\n```\n\nNow run the query and you should get the following result:\n\n```\n{\n  author: {\n    name: \"Mike\"\n  }\n}\n```\n\n\u003cvideo style=\"max-width:100%;\" autoplay\u003e\n  \u003csource src=\"/gql-demo.mp4\"  type=\"video/mp4\"/\u003e\n\u003c/video\u003e\n\nTo send this query in a client application we need to use a `POST` request. The POST request should be sent to our GraphQL server with a content type of `application/json` and a JSON-encoded body similar to:\n\n```js\n{\n  \"query\": \"...\",\n  \"variables\": { \"id\": \"1\" }\n}\n```\n\nThere are many client libraries that can make sending and receiving GraphQL queries easier, however, you don't need a client library to send a simple GraphQL request. We can send a GraphQL request using the browsers [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).\n\nCreate a file called `index.html`. In that file place the following:\n\n```html\n\u003chtml\u003e\n  \u003cbody\u003e\n    \u003cpre id=\"result\"\u003e\u003c/pre\u003e\n    \u003cscript\u003e\n      // write code here\n    \u003c/script\u003e\n  \u003c/body\u003e\n\u003c/html\u003e\n```\n\nWe'll write code directly in script tag inside this HTML file - just to demonstrate the concept.\n\nAdd the following script to the page:\n\n```js\nfetch('http://localhost:4000', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({\n    query: 'query getPage($id: ID!) { Page(id: $id) { author { name } } }',\n    variables: '{ \"id\": \"1\"}',\n  }),\n})\n  .then(res =\u003e res.json())\n  .then(res =\u003e {\n    // render the data on the page and console\n    console.log(res.data);\n    document.querySelector('#result').innerHTML = JSON.stringify(res.data, null, 2);\n  });\n```\n\nLet's add a start command for the client to our `package.json`:\n\n```json\n\"scripts\": {\n  \"start:server\": \"node index.js\",\n  \"start:client\": \"npx http-server .\"\n}\n```\n\nWith the server running, open new terminal window and run:\n\n```\nnpm run start:client\n```\n\nVisit `http://localhost:8080` in your browser and you should see the result of the query rendered to the console and on the page.\n\nThis is just one of the ways you can fetch data in a client application. Tools like `graphql-tag` or `apollo-fetch` make formatting variables and sending requests easier. For larger applications something like `apollo-client` might be useful.\n\nWe hope this introduction has demystified some aspect of GraphQL for you or given you a better understanding of how Keystone generates its GraphQL server.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_blog_introduction-to-graphql.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

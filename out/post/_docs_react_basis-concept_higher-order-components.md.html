@@ -1,0 +1,305 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: higher-order-components
+title: Higher-Order Components
+permalink: docs/higher-order-components.html</p>
+<hr>
+<p>A higher-order component (HOC) is an advanced technique in React for reusing component logic. HOCs are not part of the React API, per se. They are a pattern that emerges from React's compositional nature.</p>
+<p>Concretely, <strong>a higher-order component is a function that takes a component and returns a new component.</strong></p>
+<pre><code class="language-js">const EnhancedComponent = higherOrderComponent(WrappedComponent);
+</code></pre>
+<p>Whereas a component transforms props into UI, a higher-order component transforms a component into another component.</p>
+<p>HOCs are common in third-party React libraries, such as Redux's <a href="https://github.com/reduxjs/react-redux/blob/master/docs/api/connect.md#connect"><code>connect</code></a> and Relay's <a href="http://facebook.github.io/relay/docs/en/fragment-container.html"><code>createFragmentContainer</code></a>.</p>
+<p>In this document, we'll discuss why higher-order components are useful, and how to write your own.</p>
+<h2>Use HOCs For Cross-Cutting Concerns {#use-hocs-for-cross-cutting-concerns}</h2>
+<blockquote>
+<p><strong>Note</strong></p>
+<p>We previously recommended mixins as a way to handle cross-cutting concerns. We've since realized that mixins create more trouble than they are worth. <a href="/blog/2016/07/13/mixins-considered-harmful.html">Read more</a> about why we've moved away from mixins and how you can transition your existing components.</p>
+</blockquote>
+<p>Components are the primary unit of code reuse in React. However, you'll find that some patterns aren't a straightforward fit for traditional components.</p>
+<p>For example, say you have a <code>CommentList</code> component that subscribes to an external data source to render a list of comments:</p>
+<pre><code class="language-js">class CommentList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {
+      // &quot;DataSource&quot; is some global data source
+      comments: DataSource.getComments()
+    };
+  }
+
+  componentDidMount() {
+    // Subscribe to changes
+    DataSource.addChangeListener(this.handleChange);
+  }
+
+  componentWillUnmount() {
+    // Clean up listener
+    DataSource.removeChangeListener(this.handleChange);
+  }
+
+  handleChange() {
+    // Update component state whenever the data source changes
+    this.setState({
+      comments: DataSource.getComments()
+    });
+  }
+
+  render() {
+    return (
+      &lt;div&gt;
+        {this.state.comments.map((comment) =&gt; (
+          &lt;Comment comment={comment} key={comment.id} /&gt;
+        ))}
+      &lt;/div&gt;
+    );
+  }
+}
+</code></pre>
+<p>Later, you write a component for subscribing to a single blog post, which follows a similar pattern:</p>
+<pre><code class="language-js">class BlogPost extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {
+      blogPost: DataSource.getBlogPost(props.id)
+    };
+  }
+
+  componentDidMount() {
+    DataSource.addChangeListener(this.handleChange);
+  }
+
+  componentWillUnmount() {
+    DataSource.removeChangeListener(this.handleChange);
+  }
+
+  handleChange() {
+    this.setState({
+      blogPost: DataSource.getBlogPost(this.props.id)
+    });
+  }
+
+  render() {
+    return &lt;TextBlock text={this.state.blogPost} /&gt;;
+  }
+}
+</code></pre>
+<p><code>CommentList</code> and <code>BlogPost</code> aren't identical — they call different methods on <code>DataSource</code>, and they render different output. But much of their implementation is the same:</p>
+<ul>
+<li>On mount, add a change listener to <code>DataSource</code>.</li>
+<li>Inside the listener, call <code>setState</code> whenever the data source changes.</li>
+<li>On unmount, remove the change listener.</li>
+</ul>
+<p>You can imagine that in a large app, this same pattern of subscribing to <code>DataSource</code> and calling <code>setState</code> will occur over and over again. We want an abstraction that allows us to define this logic in a single place and share it across many components. This is where higher-order components excel.</p>
+<p>We can write a function that creates components, like <code>CommentList</code> and <code>BlogPost</code>, that subscribe to <code>DataSource</code>. The function will accept as one of its arguments a child component that receives the subscribed data as a prop. Let's call the function <code>withSubscription</code>:</p>
+<pre><code class="language-js">const CommentListWithSubscription = withSubscription(
+  CommentList,
+  (DataSource) =&gt; DataSource.getComments()
+);
+
+const BlogPostWithSubscription = withSubscription(
+  BlogPost,
+  (DataSource, props) =&gt; DataSource.getBlogPost(props.id)
+);
+</code></pre>
+<p>The first parameter is the wrapped component. The second parameter retrieves the data we're interested in, given a <code>DataSource</code> and the current props.</p>
+<p>When <code>CommentListWithSubscription</code> and <code>BlogPostWithSubscription</code> are rendered, <code>CommentList</code> and <code>BlogPost</code> will be passed a <code>data</code> prop with the most current data retrieved from <code>DataSource</code>:</p>
+<pre><code class="language-js">// This function takes a component...
+function withSubscription(WrappedComponent, selectData) {
+  // ...and returns another component...
+  return class extends React.Component {
+    constructor(props) {
+      super(props);
+      this.handleChange = this.handleChange.bind(this);
+      this.state = {
+        data: selectData(DataSource, props)
+      };
+    }
+
+    componentDidMount() {
+      // ... that takes care of the subscription...
+      DataSource.addChangeListener(this.handleChange);
+    }
+
+    componentWillUnmount() {
+      DataSource.removeChangeListener(this.handleChange);
+    }
+
+    handleChange() {
+      this.setState({
+        data: selectData(DataSource, this.props)
+      });
+    }
+
+    render() {
+      // ... and renders the wrapped component with the fresh data!
+      // Notice that we pass through any additional props
+      return &lt;WrappedComponent data={this.state.data} {...this.props} /&gt;;
+    }
+  };
+}
+</code></pre>
+<p>Note that a HOC doesn't modify the input component, nor does it use inheritance to copy its behavior. Rather, a HOC <em>composes</em> the original component by <em>wrapping</em> it in a container component. A HOC is a pure function with zero side-effects.</p>
+<p>And that's it! The wrapped component receives all the props of the container, along with a new prop, <code>data</code>, which it uses to render its output. The HOC isn't concerned with how or why the data is used, and the wrapped component isn't concerned with where the data came from.</p>
+<p>Because <code>withSubscription</code> is a normal function, you can add as many or as few arguments as you like. For example, you may want to make the name of the <code>data</code> prop configurable, to further isolate the HOC from the wrapped component. Or you could accept an argument that configures <code>shouldComponentUpdate</code>, or one that configures the data source. These are all possible because the HOC has full control over how the component is defined.</p>
+<p>Like components, the contract between <code>withSubscription</code> and the wrapped component is entirely props-based. This makes it easy to swap one HOC for a different one, as long as they provide the same props to the wrapped component. This may be useful if you change data-fetching libraries, for example.</p>
+<h2>Don't Mutate the Original Component. Use Composition. {#dont-mutate-the-original-component-use-composition}</h2>
+<p>Resist the temptation to modify a component's prototype (or otherwise mutate it) inside a HOC.</p>
+<pre><code class="language-js">function logProps(InputComponent) {
+  InputComponent.prototype.componentDidUpdate = function(prevProps) {
+    console.log('Current props: ', this.props);
+    console.log('Previous props: ', prevProps);
+  };
+  // The fact that we're returning the original input is a hint that it has
+  // been mutated.
+  return InputComponent;
+}
+
+// EnhancedComponent will log whenever props are received
+const EnhancedComponent = logProps(InputComponent);
+</code></pre>
+<p>There are a few problems with this. One is that the input component cannot be reused separately from the enhanced component. More crucially, if you apply another HOC to <code>EnhancedComponent</code> that <em>also</em> mutates <code>componentDidUpdate</code>, the first HOC's functionality will be overridden! This HOC also won't work with function components, which do not have lifecycle methods.</p>
+<p>Mutating HOCs are a leaky abstraction—the consumer must know how they are implemented in order to avoid conflicts with other HOCs.</p>
+<p>Instead of mutation, HOCs should use composition, by wrapping the input component in a container component:</p>
+<pre><code class="language-js">function logProps(WrappedComponent) {
+  return class extends React.Component {
+    componentDidUpdate(prevProps) {
+      console.log('Current props: ', this.props);
+      console.log('Previous props: ', prevProps);
+    }
+    render() {
+      // Wraps the input component in a container, without mutating it. Good!
+      return &lt;WrappedComponent {...this.props} /&gt;;
+    }
+  }
+}
+</code></pre>
+<p>This HOC has the same functionality as the mutating version while avoiding the potential for clashes. It works equally well with class and function components. And because it's a pure function, it's composable with other HOCs, or even with itself.</p>
+<p>You may have noticed similarities between HOCs and a pattern called <strong>container components</strong>. Container components are part of a strategy of separating responsibility between high-level and low-level concerns. Containers manage things like subscriptions and state, and pass props to components that handle things like rendering UI. HOCs use containers as part of their implementation. You can think of HOCs as parameterized container component definitions.</p>
+<h2>Convention: Pass Unrelated Props Through to the Wrapped Component {#convention-pass-unrelated-props-through-to-the-wrapped-component}</h2>
+<p>HOCs add features to a component. They shouldn't drastically alter its contract. It's expected that the component returned from a HOC has a similar interface to the wrapped component.</p>
+<p>HOCs should pass through props that are unrelated to its specific concern. Most HOCs contain a render method that looks something like this:</p>
+<pre><code class="language-js">render() {
+  // Filter out extra props that are specific to this HOC and shouldn't be
+  // passed through
+  const { extraProp, ...passThroughProps } = this.props;
+
+  // Inject props into the wrapped component. These are usually state values or
+  // instance methods.
+  const injectedProp = someStateOrInstanceMethod;
+
+  // Pass props to wrapped component
+  return (
+    &lt;WrappedComponent
+      injectedProp={injectedProp}
+      {...passThroughProps}
+    /&gt;
+  );
+}
+</code></pre>
+<p>This convention helps ensure that HOCs are as flexible and reusable as possible.</p>
+<h2>Convention: Maximizing Composability {#convention-maximizing-composability}</h2>
+<p>Not all HOCs look the same. Sometimes they accept only a single argument, the wrapped component:</p>
+<pre><code class="language-js">const NavbarWithRouter = withRouter(Navbar);
+</code></pre>
+<p>Usually, HOCs accept additional arguments. In this example from Relay, a config object is used to specify a component's data dependencies:</p>
+<pre><code class="language-js">const CommentWithRelay = Relay.createContainer(Comment, config);
+</code></pre>
+<p>The most common signature for HOCs looks like this:</p>
+<pre><code class="language-js">// React Redux's `connect`
+const ConnectedComment = connect(commentSelector, commentActions)(CommentList);
+</code></pre>
+<p><em>What?!</em> If you break it apart, it's easier to see what's going on.</p>
+<pre><code class="language-js">// connect is a function that returns another function
+const enhance = connect(commentListSelector, commentListActions);
+// The returned function is a HOC, which returns a component that is connected
+// to the Redux store
+const ConnectedComment = enhance(CommentList);
+</code></pre>
+<p>In other words, <code>connect</code> is a higher-order function that returns a higher-order component!</p>
+<p>This form may seem confusing or unnecessary, but it has a useful property. Single-argument HOCs like the one returned by the <code>connect</code> function have the signature <code>Component =&gt; Component</code>. Functions whose output type is the same as its input type are really easy to compose together.</p>
+<pre><code class="language-js">// Instead of doing this...
+const EnhancedComponent = withRouter(connect(commentSelector)(WrappedComponent))
+
+// ... you can use a function composition utility
+// compose(f, g, h) is the same as (...args) =&gt; f(g(h(...args)))
+const enhance = compose(
+  // These are both single-argument HOCs
+  withRouter,
+  connect(commentSelector)
+)
+const EnhancedComponent = enhance(WrappedComponent)
+</code></pre>
+<p>(This same property also allows <code>connect</code> and other enhancer-style HOCs to be used as decorators, an experimental JavaScript proposal.)</p>
+<p>The <code>compose</code> utility function is provided by many third-party libraries including lodash (as <a href="https://lodash.com/docs/#flowRight"><code>lodash.flowRight</code></a>), <a href="https://redux.js.org/api/compose">Redux</a>, and <a href="https://ramdajs.com/docs/#compose">Ramda</a>.</p>
+<h2>Convention: Wrap the Display Name for Easy Debugging {#convention-wrap-the-display-name-for-easy-debugging}</h2>
+<p>The container components created by HOCs show up in the <a href="https://github.com/facebook/react-devtools">React Developer Tools</a> like any other component. To ease debugging, choose a display name that communicates that it's the result of a HOC.</p>
+<p>The most common technique is to wrap the display name of the wrapped component. So if your higher-order component is named <code>withSubscription</code>, and the wrapped component's display name is <code>CommentList</code>, use the display name <code>WithSubscription(CommentList)</code>:</p>
+<pre><code class="language-js">function withSubscription(WrappedComponent) {
+  class WithSubscription extends React.Component {/* ... */}
+  WithSubscription.displayName = `WithSubscription(${getDisplayName(WrappedComponent)})`;
+  return WithSubscription;
+}
+
+function getDisplayName(WrappedComponent) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+}
+</code></pre>
+<h2>Caveats {#caveats}</h2>
+<p>Higher-order components come with a few caveats that aren't immediately obvious if you're new to React.</p>
+<h3>Don't Use HOCs Inside the render Method {#dont-use-hocs-inside-the-render-method}</h3>
+<p>React's diffing algorithm (called <a href="/docs/reconciliation.html">Reconciliation</a>) uses component identity to determine whether it should update the existing subtree or throw it away and mount a new one. If the component returned from <code>render</code> is identical (<code>===</code>) to the component from the previous render, React recursively updates the subtree by diffing it with the new one. If they're not equal, the previous subtree is unmounted completely.</p>
+<p>Normally, you shouldn't need to think about this. But it matters for HOCs because it means you can't apply a HOC to a component within the render method of a component:</p>
+<pre><code class="language-js">render() {
+  // A new version of EnhancedComponent is created on every render
+  // EnhancedComponent1 !== EnhancedComponent2
+  const EnhancedComponent = enhance(MyComponent);
+  // That causes the entire subtree to unmount/remount each time!
+  return &lt;EnhancedComponent /&gt;;
+}
+</code></pre>
+<p>The problem here isn't just about performance — remounting a component causes the state of that component and all of its children to be lost.</p>
+<p>Instead, apply HOCs outside the component definition so that the resulting component is created only once. Then, its identity will be consistent across renders. This is usually what you want, anyway.</p>
+<p>In those rare cases where you need to apply a HOC dynamically, you can also do it inside a component's lifecycle methods or its constructor.</p>
+<h3>Static Methods Must Be Copied Over {#static-methods-must-be-copied-over}</h3>
+<p>Sometimes it's useful to define a static method on a React component. For example, Relay containers expose a static method <code>getFragment</code> to facilitate the composition of GraphQL fragments.</p>
+<p>When you apply a HOC to a component, though, the original component is wrapped with a container component. That means the new component does not have any of the static methods of the original component.</p>
+<pre><code class="language-js">// Define a static method
+WrappedComponent.staticMethod = function() {/*...*/}
+// Now apply a HOC
+const EnhancedComponent = enhance(WrappedComponent);
+
+// The enhanced component has no static method
+typeof EnhancedComponent.staticMethod === 'undefined' // true
+</code></pre>
+<p>To solve this, you could copy the methods onto the container before returning it:</p>
+<pre><code class="language-js">function enhance(WrappedComponent) {
+  class Enhance extends React.Component {/*...*/}
+  // Must know exactly which method(s) to copy :(
+  Enhance.staticMethod = WrappedComponent.staticMethod;
+  return Enhance;
+}
+</code></pre>
+<p>However, this requires you to know exactly which methods need to be copied. You can use <a href="https://github.com/mridgway/hoist-non-react-statics">hoist-non-react-statics</a> to automatically copy all non-React static methods:</p>
+<pre><code class="language-js">import hoistNonReactStatic from 'hoist-non-react-statics';
+function enhance(WrappedComponent) {
+  class Enhance extends React.Component {/*...*/}
+  hoistNonReactStatic(Enhance, WrappedComponent);
+  return Enhance;
+}
+</code></pre>
+<p>Another possible solution is to export the static method separately from the component itself.</p>
+<pre><code class="language-js">// Instead of...
+MyComponent.someFunction = someFunction;
+export default MyComponent;
+
+// ...export the method separately...
+export { someFunction };
+
+// ...and in the consuming module, import both
+import MyComponent, { someFunction } from './MyComponent.js';
+</code></pre>
+<h3>Refs Aren't Passed Through {#refs-arent-passed-through}</h3>
+<p>While the convention for higher-order components is to pass through all props to the wrapped component, this does not work for refs. That's because <code>ref</code> is not really a prop — like <code>key</code>, it's handled specially by React. If you add a ref to an element whose component is the result of a HOC, the ref refers to an instance of the outermost container component, not the wrapped component.</p>
+<p>The solution for this problem is to use the <code>React.forwardRef</code> API (introduced with React 16.3). <a href="/docs/forwarding-refs.html">Learn more about it in the forwarding refs section</a>.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: higher-order-components\ntitle: Higher-Order Components\npermalink: docs/higher-order-components.html\n---\n\nA higher-order component (HOC) is an advanced technique in React for reusing component logic. HOCs are not part of the React API, per se. They are a pattern that emerges from React's compositional nature.\n\nConcretely, **a higher-order component is a function that takes a component and returns a new component.**\n\n```js\nconst EnhancedComponent = higherOrderComponent(WrappedComponent);\n```\n\nWhereas a component transforms props into UI, a higher-order component transforms a component into another component.\n\nHOCs are common in third-party React libraries, such as Redux's [`connect`](https://github.com/reduxjs/react-redux/blob/master/docs/api/connect.md#connect) and Relay's [`createFragmentContainer`](http://facebook.github.io/relay/docs/en/fragment-container.html).\n\nIn this document, we'll discuss why higher-order components are useful, and how to write your own.\n\n## Use HOCs For Cross-Cutting Concerns {#use-hocs-for-cross-cutting-concerns}\n\n\u003e **Note**\n\u003e\n\u003e We previously recommended mixins as a way to handle cross-cutting concerns. We've since realized that mixins create more trouble than they are worth. [Read more](/blog/2016/07/13/mixins-considered-harmful.html) about why we've moved away from mixins and how you can transition your existing components.\n\nComponents are the primary unit of code reuse in React. However, you'll find that some patterns aren't a straightforward fit for traditional components.\n\nFor example, say you have a `CommentList` component that subscribes to an external data source to render a list of comments:\n\n```js\nclass CommentList extends React.Component {\n  constructor(props) {\n    super(props);\n    this.handleChange = this.handleChange.bind(this);\n    this.state = {\n      // \"DataSource\" is some global data source\n      comments: DataSource.getComments()\n    };\n  }\n\n  componentDidMount() {\n    // Subscribe to changes\n    DataSource.addChangeListener(this.handleChange);\n  }\n\n  componentWillUnmount() {\n    // Clean up listener\n    DataSource.removeChangeListener(this.handleChange);\n  }\n\n  handleChange() {\n    // Update component state whenever the data source changes\n    this.setState({\n      comments: DataSource.getComments()\n    });\n  }\n\n  render() {\n    return (\n      \u003cdiv\u003e\n        {this.state.comments.map((comment) =\u003e (\n          \u003cComment comment={comment} key={comment.id} /\u003e\n        ))}\n      \u003c/div\u003e\n    );\n  }\n}\n```\n\nLater, you write a component for subscribing to a single blog post, which follows a similar pattern:\n\n```js\nclass BlogPost extends React.Component {\n  constructor(props) {\n    super(props);\n    this.handleChange = this.handleChange.bind(this);\n    this.state = {\n      blogPost: DataSource.getBlogPost(props.id)\n    };\n  }\n\n  componentDidMount() {\n    DataSource.addChangeListener(this.handleChange);\n  }\n\n  componentWillUnmount() {\n    DataSource.removeChangeListener(this.handleChange);\n  }\n\n  handleChange() {\n    this.setState({\n      blogPost: DataSource.getBlogPost(this.props.id)\n    });\n  }\n\n  render() {\n    return \u003cTextBlock text={this.state.blogPost} /\u003e;\n  }\n}\n```\n\n`CommentList` and `BlogPost` aren't identical — they call different methods on `DataSource`, and they render different output. But much of their implementation is the same:\n\n- On mount, add a change listener to `DataSource`.\n- Inside the listener, call `setState` whenever the data source changes.\n- On unmount, remove the change listener.\n\nYou can imagine that in a large app, this same pattern of subscribing to `DataSource` and calling `setState` will occur over and over again. We want an abstraction that allows us to define this logic in a single place and share it across many components. This is where higher-order components excel.\n\nWe can write a function that creates components, like `CommentList` and `BlogPost`, that subscribe to `DataSource`. The function will accept as one of its arguments a child component that receives the subscribed data as a prop. Let's call the function `withSubscription`:\n\n```js\nconst CommentListWithSubscription = withSubscription(\n  CommentList,\n  (DataSource) =\u003e DataSource.getComments()\n);\n\nconst BlogPostWithSubscription = withSubscription(\n  BlogPost,\n  (DataSource, props) =\u003e DataSource.getBlogPost(props.id)\n);\n```\n\nThe first parameter is the wrapped component. The second parameter retrieves the data we're interested in, given a `DataSource` and the current props.\n\nWhen `CommentListWithSubscription` and `BlogPostWithSubscription` are rendered, `CommentList` and `BlogPost` will be passed a `data` prop with the most current data retrieved from `DataSource`:\n\n```js\n// This function takes a component...\nfunction withSubscription(WrappedComponent, selectData) {\n  // ...and returns another component...\n  return class extends React.Component {\n    constructor(props) {\n      super(props);\n      this.handleChange = this.handleChange.bind(this);\n      this.state = {\n        data: selectData(DataSource, props)\n      };\n    }\n\n    componentDidMount() {\n      // ... that takes care of the subscription...\n      DataSource.addChangeListener(this.handleChange);\n    }\n\n    componentWillUnmount() {\n      DataSource.removeChangeListener(this.handleChange);\n    }\n\n    handleChange() {\n      this.setState({\n        data: selectData(DataSource, this.props)\n      });\n    }\n\n    render() {\n      // ... and renders the wrapped component with the fresh data!\n      // Notice that we pass through any additional props\n      return \u003cWrappedComponent data={this.state.data} {...this.props} /\u003e;\n    }\n  };\n}\n```\n\nNote that a HOC doesn't modify the input component, nor does it use inheritance to copy its behavior. Rather, a HOC *composes* the original component by *wrapping* it in a container component. A HOC is a pure function with zero side-effects.\n\nAnd that's it! The wrapped component receives all the props of the container, along with a new prop, `data`, which it uses to render its output. The HOC isn't concerned with how or why the data is used, and the wrapped component isn't concerned with where the data came from.\n\nBecause `withSubscription` is a normal function, you can add as many or as few arguments as you like. For example, you may want to make the name of the `data` prop configurable, to further isolate the HOC from the wrapped component. Or you could accept an argument that configures `shouldComponentUpdate`, or one that configures the data source. These are all possible because the HOC has full control over how the component is defined.\n\nLike components, the contract between `withSubscription` and the wrapped component is entirely props-based. This makes it easy to swap one HOC for a different one, as long as they provide the same props to the wrapped component. This may be useful if you change data-fetching libraries, for example.\n\n## Don't Mutate the Original Component. Use Composition. {#dont-mutate-the-original-component-use-composition}\n\nResist the temptation to modify a component's prototype (or otherwise mutate it) inside a HOC.\n\n```js\nfunction logProps(InputComponent) {\n  InputComponent.prototype.componentDidUpdate = function(prevProps) {\n    console.log('Current props: ', this.props);\n    console.log('Previous props: ', prevProps);\n  };\n  // The fact that we're returning the original input is a hint that it has\n  // been mutated.\n  return InputComponent;\n}\n\n// EnhancedComponent will log whenever props are received\nconst EnhancedComponent = logProps(InputComponent);\n```\n\nThere are a few problems with this. One is that the input component cannot be reused separately from the enhanced component. More crucially, if you apply another HOC to `EnhancedComponent` that *also* mutates `componentDidUpdate`, the first HOC's functionality will be overridden! This HOC also won't work with function components, which do not have lifecycle methods.\n\nMutating HOCs are a leaky abstraction—the consumer must know how they are implemented in order to avoid conflicts with other HOCs.\n\nInstead of mutation, HOCs should use composition, by wrapping the input component in a container component:\n\n```js\nfunction logProps(WrappedComponent) {\n  return class extends React.Component {\n    componentDidUpdate(prevProps) {\n      console.log('Current props: ', this.props);\n      console.log('Previous props: ', prevProps);\n    }\n    render() {\n      // Wraps the input component in a container, without mutating it. Good!\n      return \u003cWrappedComponent {...this.props} /\u003e;\n    }\n  }\n}\n```\n\nThis HOC has the same functionality as the mutating version while avoiding the potential for clashes. It works equally well with class and function components. And because it's a pure function, it's composable with other HOCs, or even with itself.\n\nYou may have noticed similarities between HOCs and a pattern called **container components**. Container components are part of a strategy of separating responsibility between high-level and low-level concerns. Containers manage things like subscriptions and state, and pass props to components that handle things like rendering UI. HOCs use containers as part of their implementation. You can think of HOCs as parameterized container component definitions.\n\n## Convention: Pass Unrelated Props Through to the Wrapped Component {#convention-pass-unrelated-props-through-to-the-wrapped-component}\n\nHOCs add features to a component. They shouldn't drastically alter its contract. It's expected that the component returned from a HOC has a similar interface to the wrapped component.\n\nHOCs should pass through props that are unrelated to its specific concern. Most HOCs contain a render method that looks something like this:\n\n```js\nrender() {\n  // Filter out extra props that are specific to this HOC and shouldn't be\n  // passed through\n  const { extraProp, ...passThroughProps } = this.props;\n\n  // Inject props into the wrapped component. These are usually state values or\n  // instance methods.\n  const injectedProp = someStateOrInstanceMethod;\n\n  // Pass props to wrapped component\n  return (\n    \u003cWrappedComponent\n      injectedProp={injectedProp}\n      {...passThroughProps}\n    /\u003e\n  );\n}\n```\n\nThis convention helps ensure that HOCs are as flexible and reusable as possible.\n\n## Convention: Maximizing Composability {#convention-maximizing-composability}\n\nNot all HOCs look the same. Sometimes they accept only a single argument, the wrapped component:\n\n```js\nconst NavbarWithRouter = withRouter(Navbar);\n```\n\nUsually, HOCs accept additional arguments. In this example from Relay, a config object is used to specify a component's data dependencies:\n\n```js\nconst CommentWithRelay = Relay.createContainer(Comment, config);\n```\n\nThe most common signature for HOCs looks like this:\n\n```js\n// React Redux's `connect`\nconst ConnectedComment = connect(commentSelector, commentActions)(CommentList);\n```\n\n*What?!* If you break it apart, it's easier to see what's going on.\n\n```js\n// connect is a function that returns another function\nconst enhance = connect(commentListSelector, commentListActions);\n// The returned function is a HOC, which returns a component that is connected\n// to the Redux store\nconst ConnectedComment = enhance(CommentList);\n```\nIn other words, `connect` is a higher-order function that returns a higher-order component!\n\nThis form may seem confusing or unnecessary, but it has a useful property. Single-argument HOCs like the one returned by the `connect` function have the signature `Component =\u003e Component`. Functions whose output type is the same as its input type are really easy to compose together.\n\n```js\n// Instead of doing this...\nconst EnhancedComponent = withRouter(connect(commentSelector)(WrappedComponent))\n\n// ... you can use a function composition utility\n// compose(f, g, h) is the same as (...args) =\u003e f(g(h(...args)))\nconst enhance = compose(\n  // These are both single-argument HOCs\n  withRouter,\n  connect(commentSelector)\n)\nconst EnhancedComponent = enhance(WrappedComponent)\n```\n\n(This same property also allows `connect` and other enhancer-style HOCs to be used as decorators, an experimental JavaScript proposal.)\n\nThe `compose` utility function is provided by many third-party libraries including lodash (as [`lodash.flowRight`](https://lodash.com/docs/#flowRight)), [Redux](https://redux.js.org/api/compose), and [Ramda](https://ramdajs.com/docs/#compose).\n\n## Convention: Wrap the Display Name for Easy Debugging {#convention-wrap-the-display-name-for-easy-debugging}\n\nThe container components created by HOCs show up in the [React Developer Tools](https://github.com/facebook/react-devtools) like any other component. To ease debugging, choose a display name that communicates that it's the result of a HOC.\n\nThe most common technique is to wrap the display name of the wrapped component. So if your higher-order component is named `withSubscription`, and the wrapped component's display name is `CommentList`, use the display name `WithSubscription(CommentList)`:\n\n```js\nfunction withSubscription(WrappedComponent) {\n  class WithSubscription extends React.Component {/* ... */}\n  WithSubscription.displayName = `WithSubscription(${getDisplayName(WrappedComponent)})`;\n  return WithSubscription;\n}\n\nfunction getDisplayName(WrappedComponent) {\n  return WrappedComponent.displayName || WrappedComponent.name || 'Component';\n}\n```\n\n\n## Caveats {#caveats}\n\nHigher-order components come with a few caveats that aren't immediately obvious if you're new to React.\n\n### Don't Use HOCs Inside the render Method {#dont-use-hocs-inside-the-render-method}\n\nReact's diffing algorithm (called [Reconciliation](/docs/reconciliation.html)) uses component identity to determine whether it should update the existing subtree or throw it away and mount a new one. If the component returned from `render` is identical (`===`) to the component from the previous render, React recursively updates the subtree by diffing it with the new one. If they're not equal, the previous subtree is unmounted completely.\n\nNormally, you shouldn't need to think about this. But it matters for HOCs because it means you can't apply a HOC to a component within the render method of a component:\n\n```js\nrender() {\n  // A new version of EnhancedComponent is created on every render\n  // EnhancedComponent1 !== EnhancedComponent2\n  const EnhancedComponent = enhance(MyComponent);\n  // That causes the entire subtree to unmount/remount each time!\n  return \u003cEnhancedComponent /\u003e;\n}\n```\n\nThe problem here isn't just about performance — remounting a component causes the state of that component and all of its children to be lost.\n\nInstead, apply HOCs outside the component definition so that the resulting component is created only once. Then, its identity will be consistent across renders. This is usually what you want, anyway.\n\nIn those rare cases where you need to apply a HOC dynamically, you can also do it inside a component's lifecycle methods or its constructor.\n\n### Static Methods Must Be Copied Over {#static-methods-must-be-copied-over}\n\nSometimes it's useful to define a static method on a React component. For example, Relay containers expose a static method `getFragment` to facilitate the composition of GraphQL fragments.\n\nWhen you apply a HOC to a component, though, the original component is wrapped with a container component. That means the new component does not have any of the static methods of the original component.\n\n```js\n// Define a static method\nWrappedComponent.staticMethod = function() {/*...*/}\n// Now apply a HOC\nconst EnhancedComponent = enhance(WrappedComponent);\n\n// The enhanced component has no static method\ntypeof EnhancedComponent.staticMethod === 'undefined' // true\n```\n\nTo solve this, you could copy the methods onto the container before returning it:\n\n```js\nfunction enhance(WrappedComponent) {\n  class Enhance extends React.Component {/*...*/}\n  // Must know exactly which method(s) to copy :(\n  Enhance.staticMethod = WrappedComponent.staticMethod;\n  return Enhance;\n}\n```\n\nHowever, this requires you to know exactly which methods need to be copied. You can use [hoist-non-react-statics](https://github.com/mridgway/hoist-non-react-statics) to automatically copy all non-React static methods:\n\n```js\nimport hoistNonReactStatic from 'hoist-non-react-statics';\nfunction enhance(WrappedComponent) {\n  class Enhance extends React.Component {/*...*/}\n  hoistNonReactStatic(Enhance, WrappedComponent);\n  return Enhance;\n}\n```\n\nAnother possible solution is to export the static method separately from the component itself.\n\n```js\n// Instead of...\nMyComponent.someFunction = someFunction;\nexport default MyComponent;\n\n// ...export the method separately...\nexport { someFunction };\n\n// ...and in the consuming module, import both\nimport MyComponent, { someFunction } from './MyComponent.js';\n```\n\n### Refs Aren't Passed Through {#refs-arent-passed-through}\n\nWhile the convention for higher-order components is to pass through all props to the wrapped component, this does not work for refs. That's because `ref` is not really a prop — like `key`, it's handled specially by React. If you add a ref to an element whose component is the result of a HOC, the ref refers to an instance of the outermost container component, not the wrapped component.\n\nThe solution for this problem is to use the `React.forwardRef` API (introduced with React 16.3). [Learn more about it in the forwarding refs section](/docs/forwarding-refs.html).\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_higher-order-components.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

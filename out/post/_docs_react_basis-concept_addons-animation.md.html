@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: animation
+title: Animation Add-Ons
+permalink: docs/animation.html
+layout: docs
+category: Add-Ons
+redirect_from:</p>
+<ul>
+<li>&quot;docs/animation-ja-JP.html&quot;</li>
+<li>&quot;docs/animation-ko-KR.html&quot;</li>
+<li>&quot;docs/animation-zh-CN.html&quot;</li>
+</ul>
+<hr>
+<blockquote>
+<p>Note:</p>
+<p><code>ReactTransitionGroup</code> and <code>ReactCSSTransitionGroup</code> have been moved to the <a href="https://github.com/reactjs/react-transition-group/tree/v1-stable"><code>react-transition-group</code></a> package that is maintained by the community. Its 1.x branch is completely API-compatible with the existing addons. Please file bugs and feature requests in the <a href="https://github.com/reactjs/react-transition-group/tree/v1-stable">new repository</a>.</p>
+</blockquote>
+<p>The <a href="#low-level-api-reacttransitiongroup"><code>ReactTransitionGroup</code></a> add-on component is a low-level API for animation, and <a href="#high-level-api-reactcsstransitiongroup"><code>ReactCSSTransitionGroup</code></a> is an add-on component for easily implementing basic CSS animations and transitions.</p>
+<h2>High-level API: ReactCSSTransitionGroup {#high-level-api-reactcsstransitiongroup}</h2>
+<p><code>ReactCSSTransitionGroup</code> is a high-level API based on <a href="#low-level-api-reacttransitiongroup"><code>ReactTransitionGroup</code></a> and is an easy way to perform CSS transitions and animations when a React component enters or leaves the DOM. It's inspired by the excellent <a href="https://docs.angularjs.org/api/ngAnimate">ng-animate</a> library.</p>
+<p><strong>Importing</strong></p>
+<pre><code class="language-javascript">import ReactCSSTransitionGroup from 'react-transition-group'; // ES6
+var ReactCSSTransitionGroup = require('react-transition-group'); // ES5 with npm
+</code></pre>
+<pre><code class="language-javascript{31-36}">class TodoList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {items: ['hello', 'world', 'click', 'me']};
+    this.handleAdd = this.handleAdd.bind(this);
+  }
+
+  handleAdd() {
+    const newItems = this.state.items.concat([
+      prompt('Enter some text')
+    ]);
+    this.setState({items: newItems});
+  }
+
+  handleRemove(i) {
+    let newItems = this.state.items.slice();
+    newItems.splice(i, 1);
+    this.setState({items: newItems});
+  }
+
+  render() {
+    const items = this.state.items.map((item, i) =&gt; (
+      &lt;div key={i} onClick={() =&gt; this.handleRemove(i)}&gt;
+        {item}
+      &lt;/div&gt;
+    ));
+
+    return (
+      &lt;div&gt;
+        &lt;button onClick={this.handleAdd}&gt;Add Item&lt;/button&gt;
+        &lt;ReactCSSTransitionGroup
+          transitionName=&quot;example&quot;
+          transitionEnterTimeout={500}
+          transitionLeaveTimeout={300}&gt;
+          {items}
+        &lt;/ReactCSSTransitionGroup&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+</code></pre>
+<blockquote>
+<p>Note:</p>
+<p>You must provide <a href="/docs/lists-and-keys.html#keys">the <code>key</code> attribute</a> for all children of <code>ReactCSSTransitionGroup</code>, even when only rendering a single item. This is how React will determine which children have entered, left, or stayed.</p>
+</blockquote>
+<p>In this component, when a new item is added to <code>ReactCSSTransitionGroup</code> it will get the <code>example-enter</code> CSS class and the <code>example-enter-active</code> CSS class added in the next tick. This is a convention based on the <code>transitionName</code> prop.</p>
+<p>You can use these classes to trigger a CSS animation or transition. For example, try adding this CSS and adding a new list item:</p>
+<pre><code class="language-css">.example-enter {
+  opacity: 0.01;
+}
+
+.example-enter.example-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.example-leave {
+  opacity: 1;
+}
+
+.example-leave.example-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
+</code></pre>
+<p>You'll notice that animation durations need to be specified in both the CSS and the render method; this tells React when to remove the animation classes from the element and -- if it's leaving -- when to remove the element from the DOM.</p>
+<h3>Animate Initial Mounting {#animate-initial-mounting}</h3>
+<p><code>ReactCSSTransitionGroup</code> provides the optional prop <code>transitionAppear</code>, to add an extra transition phase at the initial mount of the component. There is generally no transition phase at the initial mount as the default value of <code>transitionAppear</code> is <code>false</code>. The following is an example which passes the prop <code>transitionAppear</code> with the value <code>true</code>.</p>
+<pre><code class="language-javascript{5-6}">render() {
+  return (
+    &lt;ReactCSSTransitionGroup
+      transitionName=&quot;example&quot;
+      transitionAppear={true}
+      transitionAppearTimeout={500}
+      transitionEnter={false}
+      transitionLeave={false}&gt;
+      &lt;h1&gt;Fading at Initial Mount&lt;/h1&gt;
+    &lt;/ReactCSSTransitionGroup&gt;
+  );
+}
+</code></pre>
+<p>During the initial mount <code>ReactCSSTransitionGroup</code> will get the <code>example-appear</code> CSS class and the <code>example-appear-active</code> CSS class added in the next tick.</p>
+<pre><code class="language-css">.example-appear {
+  opacity: 0.01;
+}
+
+.example-appear.example-appear-active {
+  opacity: 1;
+  transition: opacity .5s ease-in;
+}
+</code></pre>
+<p>At the initial mount, all children of the <code>ReactCSSTransitionGroup</code> will <code>appear</code> but not <code>enter</code>. However, all children later added to an existing <code>ReactCSSTransitionGroup</code> will <code>enter</code> but not <code>appear</code>.</p>
+<blockquote>
+<p>Note:</p>
+<p>The prop <code>transitionAppear</code> was added to <code>ReactCSSTransitionGroup</code> in version <code>0.13</code>. To maintain backwards compatibility, the default value is set to <code>false</code>.</p>
+<p>However, the default values of <code>transitionEnter</code> and <code>transitionLeave</code> are <code>true</code> so you must specify <code>transitionEnterTimeout</code> and <code>transitionLeaveTimeout</code> by default. If you don't need either enter or leave animations, pass <code>transitionEnter={false}</code> or <code>transitionLeave={false}</code>.</p>
+</blockquote>
+<h3>Custom Classes {#custom-classes}</h3>
+<p>It is also possible to use custom class names for each of the steps in your transitions. Instead of passing a string into transitionName you can pass an object containing either the <code>enter</code> and <code>leave</code> class names, or an object containing the <code>enter</code>, <code>enter-active</code>, <code>leave-active</code>, and <code>leave</code> class names. If only the enter and leave classes are provided, the enter-active and leave-active classes will be determined by appending '-active' to the end of the class name. Here are two examples using custom classes:</p>
+<pre><code class="language-javascript">// ...
+&lt;ReactCSSTransitionGroup
+  transitionName={ {
+    enter: 'enter',
+    enterActive: 'enterActive',
+    leave: 'leave',
+    leaveActive: 'leaveActive',
+    appear: 'appear',
+    appearActive: 'appearActive'
+  } }&gt;
+  {item}
+&lt;/ReactCSSTransitionGroup&gt;
+
+&lt;ReactCSSTransitionGroup
+  transitionName={ {
+    enter: 'enter',
+    leave: 'leave',
+    appear: 'appear'
+  } }&gt;
+  {item2}
+&lt;/ReactCSSTransitionGroup&gt;
+// ...
+</code></pre>
+<h3>Animation Group Must Be Mounted To Work {#animation-group-must-be-mounted-to-work}</h3>
+<p>In order for it to apply transitions to its children, the <code>ReactCSSTransitionGroup</code> must already be mounted in the DOM or the prop <code>transitionAppear</code> must be set to <code>true</code>.</p>
+<p>The example below would <strong>not</strong> work, because the <code>ReactCSSTransitionGroup</code> is being mounted along with the new item, instead of the new item being mounted within it. Compare this to the <a href="#getting-started">Getting Started</a> section above to see the difference.</p>
+<pre><code class="language-javascript{4,6,13}">render() {
+  const items = this.state.items.map((item, i) =&gt; (
+    &lt;div key={item} onClick={() =&gt; this.handleRemove(i)}&gt;
+      &lt;ReactCSSTransitionGroup transitionName=&quot;example&quot;&gt;
+        {item}
+      &lt;/ReactCSSTransitionGroup&gt;
+    &lt;/div&gt;
+  ));
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={this.handleAdd}&gt;Add Item&lt;/button&gt;
+      {items}
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h3>Animating One or Zero Items {#animating-one-or-zero-items}</h3>
+<p>In the example above, we rendered a list of items into <code>ReactCSSTransitionGroup</code>. However, the children of <code>ReactCSSTransitionGroup</code> can also be one or zero items. This makes it possible to animate a single element entering or leaving. Similarly, you can animate a new element replacing the current element. For example, we can implement a simple image carousel like this:</p>
+<pre><code class="language-javascript{10}">import ReactCSSTransitionGroup from 'react-transition-group';
+
+function ImageCarousel(props) {
+  return (
+    &lt;div&gt;
+      &lt;ReactCSSTransitionGroup
+        transitionName=&quot;carousel&quot;
+        transitionEnterTimeout={300}
+        transitionLeaveTimeout={300}&gt;
+        &lt;img src={props.imageSrc} key={props.imageSrc} /&gt;
+      &lt;/ReactCSSTransitionGroup&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h3>Disabling Animations {#disabling-animations}</h3>
+<p>You can disable animating <code>enter</code> or <code>leave</code> animations if you want. For example, sometimes you may want an <code>enter</code> animation and no <code>leave</code> animation, but <code>ReactCSSTransitionGroup</code> waits for an animation to complete before removing your DOM node. You can add <code>transitionEnter={false}</code> or <code>transitionLeave={false}</code> props to <code>ReactCSSTransitionGroup</code> to disable these animations.</p>
+<blockquote>
+<p>Note:</p>
+<p>When using <code>ReactCSSTransitionGroup</code>, there's no way for your components to be notified when a transition has ended or to perform any more complex logic around animation. If you want more fine-grained control, you can use the lower-level <code>ReactTransitionGroup</code> API which provides the hooks you need to do custom transitions.</p>
+</blockquote>
+<hr>
+<h2>Low-level API: ReactTransitionGroup {#low-level-api-reacttransitiongroup}</h2>
+<p><strong>Importing</strong></p>
+<pre><code class="language-javascript">import ReactTransitionGroup from 'react-addons-transition-group' // ES6
+var ReactTransitionGroup = require('react-addons-transition-group') // ES5 with npm
+</code></pre>
+<p><code>ReactTransitionGroup</code> is the basis for animations. When children are declaratively added or removed from it (as in the <a href="#getting-started">example above</a>), special lifecycle methods are called on them.</p>
+<ul>
+<li><a href="#componentwillappear"><code>componentWillAppear()</code></a></li>
+<li><a href="#componentdidappear"><code>componentDidAppear()</code></a></li>
+<li><a href="#componentwillenter"><code>componentWillEnter()</code></a></li>
+<li><a href="#componentdidenter"><code>componentDidEnter()</code></a></li>
+<li><a href="#componentwillleave"><code>componentWillLeave()</code></a></li>
+<li><a href="#componentdidleave"><code>componentDidLeave()</code></a></li>
+</ul>
+<h4>Rendering a Different Component {#rendering-a-different-component}</h4>
+<p><code>ReactTransitionGroup</code> renders as a <code>span</code> by default. You can change this behavior by providing a <code>component</code> prop. For example, here's how you would render a <code>&lt;ul&gt;</code>:</p>
+<pre><code class="language-javascript{1}">&lt;ReactTransitionGroup component=&quot;ul&quot;&gt;
+  {/* ... */}
+&lt;/ReactTransitionGroup&gt;
+</code></pre>
+<p>Any additional, user-defined, properties will become properties of the rendered component. For example, here's how you would render a <code>&lt;ul&gt;</code> with CSS class:</p>
+<pre><code class="language-javascript{1}">&lt;ReactTransitionGroup component=&quot;ul&quot; className=&quot;animated-list&quot;&gt;
+  {/* ... */}
+&lt;/ReactTransitionGroup&gt;
+</code></pre>
+<p>Every DOM component that React can render is available for use. However, <code>component</code> does not need to be a DOM component. It can be any React component you want; even ones you've written yourself! Just write <code>component={List}</code> and your component will receive <code>this.props.children</code>.</p>
+<h4>Rendering a Single Child {#rendering-a-single-child}</h4>
+<p>People often use <code>ReactTransitionGroup</code> to animate mounting and unmounting of a single child such as a collapsible panel. Normally <code>ReactTransitionGroup</code> wraps all its children in a <code>span</code> (or a custom <code>component</code> as described above). This is because any React component has to return a single root element, and <code>ReactTransitionGroup</code> is no exception to this rule.</p>
+<p>However if you only need to render a single child inside <code>ReactTransitionGroup</code>, you can completely avoid wrapping it in a <code>&lt;span&gt;</code> or any other DOM component. To do this, create a custom component that renders the first child passed to it directly:</p>
+<pre><code class="language-javascript">function FirstChild(props) {
+  const childrenArray = React.Children.toArray(props.children);
+  return childrenArray[0] || null;
+}
+</code></pre>
+<p>Now you can specify <code>FirstChild</code> as the <code>component</code> prop in <code>&lt;ReactTransitionGroup&gt;</code> props and avoid any wrappers in the result DOM:</p>
+<pre><code class="language-javascript">&lt;ReactTransitionGroup component={FirstChild}&gt;
+  {someCondition ? &lt;MyComponent /&gt; : null}
+&lt;/ReactTransitionGroup&gt;
+</code></pre>
+<p>This only works when you are animating a single child in and out, such as a collapsible panel. This approach wouldn't work when animating multiple children or replacing the single child with another child, such as an image carousel. For an image carousel, while the current image is animating out, another image will animate in, so <code>&lt;ReactTransitionGroup&gt;</code> needs to give them a common DOM parent. You can't avoid the wrapper for multiple children, but you can customize the wrapper with the <code>component</code> prop as described above.</p>
+<hr>
+<h2>Reference {#reference}</h2>
+<h3><code>componentWillAppear()</code> {#componentwillappear}</h3>
+<pre><code class="language-javascript">componentWillAppear(callback)
+</code></pre>
+<p>This is called at the same time as <code>componentDidMount()</code> for components that are initially mounted in a <code>TransitionGroup</code>. It will block other animations from occurring until <code>callback</code> is called. It is only called on the initial render of a <code>TransitionGroup</code>.</p>
+<hr>
+<h3><code>componentDidAppear()</code> {#componentdidappear}</h3>
+<pre><code class="language-javascript">componentDidAppear()
+</code></pre>
+<p>This is called after the <code>callback</code> function that was passed to <code>componentWillAppear</code> is called.</p>
+<hr>
+<h3><code>componentWillEnter()</code> {#componentwillenter}</h3>
+<pre><code class="language-javascript">componentWillEnter(callback)
+</code></pre>
+<p>This is called at the same time as <code>componentDidMount()</code> for components added to an existing <code>TransitionGroup</code>. It will block other animations from occurring until <code>callback</code> is called. It will not be called on the initial render of a <code>TransitionGroup</code>.</p>
+<hr>
+<h3><code>componentDidEnter()</code> {#componentdidenter}</h3>
+<pre><code class="language-javascript">componentDidEnter()
+</code></pre>
+<p>This is called after the <code>callback</code> function that was passed to <a href="#componentwillenter"><code>componentWillEnter()</code></a> is called.</p>
+<hr>
+<h3><code>componentWillLeave()</code> {#componentwillleave}</h3>
+<pre><code class="language-javascript">componentWillLeave(callback)
+</code></pre>
+<p>This is called when the child has been removed from the <code>ReactTransitionGroup</code>. Though the child has been removed, <code>ReactTransitionGroup</code> will keep it in the DOM until <code>callback</code> is called.</p>
+<hr>
+<h3><code>componentDidLeave()</code> {#componentdidleave}</h3>
+<pre><code class="language-javascript">componentDidLeave()
+</code></pre>
+<p>This is called when the <code>willLeave</code> <code>callback</code> is called (at the same time as <code>componentWillUnmount()</code>).</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: animation\ntitle: Animation Add-Ons\npermalink: docs/animation.html\nlayout: docs\ncategory: Add-Ons\nredirect_from:\n  - \"docs/animation-ja-JP.html\"\n  - \"docs/animation-ko-KR.html\"\n  - \"docs/animation-zh-CN.html\"\n---\n\n\u003e Note:\n\u003e\n\u003e `ReactTransitionGroup` and `ReactCSSTransitionGroup` have been moved to the [`react-transition-group`](https://github.com/reactjs/react-transition-group/tree/v1-stable) package that is maintained by the community. Its 1.x branch is completely API-compatible with the existing addons. Please file bugs and feature requests in the [new repository](https://github.com/reactjs/react-transition-group/tree/v1-stable).\n\nThe [`ReactTransitionGroup`](#low-level-api-reacttransitiongroup) add-on component is a low-level API for animation, and [`ReactCSSTransitionGroup`](#high-level-api-reactcsstransitiongroup) is an add-on component for easily implementing basic CSS animations and transitions.\n\n## High-level API: ReactCSSTransitionGroup {#high-level-api-reactcsstransitiongroup}\n\n`ReactCSSTransitionGroup` is a high-level API based on [`ReactTransitionGroup`](#low-level-api-reacttransitiongroup) and is an easy way to perform CSS transitions and animations when a React component enters or leaves the DOM. It's inspired by the excellent [ng-animate](https://docs.angularjs.org/api/ngAnimate) library.\n\n**Importing**\n\n```javascript\nimport ReactCSSTransitionGroup from 'react-transition-group'; // ES6\nvar ReactCSSTransitionGroup = require('react-transition-group'); // ES5 with npm\n```\n\n```javascript{31-36}\nclass TodoList extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = {items: ['hello', 'world', 'click', 'me']};\n    this.handleAdd = this.handleAdd.bind(this);\n  }\n\n  handleAdd() {\n    const newItems = this.state.items.concat([\n      prompt('Enter some text')\n    ]);\n    this.setState({items: newItems});\n  }\n\n  handleRemove(i) {\n    let newItems = this.state.items.slice();\n    newItems.splice(i, 1);\n    this.setState({items: newItems});\n  }\n\n  render() {\n    const items = this.state.items.map((item, i) =\u003e (\n      \u003cdiv key={i} onClick={() =\u003e this.handleRemove(i)}\u003e\n        {item}\n      \u003c/div\u003e\n    ));\n\n    return (\n      \u003cdiv\u003e\n        \u003cbutton onClick={this.handleAdd}\u003eAdd Item\u003c/button\u003e\n        \u003cReactCSSTransitionGroup\n          transitionName=\"example\"\n          transitionEnterTimeout={500}\n          transitionLeaveTimeout={300}\u003e\n          {items}\n        \u003c/ReactCSSTransitionGroup\u003e\n      \u003c/div\u003e\n    );\n  }\n}\n```\n\n\u003e Note:\n\u003e\n\u003e You must provide [the `key` attribute](/docs/lists-and-keys.html#keys) for all children of `ReactCSSTransitionGroup`, even when only rendering a single item. This is how React will determine which children have entered, left, or stayed.\n\nIn this component, when a new item is added to `ReactCSSTransitionGroup` it will get the `example-enter` CSS class and the `example-enter-active` CSS class added in the next tick. This is a convention based on the `transitionName` prop.\n\nYou can use these classes to trigger a CSS animation or transition. For example, try adding this CSS and adding a new list item:\n\n```css\n.example-enter {\n  opacity: 0.01;\n}\n\n.example-enter.example-enter-active {\n  opacity: 1;\n  transition: opacity 500ms ease-in;\n}\n\n.example-leave {\n  opacity: 1;\n}\n\n.example-leave.example-leave-active {\n  opacity: 0.01;\n  transition: opacity 300ms ease-in;\n}\n```\n\nYou'll notice that animation durations need to be specified in both the CSS and the render method; this tells React when to remove the animation classes from the element and -- if it's leaving -- when to remove the element from the DOM.\n\n### Animate Initial Mounting {#animate-initial-mounting}\n\n`ReactCSSTransitionGroup` provides the optional prop `transitionAppear`, to add an extra transition phase at the initial mount of the component. There is generally no transition phase at the initial mount as the default value of `transitionAppear` is `false`. The following is an example which passes the prop `transitionAppear` with the value `true`.\n\n```javascript{5-6}\nrender() {\n  return (\n    \u003cReactCSSTransitionGroup\n      transitionName=\"example\"\n      transitionAppear={true}\n      transitionAppearTimeout={500}\n      transitionEnter={false}\n      transitionLeave={false}\u003e\n      \u003ch1\u003eFading at Initial Mount\u003c/h1\u003e\n    \u003c/ReactCSSTransitionGroup\u003e\n  );\n}\n```\n\nDuring the initial mount `ReactCSSTransitionGroup` will get the `example-appear` CSS class and the `example-appear-active` CSS class added in the next tick.\n\n```css\n.example-appear {\n  opacity: 0.01;\n}\n\n.example-appear.example-appear-active {\n  opacity: 1;\n  transition: opacity .5s ease-in;\n}\n```\n\nAt the initial mount, all children of the `ReactCSSTransitionGroup` will `appear` but not `enter`. However, all children later added to an existing `ReactCSSTransitionGroup` will `enter` but not `appear`.\n\n\u003e Note:\n\u003e\n\u003e The prop `transitionAppear` was added to `ReactCSSTransitionGroup` in version `0.13`. To maintain backwards compatibility, the default value is set to `false`.\n\u003e\n\u003e However, the default values of `transitionEnter` and `transitionLeave` are `true` so you must specify `transitionEnterTimeout` and `transitionLeaveTimeout` by default. If you don't need either enter or leave animations, pass `transitionEnter={false}` or `transitionLeave={false}`.\n\n### Custom Classes {#custom-classes}\n\nIt is also possible to use custom class names for each of the steps in your transitions. Instead of passing a string into transitionName you can pass an object containing either the `enter` and `leave` class names, or an object containing the `enter`, `enter-active`, `leave-active`, and `leave` class names. If only the enter and leave classes are provided, the enter-active and leave-active classes will be determined by appending '-active' to the end of the class name. Here are two examples using custom classes:\n\n```javascript\n// ...\n\u003cReactCSSTransitionGroup\n  transitionName={ {\n    enter: 'enter',\n    enterActive: 'enterActive',\n    leave: 'leave',\n    leaveActive: 'leaveActive',\n    appear: 'appear',\n    appearActive: 'appearActive'\n  } }\u003e\n  {item}\n\u003c/ReactCSSTransitionGroup\u003e\n\n\u003cReactCSSTransitionGroup\n  transitionName={ {\n    enter: 'enter',\n    leave: 'leave',\n    appear: 'appear'\n  } }\u003e\n  {item2}\n\u003c/ReactCSSTransitionGroup\u003e\n// ...\n```\n\n### Animation Group Must Be Mounted To Work {#animation-group-must-be-mounted-to-work}\n\nIn order for it to apply transitions to its children, the `ReactCSSTransitionGroup` must already be mounted in the DOM or the prop `transitionAppear` must be set to `true`.\n\nThe example below would **not** work, because the `ReactCSSTransitionGroup` is being mounted along with the new item, instead of the new item being mounted within it. Compare this to the [Getting Started](#getting-started) section above to see the difference.\n\n```javascript{4,6,13}\nrender() {\n  const items = this.state.items.map((item, i) =\u003e (\n    \u003cdiv key={item} onClick={() =\u003e this.handleRemove(i)}\u003e\n      \u003cReactCSSTransitionGroup transitionName=\"example\"\u003e\n        {item}\n      \u003c/ReactCSSTransitionGroup\u003e\n    \u003c/div\u003e\n  ));\n\n  return (\n    \u003cdiv\u003e\n      \u003cbutton onClick={this.handleAdd}\u003eAdd Item\u003c/button\u003e\n      {items}\n    \u003c/div\u003e\n  );\n}\n```\n\n### Animating One or Zero Items {#animating-one-or-zero-items}\n\nIn the example above, we rendered a list of items into `ReactCSSTransitionGroup`. However, the children of `ReactCSSTransitionGroup` can also be one or zero items. This makes it possible to animate a single element entering or leaving. Similarly, you can animate a new element replacing the current element. For example, we can implement a simple image carousel like this:\n\n```javascript{10}\nimport ReactCSSTransitionGroup from 'react-transition-group';\n\nfunction ImageCarousel(props) {\n  return (\n    \u003cdiv\u003e\n      \u003cReactCSSTransitionGroup\n        transitionName=\"carousel\"\n        transitionEnterTimeout={300}\n        transitionLeaveTimeout={300}\u003e\n        \u003cimg src={props.imageSrc} key={props.imageSrc} /\u003e\n      \u003c/ReactCSSTransitionGroup\u003e\n    \u003c/div\u003e\n  );\n}\n```\n\n### Disabling Animations {#disabling-animations}\n\nYou can disable animating `enter` or `leave` animations if you want. For example, sometimes you may want an `enter` animation and no `leave` animation, but `ReactCSSTransitionGroup` waits for an animation to complete before removing your DOM node. You can add `transitionEnter={false}` or `transitionLeave={false}` props to `ReactCSSTransitionGroup` to disable these animations.\n\n\u003e Note:\n\u003e\n\u003e When using `ReactCSSTransitionGroup`, there's no way for your components to be notified when a transition has ended or to perform any more complex logic around animation. If you want more fine-grained control, you can use the lower-level `ReactTransitionGroup` API which provides the hooks you need to do custom transitions.\n\n* * *\n\n## Low-level API: ReactTransitionGroup {#low-level-api-reacttransitiongroup}\n\n**Importing**\n\n```javascript\nimport ReactTransitionGroup from 'react-addons-transition-group' // ES6\nvar ReactTransitionGroup = require('react-addons-transition-group') // ES5 with npm\n```\n\n`ReactTransitionGroup` is the basis for animations. When children are declaratively added or removed from it (as in the [example above](#getting-started)), special lifecycle methods are called on them.\n\n - [`componentWillAppear()`](#componentwillappear)\n - [`componentDidAppear()`](#componentdidappear)\n - [`componentWillEnter()`](#componentwillenter)\n - [`componentDidEnter()`](#componentdidenter)\n - [`componentWillLeave()`](#componentwillleave)\n - [`componentDidLeave()`](#componentdidleave)\n\n#### Rendering a Different Component {#rendering-a-different-component}\n\n`ReactTransitionGroup` renders as a `span` by default. You can change this behavior by providing a `component` prop. For example, here's how you would render a `\u003cul\u003e`:\n\n```javascript{1}\n\u003cReactTransitionGroup component=\"ul\"\u003e\n  {/* ... */}\n\u003c/ReactTransitionGroup\u003e\n```\n\nAny additional, user-defined, properties will become properties of the rendered component. For example, here's how you would render a `\u003cul\u003e` with CSS class:\n\n```javascript{1}\n\u003cReactTransitionGroup component=\"ul\" className=\"animated-list\"\u003e\n  {/* ... */}\n\u003c/ReactTransitionGroup\u003e\n```\n\nEvery DOM component that React can render is available for use. However, `component` does not need to be a DOM component. It can be any React component you want; even ones you've written yourself! Just write `component={List}` and your component will receive `this.props.children`.\n\n#### Rendering a Single Child {#rendering-a-single-child}\n\nPeople often use `ReactTransitionGroup` to animate mounting and unmounting of a single child such as a collapsible panel. Normally `ReactTransitionGroup` wraps all its children in a `span` (or a custom `component` as described above). This is because any React component has to return a single root element, and `ReactTransitionGroup` is no exception to this rule.\n\nHowever if you only need to render a single child inside `ReactTransitionGroup`, you can completely avoid wrapping it in a `\u003cspan\u003e` or any other DOM component. To do this, create a custom component that renders the first child passed to it directly:\n\n```javascript\nfunction FirstChild(props) {\n  const childrenArray = React.Children.toArray(props.children);\n  return childrenArray[0] || null;\n}\n```\n\nNow you can specify `FirstChild` as the `component` prop in `\u003cReactTransitionGroup\u003e` props and avoid any wrappers in the result DOM:\n\n```javascript\n\u003cReactTransitionGroup component={FirstChild}\u003e\n  {someCondition ? \u003cMyComponent /\u003e : null}\n\u003c/ReactTransitionGroup\u003e\n```\n\nThis only works when you are animating a single child in and out, such as a collapsible panel. This approach wouldn't work when animating multiple children or replacing the single child with another child, such as an image carousel. For an image carousel, while the current image is animating out, another image will animate in, so `\u003cReactTransitionGroup\u003e` needs to give them a common DOM parent. You can't avoid the wrapper for multiple children, but you can customize the wrapper with the `component` prop as described above.\n\n* * *\n\n## Reference {#reference}\n\n### `componentWillAppear()` {#componentwillappear}\n\n```javascript\ncomponentWillAppear(callback)\n```\n\nThis is called at the same time as `componentDidMount()` for components that are initially mounted in a `TransitionGroup`. It will block other animations from occurring until `callback` is called. It is only called on the initial render of a `TransitionGroup`.\n\n* * *\n\n### `componentDidAppear()` {#componentdidappear}\n\n```javascript\ncomponentDidAppear()\n```\n\nThis is called after the `callback` function that was passed to `componentWillAppear` is called.\n\n* * *\n\n### `componentWillEnter()` {#componentwillenter}\n\n```javascript\ncomponentWillEnter(callback)\n```\n\nThis is called at the same time as `componentDidMount()` for components added to an existing `TransitionGroup`. It will block other animations from occurring until `callback` is called. It will not be called on the initial render of a `TransitionGroup`.\n\n* * *\n\n### `componentDidEnter()` {#componentdidenter}\n\n```javascript\ncomponentDidEnter()\n```\n\nThis is called after the `callback` function that was passed to [`componentWillEnter()`](#componentwillenter) is called.\n\n* * *\n\n### `componentWillLeave()` {#componentwillleave}\n\n```javascript\ncomponentWillLeave(callback)\n```\n\nThis is called when the child has been removed from the `ReactTransitionGroup`. Though the child has been removed, `ReactTransitionGroup` will keep it in the DOM until `callback` is called.\n\n* * *\n\n### `componentDidLeave()` {#componentdidleave}\n\n```javascript\ncomponentDidLeave()\n```\n\nThis is called when the `willLeave` `callback` is called (at the same time as `componentWillUnmount()`).\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_addons-animation.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: tutorials
+title: Creating a new project
+order: 1
+[meta]-->
+<h1>Creating a new project</h1>
+<p>In this guide we will learn how to manually create and run a new Keystone project.</p>
+<h2>Database preparation</h2>
+<p>Before running a Keystone application you need to ensure you have a database set
+up. This tutorial requires you to have a MongoDB database setup. Follow the
+<a href="/docs/quick-start/adapters.md">database setup instructions</a> here to ensure your
+database is ready to go.</p>
+<h2>Initialisation</h2>
+<p>First things first. Create a directory for your project and initialise it:</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">mkdir new-project
+cd new-project
+yarn init
+</code></pre>
+<p>Let's start with the minimal setup. We will need two packages here:
+<code>@keystonejs/keystone</code>, which is the core of Keystone, and
+<code>@keystonejs/adapter-mongoose</code>, which allows our app to connect to MongoDB:</p>
+<pre><code class="language-shell">yarn add @keystonejs/keystone @keystonejs/adapter-mongoose
+</code></pre>
+<h2>First steps</h2>
+<p>After installation we can start coding. The main entry point of a Keystone app
+is the <code>index.js</code> file in the root folder. Create it and add the following:</p>
+<pre><code class="language-javascript title=index.js">const { Keystone } = require('@keystonejs/keystone');
+const { MongooseAdapter } = require('@keystonejs/adapter-mongoose');
+
+const keystone = new Keystone({
+  adapter: new MongooseAdapter({ mongoUri: 'mongodb://localhost/keystone' }),
+});
+</code></pre>
+<p>You can specify any suitable name for your project. Note that we created an
+instance of the <a href="/packages/adapter-mongoose/README.md">Mongoose adapter</a> and
+passed it to <code>Keystone</code>'s constructor.</p>
+<p>Now we can export our <code>Keystone</code> instance and make it available to run. Add the
+following to the end of <code>index.js</code>:</p>
+<pre><code class="language-javascript title=index.js">module.exports = {
+  keystone,
+};
+</code></pre>
+<p>Although our app doesn't do much yet, it <em>is</em> able to start and connect to a
+database.</p>
+<!-- FIXME:TL How exactly does this happen? How do we know? -->
+<h2>GraphQL setup</h2>
+<p>As in the previous step, install the necessary package.</p>
+<pre><code class="language-shell">yarn add @keystonejs/app-graphql
+</code></pre>
+<p>Import it in index.js:</p>
+<pre><code class="language-javascript title=index.js">const { GraphQLApp } = require('@keystonejs/app-graphql');
+</code></pre>
+<p>And add a new array export named <code>apps</code> with a new instance of <code>GraphQLApp</code>, like so:</p>
+<pre><code class="language-javascript title=index.js">module.exports = {
+  keystone,
+  apps: [new GraphQLApp()],
+};
+</code></pre>
+<h2>Adding a list</h2>
+<p>In order to be able to start an app we need to add at least one <code>List</code>. A <code>List</code>
+is a model that is compatible with Keystone's Admin UI.</p>
+<p>Lists are composed of <code>fields</code>. To add fields to a list, we must install the
+<code>@keystonejs/fields</code> package:</p>
+<pre><code class="language-shell">yarn add @keystonejs/fields
+</code></pre>
+<p>In this example the field type <code>Text</code> is used, which must be <code>required</code> in <code>index.js</code>:</p>
+<pre><code class="language-javascript title=index.js">const { Text } = require('@keystonejs/fields');
+</code></pre>
+<p>Create your first list in <code>index.js</code> by adding the following before the module
+export and after instantiating <code>Keystone</code>:</p>
+<pre><code class="language-javascript title=index.js">keystone.createList('Todo', {
+  fields: {
+    name: { type: Text },
+  },
+});
+</code></pre>
+<p>This code snippet creates a List named <code>Todo</code>. The second argument is a config
+object. For now it has only one key (<code>fields</code>) which is used to define the
+schema for the newly created model.</p>
+<p>In our example, the <code>Todo</code> list has a single field called <code>name</code> of type <code>Text</code>.</p>
+<h2>Starting the application</h2>
+<p>Add the following to <code>package.json</code>:</p>
+<pre><code class="language-json title=package.json">&quot;scripts&quot;: {
+  &quot;start:dev&quot;: &quot;keystone&quot;
+}
+</code></pre>
+<p>Now ensure that <code>mongod</code> is running and execute the start script:</p>
+<pre><code class="language-shell">yarn start:dev
+</code></pre>
+<p>You should see something like this:</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">✔ Keystone instance is ready 🚀
+🔗 GraphQL Playground:   http://localhost:3000/admin/graphiql
+🔗 GraphQL API:          http://localhost:3000/admin/api
+</code></pre>
+<p>Now it's time to check those routes in browser to ensure that everything works
+as expected.</p>
+<h2>Summary</h2>
+<p>Congratulations, you have just set up your very first Keystone application;
+including a GraphQL API and a GraphQL Playground which you start interacting
+with.</p>
+<p>In future tutorials we will show you how to execute queries and mutations
+with this API, and launch a browser based Admin UI to explore and interact with
+your data.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: tutorials\ntitle: Creating a new project\norder: 1\n[meta]--\u003e\n\n# Creating a new project\n\nIn this guide we will learn how to manually create and run a new Keystone project.\n\n## Database preparation\n\nBefore running a Keystone application you need to ensure you have a database set\nup. This tutorial requires you to have a MongoDB database setup. Follow the\n[database setup instructions](/docs/quick-start/adapters.md) here to ensure your\ndatabase is ready to go.\n\n## Initialisation\n\nFirst things first. Create a directory for your project and initialise it:\n\n```shell allowCopy=false showLanguage=false\nmkdir new-project\ncd new-project\nyarn init\n```\n\nLet's start with the minimal setup. We will need two packages here:\n`@keystonejs/keystone`, which is the core of Keystone, and\n`@keystonejs/adapter-mongoose`, which allows our app to connect to MongoDB:\n\n```shell\nyarn add @keystonejs/keystone @keystonejs/adapter-mongoose\n```\n\n## First steps\n\nAfter installation we can start coding. The main entry point of a Keystone app\nis the `index.js` file in the root folder. Create it and add the following:\n\n```javascript title=index.js\nconst { Keystone } = require('@keystonejs/keystone');\nconst { MongooseAdapter } = require('@keystonejs/adapter-mongoose');\n\nconst keystone = new Keystone({\n  adapter: new MongooseAdapter({ mongoUri: 'mongodb://localhost/keystone' }),\n});\n```\n\nYou can specify any suitable name for your project. Note that we created an\ninstance of the [Mongoose adapter](/packages/adapter-mongoose/README.md) and\npassed it to `Keystone`'s constructor.\n\nNow we can export our `Keystone` instance and make it available to run. Add the\nfollowing to the end of `index.js`:\n\n```javascript title=index.js\nmodule.exports = {\n  keystone,\n};\n```\n\nAlthough our app doesn't do much yet, it _is_ able to start and connect to a\ndatabase.\n\n\u003c!-- FIXME:TL How exactly does this happen? How do we know? --\u003e\n\n## GraphQL setup\n\nAs in the previous step, install the necessary package.\n\n```shell\nyarn add @keystonejs/app-graphql\n```\n\nImport it in index.js:\n\n```javascript title=index.js\nconst { GraphQLApp } = require('@keystonejs/app-graphql');\n```\n\nAnd add a new array export named `apps` with a new instance of `GraphQLApp`, like so:\n\n```javascript title=index.js\nmodule.exports = {\n  keystone,\n  apps: [new GraphQLApp()],\n};\n```\n\n## Adding a list\n\nIn order to be able to start an app we need to add at least one `List`. A `List`\nis a model that is compatible with Keystone's Admin UI.\n\nLists are composed of `fields`. To add fields to a list, we must install the\n`@keystonejs/fields` package:\n\n```shell\nyarn add @keystonejs/fields\n```\n\nIn this example the field type `Text` is used, which must be `required` in `index.js`:\n\n```javascript title=index.js\nconst { Text } = require('@keystonejs/fields');\n```\n\nCreate your first list in `index.js` by adding the following before the module\nexport and after instantiating `Keystone`:\n\n```javascript title=index.js\nkeystone.createList('Todo', {\n  fields: {\n    name: { type: Text },\n  },\n});\n```\n\nThis code snippet creates a List named `Todo`. The second argument is a config\nobject. For now it has only one key (`fields`) which is used to define the\nschema for the newly created model.\n\nIn our example, the `Todo` list has a single field called `name` of type `Text`.\n\n## Starting the application\n\nAdd the following to `package.json`:\n\n```json title=package.json\n\"scripts\": {\n  \"start:dev\": \"keystone\"\n}\n```\n\nNow ensure that `mongod` is running and execute the start script:\n\n```shell\nyarn start:dev\n```\n\nYou should see something like this:\n\n```shell allowCopy=false showLanguage=false\n✔ Keystone instance is ready 🚀\n🔗 GraphQL Playground:   http://localhost:3000/admin/graphiql\n🔗 GraphQL API:          http://localhost:3000/admin/api\n```\n\nNow it's time to check those routes in browser to ensure that everything works\nas expected.\n\n## Summary\n\nCongratulations, you have just set up your very first Keystone application;\nincluding a GraphQL API and a GraphQL Playground which you start interacting\nwith.\n\nIn future tutorials we will show you how to execute queries and mutations\nwith this API, and launch a browser based Admin UI to explore and interact with\nyour data.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_tutorials_new-project.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

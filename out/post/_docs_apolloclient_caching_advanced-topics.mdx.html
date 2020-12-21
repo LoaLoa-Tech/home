@@ -1,0 +1,264 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Advanced topics on caching
+sidebar_title: Advanced topics</p>
+<hr>
+<p>This article describes special cases and considerations when using the Apollo Client cache.</p>
+<h2>Bypassing the cache</h2>
+<p>Sometimes you <em>shouldn't</em> use the cache for a particular GraphQL operation. For example, a query's response might be a token that's only used once. In cases like this, use <a href="../data/queries/#setting-a-fetch-policy">the <code>no-cache</code> fetch policy</a>:</p>
+<pre><code class="language-js">const { loading, error, data } = useQuery(GET_DOGS, {
+  fetchPolicy: &quot;no-cache&quot; // highlight-line
+});
+</code></pre>
+<p>Operations that use this fetch policy don't write their result to the cache, and they also don't check the cache for data before sending a request to your server.</p>
+<h2>Rerunning queries after a mutation</h2>
+<p>In certain cases, writing an <code>update</code> function to <a href="../data/mutations/#updating-the-cache-after-a-mutation">update the cache after a mutation</a> can be complex, or even impossible if the mutation doesn't return modified fields.</p>
+<p>In these cases, you can provide a <code>refetchQueries</code> option to the <code>useMutation</code> hook to automatically rerun certain queries after the mutation completes.</p>
+<blockquote>
+<p>Note that although <code>refetchQueries</code> can be faster to implement than an <code>update</code> function, it also requires additional network requests that are usually undesirable. For more information, see <a href="https://www.apollographql.com/blog/when-to-use-refetch-queries-in-apollo-client/">this blog post</a>.</p>
+</blockquote>
+<p>Here's an example of using <code>refetchQueries</code> to execute a query that's specified inline:</p>
+<pre><code class="language-javascript">useMutation(
+  // ... Mutation definition ...
+
+  // Mutation options
+  {
+  refetchQueries: [{
+    query: gql`
+      query UpdateCache($repoName: String!) {
+        entry(repoFullName: $repoName) {
+          id
+          comments {
+            postedBy {
+              login
+              html_url
+            }
+            createdAt
+            content
+          }
+        }
+      }
+    `,
+    variables: { repoName: 'apollographql/apollo-client' },
+  }],
+});
+</code></pre>
+<p>The <code>refetchQueries</code> option is an array where each element is one of the following:</p>
+<ul>
+<li>An object with a <code>query</code> field that specifies the query to execute, along with a <code>variables</code> field if applicable (shown above)</li>
+<li>The name of a query you've previously executed, as a string (e.g., <code>GetComments</code>)
+<ul>
+<li><em>Queries you list by name are executed with their most recently provided set of variables.</em></li>
+</ul></li>
+</ul>
+<p>You can also import and provide queries that are defined in other components to make sure those components are updated:</p>
+<pre><code class="language-javascript">import RepoCommentsQuery from '../queries/RepoCommentsQuery';
+
+mutate({
+  //... insert comment mutation
+  refetchQueries: [{
+    query: RepoCommentsQuery,
+    variables: { repoFullName: 'apollographql/apollo-client' },
+  }],
+})
+</code></pre>
+<h2>Incremental loading: <code>fetchMore</code></h2>
+<p><code>fetchMore</code> can be used to update the result of a query based on the data returned by another query. Most often, it is used to handle infinite-scroll pagination or other situations where you are loading more data when you already have some.</p>
+<p>In our GitHunt example, we have a paginated feed that displays a list of GitHub repositories. When we hit the &quot;Load More&quot; button, we don't want Apollo Client to throw away the repository information it has already loaded. Instead, it should just append the newly loaded repositories to the list that Apollo Client already has in the store. With this update, our UI component should re-render and show us all of the available repositories.</p>
+<p>Let's see how to do that with the <code>fetchMore</code> method on a query:</p>
+<pre><code class="language-javascript">const FEED_QUERY = gql`
+  query Feed($type: FeedType!, $offset: Int, $limit: Int) {
+    currentUser {
+      login
+    }
+    feed(type: $type, offset: $offset, limit: $limit) {
+      id
+      # ...
+    }
+  }
+`;
+
+const FeedWithData = ({ match }) =&gt; (
+  &lt;Query
+    query={FEED_QUERY}
+    variables={{
+      type: match.params.type.toUpperCase() || &quot;TOP&quot;,
+      offset: 0,
+      limit: 10
+    }}
+    fetchPolicy=&quot;cache-and-network&quot;
+  &gt;
+    {({ data, fetchMore }) =&gt; (
+      &lt;Feed
+        entries={data.feed || []}
+        onLoadMore={() =&gt;
+          fetchMore({
+            variables: {
+              offset: data.feed.length
+            },
+            updateQuery: (prev, { fetchMoreResult }) =&gt; {
+              if (!fetchMoreResult) return prev;
+              return Object.assign({}, prev, {
+                feed: [...prev.feed, ...fetchMoreResult.feed]
+              });
+            }
+          })
+        }
+      /&gt;
+    )}
+  &lt;/Query&gt;
+);
+</code></pre>
+<p>The <code>fetchMore</code> method takes a map of <code>variables</code> to be sent with the new query. Here, we're setting the offset to <code>feed.length</code> so that we fetch items that aren't already displayed on the feed. This variable map is merged with the one that's been specified for the query associated with the component. This means that other variables, e.g. the <code>limit</code> variable, will have the same value as they do within the component query.</p>
+<p>It can also take a <code>query</code> named argument, which can be a GraphQL document containing a query that will be fetched in order to fetch more information; we refer to this as the <code>fetchMore</code> query. By default, the <code>fetchMore</code> query is the query associated with the container, in this case the <code>FEED_QUERY</code>.</p>
+<p>When we call <code>fetchMore</code>, Apollo Client will fire the <code>fetchMore</code> query and use the logic in the <code>updateQuery</code> option to incorporate that into the original result. The named argument <code>updateQuery</code> should be a function that takes the previous result of the query associated with your component (i.e. <code>FEED_QUERY</code> in this case) and the information returned by the <code>fetchMore</code> query and return a combination of the two.</p>
+<p>Here, the <code>fetchMore</code> query is the same as the query associated with the component. Our <code>updateQuery</code> takes the new feed items returned and just appends them onto the feed items that we'd asked for previously. With this, the UI will update and the feed will contain the next page of items!</p>
+<p>Although <code>fetchMore</code> is often used for pagination, there are many other cases in which it is applicable. For example, suppose you have a list of items (say, a collaborative todo list) and you have a way to fetch items that have been updated after a certain time. Then, you don't have to refetch the whole todo list to get updates: you can just incorporate the newly added items with <code>fetchMore</code>, as long as your <code>updateQuery</code> function correctly merges the new results.</p>
+<h2>The <code>@connection</code> directive</h2>
+<p>Fundamentally, paginated queries are the same as any other query with the exception that calls to <code>fetchMore</code> update the same cache key. Since these queries are cached by both the initial query and their parameters, a problem arises when later retrieving or updating paginated queries in the cache. We don’t care about pagination arguments such as limits, offsets, or cursors outside of the need to <code>fetchMore</code>, nor do we want to provide them simply for accessing cached data.</p>
+<p>To solve this Apollo Client 1.6 introduced the <code>@connection</code> directive to specify a custom store key for results. A connection allows us to set the cache key for a field and to filter which arguments actually alter the query.</p>
+<p>To use the <code>@connection</code> directive, simply add the directive to the segment of the query you want a custom store key for and provide the <code>key</code> parameter to specify the store key. In addition to the <code>key</code> parameter, you can also include the optional <code>filter</code> parameter, which takes an array of query argument names to include in the generated custom store key.</p>
+<pre><code class="language-js">const query = gql`
+  query Feed($type: FeedType!, $offset: Int, $limit: Int) {
+    feed(type: $type, offset: $offset, limit: $limit) @connection(key: &quot;feed&quot;, filter: [&quot;type&quot;]) {
+      ...FeedEntry
+    }
+  }
+`
+</code></pre>
+<p>With the above query, even with multiple <code>fetchMore</code>s, the results of each feed update will always result in the <code>feed</code> key in the store being updated with the latest accumulated values. In this example, we also use the <code>@connection</code> directive's optional <code>filter</code> argument to include the <code>type</code> query argument in the store key, which results in multiple store values that accumulate queries from each type of feed.</p>
+<p>Now that we have a stable store key, we can easily use <code>writeQuery</code> to perform a store update, in this case clearing out the feed.</p>
+<pre><code class="language-js">client.writeQuery({
+  query: gql`
+    query Feed($type: FeedType!) {
+      feed(type: $type) @connection(key: &quot;feed&quot;, filter: [&quot;type&quot;]) {
+        id
+      }
+    }
+  `,
+  variables: {
+    type: &quot;top&quot;,
+  },
+  data: {
+    feed: [],
+  },
+});
+</code></pre>
+<p>Note that because we are only using the <code>type</code> argument in the store key, we don't have to provide <code>offset</code> or <code>limit</code>.</p>
+<h2>Cache redirects using field policy <code>read</code> functions</h2>
+<blockquote>
+<p>⚠️ <strong>Note:</strong> Apollo Client &gt;= 3.0 no longer supports the <code>ApolloClient</code> <code>cacheRedirects</code> constructor option. Equivalent <code>cacheRedirects</code> functionality can now be handled with field policy <code>read</code> functions, and is explained below.</p>
+</blockquote>
+<p>In some cases, a query requests data that already exists in the cache under a different reference. A very common example of this is when your UI has a list view and a detail view that both use the same data. The list view might run the following query:</p>
+<pre><code class="language-graphql">query Books {
+  books {
+    id
+    title
+    abstract
+  }
+}
+</code></pre>
+<p>When a specific book is selected, the detail view displays an individual item using this query:</p>
+<pre><code class="language-graphql">query Book($id: ID!) {
+  book(id: $id) {
+    id
+    title
+    abstract
+  }
+}
+</code></pre>
+<p>We know that the data is most likely already in the client cache, but because it was requested with a different query, Apollo Client doesn't know that. To tell Apollo Client where to look for the existing <code>book</code> data, we can define a field policy <code>read</code> function for the <code>book</code> field:</p>
+<pre><code class="language-js">import { ApolloClient, InMemoryCache } from '@apollo/client';
+
+const client = new ApolloClient({
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          book(_, { args, toReference }) {
+            return toReference({
+              __typename: 'Book',
+              id: args.id,
+            });
+          }
+        }
+      }
+    }
+  }
+});
+</code></pre>
+<p>Now whenever a query is run that includes a <code>book</code> field, the <code>read</code> function above will be executed, and return a reference that points to the book entity that was already created in the cache when the <code>Books</code> list view query ran. Apollo Client will use the reference returned by the <code>read</code> function to look up the item in its cache. <code>toReference</code> is a helper utility that is passed into <code>read</code> functions as part of the second parameter options object, and is used to generate an entity reference based on its <code>__typename</code> and <code>id</code>.</p>
+<blockquote>
+<p>⚠️ <strong>Note:</strong> For the above to work properly, the data returned by the list query has to include all of the data the specific detail query needs. If the specific detail query fetches a field that the list query doesn't return, Apollo Client will consider the cache hit to be incomplete, and will attempt to fetch the full data set over the network (if network requests are enabled).</p>
+</blockquote>
+<h2>Resetting the store</h2>
+<p>Sometimes, you may want to reset the store entirely, such as <a href="../networking/authentication/#reset-store-on-logout">when a user logs out</a>. To accomplish this, use <code>client.resetStore</code> to clear out your Apollo cache. Since <code>client.resetStore</code> also refetches any of your active queries for you, it is asynchronous.</p>
+<pre><code class="language-js">export default withApollo(graphql(PROFILE_QUERY, {
+  props: ({ data: { loading, currentUser }, ownProps: { client }}) =&gt; ({
+    loading,
+    currentUser,
+    resetOnLogout: async () =&gt; client.resetStore(),
+  }),
+})(Profile));
+</code></pre>
+<p>To register a callback function to be executed after the store has been reset, call <code>client.onResetStore</code> and pass in your callback. If you would like to register multiple callbacks, simply call <code>client.onResetStore</code> again. All of your callbacks will be pushed into an array and executed concurrently.</p>
+<p>In this example, we're using <code>client.onResetStore</code> to write default values to the cache. This is useful when using Apollo Client's <a href="../local-state/local-state-management/">local state management</a> features and calling <code>client.resetStore</code> anywhere in your application.</p>
+<pre><code class="language-js">import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { withClientState } from 'apollo-link-state';
+
+import { resolvers, defaults } from './resolvers';
+
+const cache = new InMemoryCache();
+const stateLink = withClientState({ cache, resolvers, defaults });
+
+const client = new ApolloClient({
+  cache,
+  link: stateLink,
+});
+
+client.onResetStore(stateLink.writeDefaults);
+</code></pre>
+<p>You can also call <code>client.onResetStore</code> from your React components. This can be useful if you would like to force your UI to rerender after the store has been reset.</p>
+<p>If you would like to unsubscribe your callbacks from resetStore, use the return value of <code>client.onResetStore</code> for your unsubscribe function.</p>
+<pre><code class="language-js">import { withApollo } from &quot;@apollo/react-hoc&quot;;
+
+export class Foo extends Component {
+  constructor(props) {
+    super(props);
+    this.unsubscribe = props.client.onResetStore(
+      () =&gt; this.setState({ reset: false })
+    );
+    this.state = { reset: false };
+  }
+  componentDidUnmount() {
+    this.unsubscribe();
+  }
+  render() {
+    return this.state.reset ? &lt;div /&gt; : &lt;span /&gt;
+  }
+}
+
+export default withApollo(Foo);
+</code></pre>
+<p>If you want to clear the store but don't want to refetch active queries, use
+<code>client.clearStore()</code> instead of <code>client.resetStore()</code>.</p>
+<h2>Cache persistence</h2>
+<p>If you would like to persist and rehydrate your Apollo Cache from a storage provider like <code>AsyncStorage</code> or <code>localStorage</code>, you can use <a href="https://github.com/apollographql/apollo-cache-persist"><code>apollo3-cache-persist</code></a>. <code>apollo3-cache-persist</code> works with all Apollo caches, including <code>InMemoryCache</code> &amp; <code>Hermes</code>, and a variety of different <a href="https://github.com/apollographql/apollo-cache-persist#storage-providers">storage providers</a>.</p>
+<p>To get started, simply pass your Apollo Cache and a storage provider to <code>persistCache</code>. By default, the contents of your Apollo Cache will be immediately restored asynchronously, and persisted upon every write to the cache with a short configurable debounce interval.</p>
+<blockquote>
+<p>Note: The <code>persistCache</code> method is async and returns a <code>Promise</code>.</p>
+</blockquote>
+<pre><code class="language-js">import { AsyncStorage } from 'react-native';
+import { InMemoryCache } from '@apollo/client';
+import { persistCache } from 'apollo3-cache-persist';
+
+const cache = new InMemoryCache();
+
+persistCache({
+  cache,
+  storage: AsyncStorage,
+}).then(() =&gt; {
+  // Continue setting up Apollo as usual.
+})
+</code></pre>
+<p>For more advanced usage, such as persisting the cache when the app is in the background, and additional configuration options, please check the <a href="https://github.com/apollographql/apollo-cache-persist">README of <code>apollo3-cache-persist</code></a>.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Advanced topics on caching\nsidebar_title: Advanced topics\n---\n\nThis article describes special cases and considerations when using the Apollo Client cache.\n\n## Bypassing the cache\n\nSometimes you _shouldn't_ use the cache for a particular GraphQL operation. For example, a query's response might be a token that's only used once. In cases like this, use [the `no-cache` fetch policy](../data/queries/#setting-a-fetch-policy):\n\n```js\nconst { loading, error, data } = useQuery(GET_DOGS, {\n  fetchPolicy: \"no-cache\" // highlight-line\n});\n```\n\nOperations that use this fetch policy don't write their result to the cache, and they also don't check the cache for data before sending a request to your server.\n\n## Rerunning queries after a mutation\n\nIn certain cases, writing an `update` function to [update the cache after a mutation](../data/mutations/#updating-the-cache-after-a-mutation) can be complex, or even impossible if the mutation doesn't return modified fields.\n\nIn these cases, you can provide a `refetchQueries` option to the `useMutation` hook to automatically rerun certain queries after the mutation completes.\n\n\u003e Note that although `refetchQueries` can be faster to implement than an `update` function, it also requires additional network requests that are usually undesirable. For more information, see [this blog post](https://www.apollographql.com/blog/when-to-use-refetch-queries-in-apollo-client/).\n\nHere's an example of using `refetchQueries` to execute a query that's specified inline:\n\n```javascript\nuseMutation(\n  // ... Mutation definition ...\n\n  // Mutation options\n  {\n  refetchQueries: [{\n    query: gql`\n      query UpdateCache($repoName: String!) {\n        entry(repoFullName: $repoName) {\n          id\n          comments {\n            postedBy {\n              login\n              html_url\n            }\n            createdAt\n            content\n          }\n        }\n      }\n    `,\n    variables: { repoName: 'apollographql/apollo-client' },\n  }],\n});\n```\n\nThe `refetchQueries` option is an array where each element is one of the following:\n\n* An object with a `query` field that specifies the query to execute, along with a `variables` field if applicable (shown above)\n* The name of a query you've previously executed, as a string (e.g., `GetComments`)\n  * _Queries you list by name are executed with their most recently provided set of variables._\n\nYou can also import and provide queries that are defined in other components to make sure those components are updated:\n\n```javascript\nimport RepoCommentsQuery from '../queries/RepoCommentsQuery';\n\nmutate({\n  //... insert comment mutation\n  refetchQueries: [{\n    query: RepoCommentsQuery,\n    variables: { repoFullName: 'apollographql/apollo-client' },\n  }],\n})\n```\n\n## Incremental loading: `fetchMore`\n\n`fetchMore` can be used to update the result of a query based on the data returned by another query. Most often, it is used to handle infinite-scroll pagination or other situations where you are loading more data when you already have some.\n\nIn our GitHunt example, we have a paginated feed that displays a list of GitHub repositories. When we hit the \"Load More\" button, we don't want Apollo Client to throw away the repository information it has already loaded. Instead, it should just append the newly loaded repositories to the list that Apollo Client already has in the store. With this update, our UI component should re-render and show us all of the available repositories.\n\nLet's see how to do that with the `fetchMore` method on a query:\n\n```javascript\nconst FEED_QUERY = gql`\n  query Feed($type: FeedType!, $offset: Int, $limit: Int) {\n    currentUser {\n      login\n    }\n    feed(type: $type, offset: $offset, limit: $limit) {\n      id\n      # ...\n    }\n  }\n`;\n\nconst FeedWithData = ({ match }) =\u003e (\n  \u003cQuery\n    query={FEED_QUERY}\n    variables={{\n      type: match.params.type.toUpperCase() || \"TOP\",\n      offset: 0,\n      limit: 10\n    }}\n    fetchPolicy=\"cache-and-network\"\n  \u003e\n    {({ data, fetchMore }) =\u003e (\n      \u003cFeed\n        entries={data.feed || []}\n        onLoadMore={() =\u003e\n          fetchMore({\n            variables: {\n              offset: data.feed.length\n            },\n            updateQuery: (prev, { fetchMoreResult }) =\u003e {\n              if (!fetchMoreResult) return prev;\n              return Object.assign({}, prev, {\n                feed: [...prev.feed, ...fetchMoreResult.feed]\n              });\n            }\n          })\n        }\n      /\u003e\n    )}\n  \u003c/Query\u003e\n);\n```\n\n\nThe `fetchMore` method takes a map of `variables` to be sent with the new query. Here, we're setting the offset to `feed.length` so that we fetch items that aren't already displayed on the feed. This variable map is merged with the one that's been specified for the query associated with the component. This means that other variables, e.g. the `limit` variable, will have the same value as they do within the component query.\n\nIt can also take a `query` named argument, which can be a GraphQL document containing a query that will be fetched in order to fetch more information; we refer to this as the `fetchMore` query. By default, the `fetchMore` query is the query associated with the container, in this case the `FEED_QUERY`.\n\nWhen we call `fetchMore`, Apollo Client will fire the `fetchMore` query and use the logic in the `updateQuery` option to incorporate that into the original result. The named argument `updateQuery` should be a function that takes the previous result of the query associated with your component (i.e. `FEED_QUERY` in this case) and the information returned by the `fetchMore` query and return a combination of the two.\n\nHere, the `fetchMore` query is the same as the query associated with the component. Our `updateQuery` takes the new feed items returned and just appends them onto the feed items that we'd asked for previously. With this, the UI will update and the feed will contain the next page of items!\n\nAlthough `fetchMore` is often used for pagination, there are many other cases in which it is applicable. For example, suppose you have a list of items (say, a collaborative todo list) and you have a way to fetch items that have been updated after a certain time. Then, you don't have to refetch the whole todo list to get updates: you can just incorporate the newly added items with `fetchMore`, as long as your `updateQuery` function correctly merges the new results.\n\n## The `@connection` directive\n\nFundamentally, paginated queries are the same as any other query with the exception that calls to `fetchMore` update the same cache key. Since these queries are cached by both the initial query and their parameters, a problem arises when later retrieving or updating paginated queries in the cache. We don’t care about pagination arguments such as limits, offsets, or cursors outside of the need to `fetchMore`, nor do we want to provide them simply for accessing cached data.\n\nTo solve this Apollo Client 1.6 introduced the `@connection` directive to specify a custom store key for results. A connection allows us to set the cache key for a field and to filter which arguments actually alter the query.\n\nTo use the `@connection` directive, simply add the directive to the segment of the query you want a custom store key for and provide the `key` parameter to specify the store key. In addition to the `key` parameter, you can also include the optional `filter` parameter, which takes an array of query argument names to include in the generated custom store key.\n\n```js\nconst query = gql`\n  query Feed($type: FeedType!, $offset: Int, $limit: Int) {\n    feed(type: $type, offset: $offset, limit: $limit) @connection(key: \"feed\", filter: [\"type\"]) {\n      ...FeedEntry\n    }\n  }\n`\n```\n\nWith the above query, even with multiple `fetchMore`s, the results of each feed update will always result in the `feed` key in the store being updated with the latest accumulated values. In this example, we also use the `@connection` directive's optional `filter` argument to include the `type` query argument in the store key, which results in multiple store values that accumulate queries from each type of feed.\n\nNow that we have a stable store key, we can easily use `writeQuery` to perform a store update, in this case clearing out the feed.\n\n```js\nclient.writeQuery({\n  query: gql`\n    query Feed($type: FeedType!) {\n      feed(type: $type) @connection(key: \"feed\", filter: [\"type\"]) {\n        id\n      }\n    }\n  `,\n  variables: {\n    type: \"top\",\n  },\n  data: {\n    feed: [],\n  },\n});\n```\n\nNote that because we are only using the `type` argument in the store key, we don't have to provide `offset` or `limit`.\n\n## Cache redirects using field policy `read` functions\n\n\u003e ⚠️ **Note:** Apollo Client \u003e= 3.0 no longer supports the `ApolloClient` `cacheRedirects` constructor option. Equivalent `cacheRedirects` functionality can now be handled with field policy `read` functions, and is explained below.\n\nIn some cases, a query requests data that already exists in the cache under a different reference. A very common example of this is when your UI has a list view and a detail view that both use the same data. The list view might run the following query:\n\n```graphql\nquery Books {\n  books {\n    id\n    title\n    abstract\n  }\n}\n```\n\nWhen a specific book is selected, the detail view displays an individual item using this query:\n\n```graphql\nquery Book($id: ID!) {\n  book(id: $id) {\n    id\n    title\n    abstract\n  }\n}\n```\n\nWe know that the data is most likely already in the client cache, but because it was requested with a different query, Apollo Client doesn't know that. To tell Apollo Client where to look for the existing `book` data, we can define a field policy `read` function for the `book` field:\n\n```js\nimport { ApolloClient, InMemoryCache } from '@apollo/client';\n\nconst client = new ApolloClient({\n  cache: new InMemoryCache({\n    typePolicies: {\n      Query: {\n        fields: {\n          book(_, { args, toReference }) {\n            return toReference({\n              __typename: 'Book',\n              id: args.id,\n            });\n          }\n        }\n      }\n    }\n  }\n});\n```\n\nNow whenever a query is run that includes a `book` field, the `read` function above will be executed, and return a reference that points to the book entity that was already created in the cache when the `Books` list view query ran. Apollo Client will use the reference returned by the `read` function to look up the item in its cache. `toReference` is a helper utility that is passed into `read` functions as part of the second parameter options object, and is used to generate an entity reference based on its `__typename` and `id`.\n\n\u003e ⚠️ **Note:** For the above to work properly, the data returned by the list query has to include all of the data the specific detail query needs. If the specific detail query fetches a field that the list query doesn't return, Apollo Client will consider the cache hit to be incomplete, and will attempt to fetch the full data set over the network (if network requests are enabled).\n\n## Resetting the store\n\nSometimes, you may want to reset the store entirely, such as [when a user logs out](../networking/authentication/#reset-store-on-logout). To accomplish this, use `client.resetStore` to clear out your Apollo cache. Since `client.resetStore` also refetches any of your active queries for you, it is asynchronous.\n\n```js\nexport default withApollo(graphql(PROFILE_QUERY, {\n  props: ({ data: { loading, currentUser }, ownProps: { client }}) =\u003e ({\n    loading,\n    currentUser,\n    resetOnLogout: async () =\u003e client.resetStore(),\n  }),\n})(Profile));\n```\n\nTo register a callback function to be executed after the store has been reset, call `client.onResetStore` and pass in your callback. If you would like to register multiple callbacks, simply call `client.onResetStore` again. All of your callbacks will be pushed into an array and executed concurrently.\n\nIn this example, we're using `client.onResetStore` to write default values to the cache. This is useful when using Apollo Client's [local state management](../local-state/local-state-management/) features and calling `client.resetStore` anywhere in your application.\n\n```js\nimport { ApolloClient, InMemoryCache } from '@apollo/client';\nimport { withClientState } from 'apollo-link-state';\n\nimport { resolvers, defaults } from './resolvers';\n\nconst cache = new InMemoryCache();\nconst stateLink = withClientState({ cache, resolvers, defaults });\n\nconst client = new ApolloClient({\n  cache,\n  link: stateLink,\n});\n\nclient.onResetStore(stateLink.writeDefaults);\n```\n\nYou can also call `client.onResetStore` from your React components. This can be useful if you would like to force your UI to rerender after the store has been reset.\n\nIf you would like to unsubscribe your callbacks from resetStore, use the return value of `client.onResetStore` for your unsubscribe function.\n\n```js\nimport { withApollo } from \"@apollo/react-hoc\";\n\nexport class Foo extends Component {\n  constructor(props) {\n    super(props);\n    this.unsubscribe = props.client.onResetStore(\n      () =\u003e this.setState({ reset: false })\n    );\n    this.state = { reset: false };\n  }\n  componentDidUnmount() {\n    this.unsubscribe();\n  }\n  render() {\n    return this.state.reset ? \u003cdiv /\u003e : \u003cspan /\u003e\n  }\n}\n\nexport default withApollo(Foo);\n```\n\nIf you want to clear the store but don't want to refetch active queries, use\n`client.clearStore()` instead of `client.resetStore()`.\n\n## Cache persistence\n\nIf you would like to persist and rehydrate your Apollo Cache from a storage provider like `AsyncStorage` or `localStorage`, you can use [`apollo3-cache-persist`](https://github.com/apollographql/apollo-cache-persist). `apollo3-cache-persist` works with all Apollo caches, including `InMemoryCache` \u0026 `Hermes`, and a variety of different [storage providers](https://github.com/apollographql/apollo-cache-persist#storage-providers).\n\nTo get started, simply pass your Apollo Cache and a storage provider to `persistCache`. By default, the contents of your Apollo Cache will be immediately restored asynchronously, and persisted upon every write to the cache with a short configurable debounce interval.\n\n\u003e Note: The `persistCache` method is async and returns a `Promise`.\n\n```js\nimport { AsyncStorage } from 'react-native';\nimport { InMemoryCache } from '@apollo/client';\nimport { persistCache } from 'apollo3-cache-persist';\n\nconst cache = new InMemoryCache();\n\npersistCache({\n  cache,\n  storage: AsyncStorage,\n}).then(() =\u003e {\n  // Continue setting up Apollo as usual.\n})\n```\n\nFor more advanced usage, such as persisting the cache when the app is in the background, and additional configuration options, please check the [README of `apollo3-cache-persist`](https://github.com/apollographql/apollo-cache-persist).\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_caching_advanced-topics.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

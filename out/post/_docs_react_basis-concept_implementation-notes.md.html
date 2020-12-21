@@ -1,0 +1,752 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: implementation-notes
+title: Implementation Notes
+layout: contributing
+permalink: docs/implementation-notes.html
+prev: codebase-overview.html
+next: design-principles.html
+redirect_from:</p>
+<ul>
+<li>&quot;contributing/implementation-notes.html&quot;</li>
+</ul>
+<hr>
+<p>This section is a collection of implementation notes for the <a href="/docs/codebase-overview.html#stack-reconciler">stack reconciler</a>.</p>
+<p>It is very technical and assumes a strong understanding of React public API as well as how it's divided into core, renderers, and the reconciler. If you're not very familiar with the React codebase, read <a href="/docs/codebase-overview.html">the codebase overview</a> first.</p>
+<p>It also assumes an understanding of the <a href="/blog/2015/12/18/react-components-elements-and-instances.html">differences between React components, their instances, and elements</a>.</p>
+<p>The stack reconciler was used in React 15 and earlier. It is located at <a href="https://github.com/facebook/react/tree/15-stable/src/renderers/shared/stack/reconciler">src/renderers/shared/stack/reconciler</a>.</p>
+<h3>Video: Building React from Scratch {#video-building-react-from-scratch}</h3>
+<p><a href="https://twitter.com/zpao">Paul O'Shannessy</a> gave a talk about <a href="https://www.youtube.com/watch?v=_MAD4Oly9yg">building React from scratch</a> that largely inspired this document.</p>
+<p>Both this document and his talk are simplifications of the real codebase so you might get a better understanding by getting familiar with both of them.</p>
+<h3>Overview {#overview}</h3>
+<p>The reconciler itself doesn't have a public API. <a href="/docs/codebase-overview.html#renderers">Renderers</a> like React DOM and React Native use it to efficiently update the user interface according to the React components written by the user.</p>
+<h3>Mounting as a Recursive Process {#mounting-as-a-recursive-process}</h3>
+<p>Let's consider the first time you mount a component:</p>
+<pre><code class="language-js">ReactDOM.render(&lt;App /&gt;, rootEl);
+</code></pre>
+<p>React DOM will pass <code>&lt;App /&gt;</code> along to the reconciler. Remember that <code>&lt;App /&gt;</code> is a React element, that is, a description of <em>what</em> to render. You can think about it as a plain object:</p>
+<pre><code class="language-js">console.log(&lt;App /&gt;);
+// { type: App, props: {} }
+</code></pre>
+<p>The reconciler will check if <code>App</code> is a class or a function.</p>
+<p>If <code>App</code> is a function, the reconciler will call <code>App(props)</code> to get the rendered element.</p>
+<p>If <code>App</code> is a class, the reconciler will instantiate an <code>App</code> with <code>new App(props)</code>, call the <code>componentWillMount()</code> lifecycle method, and then will call the <code>render()</code> method to get the rendered element.</p>
+<p>Either way, the reconciler will learn the element <code>App</code> &quot;rendered to&quot;.</p>
+<p>This process is recursive. <code>App</code> may render to a <code>&lt;Greeting /&gt;</code>, <code>Greeting</code> may render to a <code>&lt;Button /&gt;</code>, and so on. The reconciler will &quot;drill down&quot; through user-defined components recursively as it learns what each component renders to.</p>
+<p>You can imagine this process as a pseudocode:</p>
+<pre><code class="language-js">function isClass(type) {
+  // React.Component subclasses have this flag
+  return (
+    Boolean(type.prototype) &amp;&amp;
+    Boolean(type.prototype.isReactComponent)
+  );
+}
+
+// This function takes a React element (e.g. &lt;App /&gt;)
+// and returns a DOM or Native node representing the mounted tree.
+function mount(element) {
+  var type = element.type;
+  var props = element.props;
+
+  // We will determine the rendered element
+  // by either running the type as function
+  // or creating an instance and calling render().
+  var renderedElement;
+  if (isClass(type)) {
+    // Component class
+    var publicInstance = new type(props);
+    // Set the props
+    publicInstance.props = props;
+    // Call the lifecycle if necessary
+    if (publicInstance.componentWillMount) {
+      publicInstance.componentWillMount();
+    }
+    // Get the rendered element by calling render()
+    renderedElement = publicInstance.render();
+  } else {
+    // Component function
+    renderedElement = type(props);
+  }
+
+  // This process is recursive because a component may
+  // return an element with a type of another component.
+  return mount(renderedElement);
+
+  // Note: this implementation is incomplete and recurses infinitely!
+  // It only handles elements like &lt;App /&gt; or &lt;Button /&gt;.
+  // It doesn't handle elements like &lt;div /&gt; or &lt;p /&gt; yet.
+}
+
+var rootEl = document.getElementById('root');
+var node = mount(&lt;App /&gt;);
+rootEl.appendChild(node);
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>This really <em>is</em> a pseudo-code. It isn't similar to the real implementation. It will also cause a stack overflow because we haven't discussed when to stop the recursion.</p>
+</blockquote>
+<p>Let's recap a few key ideas in the example above:</p>
+<ul>
+<li>React elements are plain objects representing the component type (e.g. <code>App</code>) and the props.</li>
+<li>User-defined components (e.g. <code>App</code>) can be classes or functions but they all &quot;render to&quot; elements.</li>
+<li>&quot;Mounting&quot; is a recursive process that creates a DOM or Native tree given the top-level React element (e.g. <code>&lt;App /&gt;</code>).</li>
+</ul>
+<h3>Mounting Host Elements {#mounting-host-elements}</h3>
+<p>This process would be useless if we didn't render something to the screen as a result.</p>
+<p>In addition to user-defined (&quot;composite&quot;) components, React elements may also represent platform-specific (&quot;host&quot;) components. For example, <code>Button</code> might return a <code>&lt;div /&gt;</code> from its render method.</p>
+<p>If element's <code>type</code> property is a string, we are dealing with a host element:</p>
+<pre><code class="language-js">console.log(&lt;div /&gt;);
+// { type: 'div', props: {} }
+</code></pre>
+<p>There is no user-defined code associated with host elements.</p>
+<p>When the reconciler encounters a host element, it lets the renderer take care of mounting it. For example, React DOM would create a DOM node.</p>
+<p>If the host element has children, the reconciler recursively mounts them following the same algorithm as above. It doesn't matter whether children are host (like <code>&lt;div&gt;&lt;hr /&gt;&lt;/div&gt;</code>), composite (like <code>&lt;div&gt;&lt;Button /&gt;&lt;/div&gt;</code>), or both.</p>
+<p>The DOM nodes produced by the child components will be appended to the parent DOM node, and recursively, the complete DOM structure will be assembled.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>The reconciler itself is not tied to the DOM. The exact result of mounting (sometimes called &quot;mount image&quot; in the source code) depends on the renderer, and can be a DOM node (React DOM), a string (React DOM Server), or a number representing a native view (React Native).</p>
+</blockquote>
+<p>If we were to extend the code to handle host elements, it would look like this:</p>
+<pre><code class="language-js">function isClass(type) {
+  // React.Component subclasses have this flag
+  return (
+    Boolean(type.prototype) &amp;&amp;
+    Boolean(type.prototype.isReactComponent)
+  );
+}
+
+// This function only handles elements with a composite type.
+// For example, it handles &lt;App /&gt; and &lt;Button /&gt;, but not a &lt;div /&gt;.
+function mountComposite(element) {
+  var type = element.type;
+  var props = element.props;
+
+  var renderedElement;
+  if (isClass(type)) {
+    // Component class
+    var publicInstance = new type(props);
+    // Set the props
+    publicInstance.props = props;
+    // Call the lifecycle if necessary
+    if (publicInstance.componentWillMount) {
+      publicInstance.componentWillMount();
+    }
+    renderedElement = publicInstance.render();
+  } else if (typeof type === 'function') {
+    // Component function
+    renderedElement = type(props);
+  }
+
+  // This is recursive but we'll eventually reach the bottom of recursion when
+  // the element is host (e.g. &lt;div /&gt;) rather than composite (e.g. &lt;App /&gt;):
+  return mount(renderedElement);
+}
+
+// This function only handles elements with a host type.
+// For example, it handles &lt;div /&gt; and &lt;p /&gt; but not an &lt;App /&gt;.
+function mountHost(element) {
+  var type = element.type;
+  var props = element.props;
+  var children = props.children || [];
+  if (!Array.isArray(children)) {
+    children = [children];
+  }
+  children = children.filter(Boolean);
+
+  // This block of code shouldn't be in the reconciler.
+  // Different renderers might initialize nodes differently.
+  // For example, React Native would create iOS or Android views.
+  var node = document.createElement(type);
+  Object.keys(props).forEach(propName =&gt; {
+    if (propName !== 'children') {
+      node.setAttribute(propName, props[propName]);
+    }
+  });
+
+  // Mount the children
+  children.forEach(childElement =&gt; {
+    // Children may be host (e.g. &lt;div /&gt;) or composite (e.g. &lt;Button /&gt;).
+    // We will also mount them recursively:
+    var childNode = mount(childElement);
+
+    // This line of code is also renderer-specific.
+    // It would be different depending on the renderer:
+    node.appendChild(childNode);
+  });
+
+  // Return the DOM node as mount result.
+  // This is where the recursion ends.
+  return node;
+}
+
+function mount(element) {
+  var type = element.type;
+  if (typeof type === 'function') {
+    // User-defined components
+    return mountComposite(element);
+  } else if (typeof type === 'string') {
+    // Platform-specific components
+    return mountHost(element);
+  }
+}
+
+var rootEl = document.getElementById('root');
+var node = mount(&lt;App /&gt;);
+rootEl.appendChild(node);
+</code></pre>
+<p>This is working but still far from how the reconciler is really implemented. The key missing ingredient is support for updates.</p>
+<h3>Introducing Internal Instances {#introducing-internal-instances}</h3>
+<p>The key feature of React is that you can re-render everything, and it won't recreate the DOM or reset the state:</p>
+<pre><code class="language-js">ReactDOM.render(&lt;App /&gt;, rootEl);
+// Should reuse the existing DOM:
+ReactDOM.render(&lt;App /&gt;, rootEl);
+</code></pre>
+<p>However, our implementation above only knows how to mount the initial tree. It can't perform updates on it because it doesn't store all the necessary information, such as all the <code>publicInstance</code>s, or which DOM <code>node</code>s correspond to which components.</p>
+<p>The stack reconciler codebase solves this by making the <code>mount()</code> function a method and putting it on a class. There are drawbacks to this approach, and we are going in the opposite direction in the <a href="/docs/codebase-overview.html#fiber-reconciler">ongoing rewrite of the reconciler</a>. Nevertheless this is how it works now.</p>
+<p>Instead of separate <code>mountHost</code> and <code>mountComposite</code> functions, we will create two classes: <code>DOMComponent</code> and <code>CompositeComponent</code>.</p>
+<p>Both classes have a constructor accepting the <code>element</code>, as well as a <code>mount()</code> method returning the mounted node. We will replace a top-level <code>mount()</code> function with a factory that instantiates the correct class:</p>
+<pre><code class="language-js">function instantiateComponent(element) {
+  var type = element.type;
+  if (typeof type === 'function') {
+    // User-defined components
+    return new CompositeComponent(element);
+  } else if (typeof type === 'string') {
+    // Platform-specific components
+    return new DOMComponent(element);
+  }  
+}
+</code></pre>
+<p>First, let's consider the implementation of <code>CompositeComponent</code>:</p>
+<pre><code class="language-js">class CompositeComponent {
+  constructor(element) {
+    this.currentElement = element;
+    this.renderedComponent = null;
+    this.publicInstance = null;
+  }
+
+  getPublicInstance() {
+    // For composite components, expose the class instance.
+    return this.publicInstance;
+  }
+
+  mount() {
+    var element = this.currentElement;
+    var type = element.type;
+    var props = element.props;
+
+    var publicInstance;
+    var renderedElement;
+    if (isClass(type)) {
+      // Component class
+      publicInstance = new type(props);
+      // Set the props
+      publicInstance.props = props;
+      // Call the lifecycle if necessary
+      if (publicInstance.componentWillMount) {
+        publicInstance.componentWillMount();
+      }
+      renderedElement = publicInstance.render();
+    } else if (typeof type === 'function') {
+      // Component function
+      publicInstance = null;
+      renderedElement = type(props);
+    }
+
+    // Save the public instance
+    this.publicInstance = publicInstance;
+
+    // Instantiate the child internal instance according to the element.
+    // It would be a DOMComponent for &lt;div /&gt; or &lt;p /&gt;,
+    // and a CompositeComponent for &lt;App /&gt; or &lt;Button /&gt;:
+    var renderedComponent = instantiateComponent(renderedElement);
+    this.renderedComponent = renderedComponent;
+
+    // Mount the rendered output
+    return renderedComponent.mount();
+  }
+}
+</code></pre>
+<p>This is not much different from our previous <code>mountComposite()</code> implementation, but now we can save some information, such as <code>this.currentElement</code>, <code>this.renderedComponent</code>, and <code>this.publicInstance</code>, for use during updates.</p>
+<p>Note that an instance of <code>CompositeComponent</code> is not the same thing as an instance of the user-supplied <code>element.type</code>. <code>CompositeComponent</code> is an implementation detail of our reconciler, and is never exposed to the user. The user-defined class is the one we read from <code>element.type</code>, and <code>CompositeComponent</code> creates an instance of it.</p>
+<p>To avoid the confusion, we will call instances of <code>CompositeComponent</code> and <code>DOMComponent</code> &quot;internal instances&quot;. They exist so we can associate some long-lived data with them. Only the renderer and the reconciler are aware that they exist.</p>
+<p>In contrast, we call an instance of the user-defined class a &quot;public instance&quot;. The public instance is what you see as <code>this</code> in the <code>render()</code> and other methods of your custom components.</p>
+<p>The <code>mountHost()</code> function, refactored to be a <code>mount()</code> method on <code>DOMComponent</code> class, also looks familiar:</p>
+<pre><code class="language-js">class DOMComponent {
+  constructor(element) {
+    this.currentElement = element;
+    this.renderedChildren = [];
+    this.node = null;
+  }
+
+  getPublicInstance() {
+    // For DOM components, only expose the DOM node.
+    return this.node;
+  }
+
+  mount() {
+    var element = this.currentElement;
+    var type = element.type;
+    var props = element.props;
+    var children = props.children || [];
+    if (!Array.isArray(children)) {
+      children = [children];
+    }
+
+    // Create and save the node
+    var node = document.createElement(type);
+    this.node = node;
+
+    // Set the attributes
+    Object.keys(props).forEach(propName =&gt; {
+      if (propName !== 'children') {
+        node.setAttribute(propName, props[propName]);
+      }
+    });
+
+    // Create and save the contained children.
+    // Each of them can be a DOMComponent or a CompositeComponent,
+    // depending on whether the element type is a string or a function.
+    var renderedChildren = children.map(instantiateComponent);
+    this.renderedChildren = renderedChildren;
+
+    // Collect DOM nodes they return on mount
+    var childNodes = renderedChildren.map(child =&gt; child.mount());
+    childNodes.forEach(childNode =&gt; node.appendChild(childNode));
+
+    // Return the DOM node as mount result
+    return node;
+  }
+}
+</code></pre>
+<p>The main difference after refactoring from <code>mountHost()</code> is that we now keep <code>this.node</code> and <code>this.renderedChildren</code> associated with the internal DOM component instance. We will also use them for applying non-destructive updates in the future.</p>
+<p>As a result, each internal instance, composite or host, now points to its child internal instances. To help visualize this, if a function <code>&lt;App&gt;</code> component renders a <code>&lt;Button&gt;</code> class component, and <code>Button</code> class renders a <code>&lt;div&gt;</code>, the internal instance tree would look like this:</p>
+<pre><code class="language-js">[object CompositeComponent] {
+  currentElement: &lt;App /&gt;,
+  publicInstance: null,
+  renderedComponent: [object CompositeComponent] {
+    currentElement: &lt;Button /&gt;,
+    publicInstance: [object Button],
+    renderedComponent: [object DOMComponent] {
+      currentElement: &lt;div /&gt;,
+      node: [object HTMLDivElement],
+      renderedChildren: []
+    }
+  }
+}
+</code></pre>
+<p>In the DOM you would only see the <code>&lt;div&gt;</code>. However the internal instance tree contains both composite and host internal instances.</p>
+<p>The composite internal instances need to store:</p>
+<ul>
+<li>The current element.</li>
+<li>The public instance if element type is a class.</li>
+<li>The single rendered internal instance. It can be either a <code>DOMComponent</code> or a <code>CompositeComponent</code>.</li>
+</ul>
+<p>The host internal instances need to store:</p>
+<ul>
+<li>The current element.</li>
+<li>The DOM node.</li>
+<li>All the child internal instances. Each of them can be either a <code>DOMComponent</code> or a <code>CompositeComponent</code>.</li>
+</ul>
+<p>If you're struggling to imagine how an internal instance tree is structured in more complex applications, <a href="https://github.com/facebook/react-devtools">React DevTools</a> can give you a close approximation, as it highlights host instances with grey, and composite instances with purple:</p>
+<p><img src="../images/docs/implementation-notes-tree.png" width="500" style="max-width: 100%" alt="React DevTools tree" /></p>
+<p>To complete this refactoring, we will introduce a function that mounts a complete tree into a container node, just like <code>ReactDOM.render()</code>. It returns a public instance, also like <code>ReactDOM.render()</code>:</p>
+<pre><code class="language-js">function mountTree(element, containerNode) {
+  // Create the top-level internal instance
+  var rootComponent = instantiateComponent(element);
+
+  // Mount the top-level component into the container
+  var node = rootComponent.mount();
+  containerNode.appendChild(node);
+
+  // Return the public instance it provides
+  var publicInstance = rootComponent.getPublicInstance();
+  return publicInstance;
+}
+
+var rootEl = document.getElementById('root');
+mountTree(&lt;App /&gt;, rootEl);
+</code></pre>
+<h3>Unmounting {#unmounting}</h3>
+<p>Now that we have internal instances that hold onto their children and the DOM nodes, we can implement unmounting. For a composite component, unmounting calls a lifecycle method and recurses.</p>
+<pre><code class="language-js">class CompositeComponent {
+
+  // ...
+
+  unmount() {
+    // Call the lifecycle method if necessary
+    var publicInstance = this.publicInstance;
+    if (publicInstance) {
+      if (publicInstance.componentWillUnmount) {
+        publicInstance.componentWillUnmount();
+      }
+    }
+
+    // Unmount the single rendered component
+    var renderedComponent = this.renderedComponent;
+    renderedComponent.unmount();
+  }
+}
+</code></pre>
+<p>For <code>DOMComponent</code>, unmounting tells each child to unmount:</p>
+<pre><code class="language-js">class DOMComponent {
+
+  // ...
+
+  unmount() {
+    // Unmount all the children
+    var renderedChildren = this.renderedChildren;
+    renderedChildren.forEach(child =&gt; child.unmount());
+  }
+}
+</code></pre>
+<p>In practice, unmounting DOM components also removes the event listeners and clears some caches, but we will skip those details.</p>
+<p>We can now add a new top-level function called <code>unmountTree(containerNode)</code> that is similar to <code>ReactDOM.unmountComponentAtNode()</code>:</p>
+<pre><code class="language-js">function unmountTree(containerNode) {
+  // Read the internal instance from a DOM node:
+  // (This doesn't work yet, we will need to change mountTree() to store it.)
+  var node = containerNode.firstChild;
+  var rootComponent = node._internalInstance;
+
+  // Unmount the tree and clear the container
+  rootComponent.unmount();
+  containerNode.innerHTML = '';
+}
+</code></pre>
+<p>In order for this to work, we need to read an internal root instance from a DOM node. We will modify <code>mountTree()</code> to add the <code>_internalInstance</code> property to the root DOM node. We will also teach <code>mountTree()</code> to destroy any existing tree so it can be called multiple times:</p>
+<pre><code class="language-js">function mountTree(element, containerNode) {
+  // Destroy any existing tree
+  if (containerNode.firstChild) {
+    unmountTree(containerNode);
+  }
+
+  // Create the top-level internal instance
+  var rootComponent = instantiateComponent(element);
+
+  // Mount the top-level component into the container
+  var node = rootComponent.mount();
+  containerNode.appendChild(node);
+
+  // Save a reference to the internal instance
+  node._internalInstance = rootComponent;
+
+  // Return the public instance it provides
+  var publicInstance = rootComponent.getPublicInstance();
+  return publicInstance;
+}
+</code></pre>
+<p>Now, running <code>unmountTree()</code>, or running <code>mountTree()</code> repeatedly, removes the old tree and runs the <code>componentWillUnmount()</code> lifecycle method on components.</p>
+<h3>Updating {#updating}</h3>
+<p>In the previous section, we implemented unmounting. However React wouldn't be very useful if each prop change unmounted and mounted the whole tree. The goal of the reconciler is to reuse existing instances where possible to preserve the DOM and the state:</p>
+<pre><code class="language-js">var rootEl = document.getElementById('root');
+
+mountTree(&lt;App /&gt;, rootEl);
+// Should reuse the existing DOM:
+mountTree(&lt;App /&gt;, rootEl);
+</code></pre>
+<p>We will extend our internal instance contract with one more method. In addition to <code>mount()</code> and <code>unmount()</code>, both <code>DOMComponent</code> and <code>CompositeComponent</code> will implement a new method called <code>receive(nextElement)</code>:</p>
+<pre><code class="language-js">class CompositeComponent {
+  // ...
+
+  receive(nextElement) {
+    // ...
+  }
+}
+
+class DOMComponent {
+  // ...
+
+  receive(nextElement) {
+    // ...
+  }
+}
+</code></pre>
+<p>Its job is to do whatever is necessary to bring the component (and any of its children) up to date with the description provided by the <code>nextElement</code>.</p>
+<p>This is the part that is often described as &quot;virtual DOM diffing&quot; although what really happens is that we walk the internal tree recursively and let each internal instance receive an update.</p>
+<h3>Updating Composite Components {#updating-composite-components}</h3>
+<p>When a composite component receives a new element, we run the <code>componentWillUpdate()</code> lifecycle method.</p>
+<p>Then we re-render the component with the new props, and get the next rendered element:</p>
+<pre><code class="language-js">class CompositeComponent {
+
+  // ...
+
+  receive(nextElement) {
+    var prevProps = this.currentElement.props;
+    var publicInstance = this.publicInstance;
+    var prevRenderedComponent = this.renderedComponent;
+    var prevRenderedElement = prevRenderedComponent.currentElement;
+
+    // Update *own* element
+    this.currentElement = nextElement;
+    var type = nextElement.type;
+    var nextProps = nextElement.props;
+
+    // Figure out what the next render() output is
+    var nextRenderedElement;
+    if (isClass(type)) {
+      // Component class
+      // Call the lifecycle if necessary
+      if (publicInstance.componentWillUpdate) {
+        publicInstance.componentWillUpdate(nextProps);
+      }
+      // Update the props
+      publicInstance.props = nextProps;
+      // Re-render
+      nextRenderedElement = publicInstance.render();
+    } else if (typeof type === 'function') {
+      // Component function
+      nextRenderedElement = type(nextProps);
+    }
+
+    // ...
+</code></pre>
+<p>Next, we can look at the rendered element's <code>type</code>. If the <code>type</code> has not changed since the last render, the component below can also be updated in place.</p>
+<p>For example, if it returned <code>&lt;Button color=&quot;red&quot; /&gt;</code> the first time, and <code>&lt;Button color=&quot;blue&quot; /&gt;</code> the second time, we can just tell the corresponding internal instance to <code>receive()</code> the next element:</p>
+<pre><code class="language-js">    // ...
+
+    // If the rendered element type has not changed,
+    // reuse the existing component instance and exit.
+    if (prevRenderedElement.type === nextRenderedElement.type) {
+      prevRenderedComponent.receive(nextRenderedElement);
+      return;
+    }
+
+    // ...
+</code></pre>
+<p>However, if the next rendered element has a different <code>type</code> than the previously rendered element, we can't update the internal instance. A <code>&lt;button&gt;</code> can't &quot;become&quot; an <code>&lt;input&gt;</code>.</p>
+<p>Instead, we have to unmount the existing internal instance and mount the new one corresponding to the rendered element type. For example, this is what happens when a component that previously rendered a <code>&lt;button /&gt;</code> renders an <code>&lt;input /&gt;</code>:</p>
+<pre><code class="language-js">    // ...
+
+    // If we reached this point, we need to unmount the previously
+    // mounted component, mount the new one, and swap their nodes.
+
+    // Find the old node because it will need to be replaced
+    var prevNode = prevRenderedComponent.getHostNode();
+
+    // Unmount the old child and mount a new child
+    prevRenderedComponent.unmount();
+    var nextRenderedComponent = instantiateComponent(nextRenderedElement);
+    var nextNode = nextRenderedComponent.mount();
+
+    // Replace the reference to the child
+    this.renderedComponent = nextRenderedComponent;
+
+    // Replace the old node with the new one
+    // Note: this is renderer-specific code and
+    // ideally should live outside of CompositeComponent:
+    prevNode.parentNode.replaceChild(nextNode, prevNode);
+  }
+}
+</code></pre>
+<p>To sum this up, when a composite component receives a new element, it may either delegate the update to its rendered internal instance, or unmount it and mount a new one in its place.</p>
+<p>There is another condition under which a component will re-mount rather than receive an element, and that is when the element's <code>key</code> has changed. We don't discuss <code>key</code> handling in this document because it adds more complexity to an already complex tutorial.</p>
+<p>Note that we needed to add a method called <code>getHostNode()</code> to the internal instance contract so that it's possible to locate the platform-specific node and replace it during the update. Its implementation is straightforward for both classes:</p>
+<pre><code class="language-js">class CompositeComponent {
+  // ...
+
+  getHostNode() {
+    // Ask the rendered component to provide it.
+    // This will recursively drill down any composites.
+    return this.renderedComponent.getHostNode();
+  }
+}
+
+class DOMComponent {
+  // ...
+
+  getHostNode() {
+    return this.node;
+  }  
+}
+</code></pre>
+<h3>Updating Host Components {#updating-host-components}</h3>
+<p>Host component implementations, such as <code>DOMComponent</code>, update differently. When they receive an element, they need to update the underlying platform-specific view. In case of React DOM, this means updating the DOM attributes:</p>
+<pre><code class="language-js">class DOMComponent {
+  // ...
+
+  receive(nextElement) {
+    var node = this.node;
+    var prevElement = this.currentElement;
+    var prevProps = prevElement.props;
+    var nextProps = nextElement.props;    
+    this.currentElement = nextElement;
+
+    // Remove old attributes.
+    Object.keys(prevProps).forEach(propName =&gt; {
+      if (propName !== 'children' &amp;&amp; !nextProps.hasOwnProperty(propName)) {
+        node.removeAttribute(propName);
+      }
+    });
+    // Set next attributes.
+    Object.keys(nextProps).forEach(propName =&gt; {
+      if (propName !== 'children') {
+        node.setAttribute(propName, nextProps[propName]);
+      }
+    });
+
+    // ...
+</code></pre>
+<p>Then, host components need to update their children. Unlike composite components, they might contain more than a single child.</p>
+<p>In this simplified example, we use an array of internal instances and iterate over it, either updating or replacing the internal instances depending on whether the received <code>type</code> matches their previous <code>type</code>. The real reconciler also takes element's <code>key</code> in the account and track moves in addition to insertions and deletions, but we will omit this logic.</p>
+<p>We collect DOM operations on children in a list so we can execute them in batch:</p>
+<pre><code class="language-js">    // ...
+
+    // These are arrays of React elements:
+    var prevChildren = prevProps.children || [];
+    if (!Array.isArray(prevChildren)) {
+      prevChildren = [prevChildren];
+    }
+    var nextChildren = nextProps.children || [];
+    if (!Array.isArray(nextChildren)) {
+      nextChildren = [nextChildren];
+    }
+    // These are arrays of internal instances:
+    var prevRenderedChildren = this.renderedChildren;
+    var nextRenderedChildren = [];
+
+    // As we iterate over children, we will add operations to the array.
+    var operationQueue = [];
+
+    // Note: the section below is extremely simplified!
+    // It doesn't handle reorders, children with holes, or keys.
+    // It only exists to illustrate the overall flow, not the specifics.
+
+    for (var i = 0; i &lt; nextChildren.length; i++) {
+      // Try to get an existing internal instance for this child
+      var prevChild = prevRenderedChildren[i];
+
+      // If there is no internal instance under this index,
+      // a child has been appended to the end. Create a new
+      // internal instance, mount it, and use its node.
+      if (!prevChild) {
+        var nextChild = instantiateComponent(nextChildren[i]);
+        var node = nextChild.mount();
+
+        // Record that we need to append a node
+        operationQueue.push({type: 'ADD', node});
+        nextRenderedChildren.push(nextChild);
+        continue;
+      }
+
+      // We can only update the instance if its element's type matches.
+      // For example, &lt;Button size=&quot;small&quot; /&gt; can be updated to
+      // &lt;Button size=&quot;large&quot; /&gt; but not to an &lt;App /&gt;.
+      var canUpdate = prevChildren[i].type === nextChildren[i].type;
+
+      // If we can't update an existing instance, we have to unmount it
+      // and mount a new one instead of it.
+      if (!canUpdate) {
+        var prevNode = prevChild.getHostNode();
+        prevChild.unmount();
+
+        var nextChild = instantiateComponent(nextChildren[i]);
+        var nextNode = nextChild.mount();
+
+        // Record that we need to swap the nodes
+        operationQueue.push({type: 'REPLACE', prevNode, nextNode});
+        nextRenderedChildren.push(nextChild);
+        continue;
+      }
+
+      // If we can update an existing internal instance,
+      // just let it receive the next element and handle its own update.
+      prevChild.receive(nextChildren[i]);
+      nextRenderedChildren.push(prevChild);
+    }
+
+    // Finally, unmount any children that don't exist:
+    for (var j = nextChildren.length; j &lt; prevChildren.length; j++) {
+      var prevChild = prevRenderedChildren[j];
+      var node = prevChild.getHostNode();
+      prevChild.unmount();
+
+      // Record that we need to remove the node
+      operationQueue.push({type: 'REMOVE', node});
+    }
+
+    // Point the list of rendered children to the updated version.
+    this.renderedChildren = nextRenderedChildren;
+
+    // ...
+</code></pre>
+<p>As the last step, we execute the DOM operations. Again, the real reconciler code is more complex because it also handles moves:</p>
+<pre><code class="language-js">    // ...
+
+    // Process the operation queue.
+    while (operationQueue.length &gt; 0) {
+      var operation = operationQueue.shift();
+      switch (operation.type) {
+      case 'ADD':
+        this.node.appendChild(operation.node);
+        break;
+      case 'REPLACE':
+        this.node.replaceChild(operation.nextNode, operation.prevNode);
+        break;
+      case 'REMOVE':
+        this.node.removeChild(operation.node);
+        break;
+      }
+    }
+  }
+}
+</code></pre>
+<p>And that is it for updating host components.</p>
+<h3>Top-Level Updates {#top-level-updates}</h3>
+<p>Now that both <code>CompositeComponent</code> and <code>DOMComponent</code> implement the <code>receive(nextElement)</code> method, we can change the top-level <code>mountTree()</code> function to use it when the element <code>type</code> is the same as it was the last time:</p>
+<pre><code class="language-js">function mountTree(element, containerNode) {
+  // Check for an existing tree
+  if (containerNode.firstChild) {
+    var prevNode = containerNode.firstChild;
+    var prevRootComponent = prevNode._internalInstance;
+    var prevElement = prevRootComponent.currentElement;
+
+    // If we can, reuse the existing root component
+    if (prevElement.type === element.type) {
+      prevRootComponent.receive(element);
+      return;
+    }
+
+    // Otherwise, unmount the existing tree
+    unmountTree(containerNode);
+  }
+
+  // ...
+
+}
+</code></pre>
+<p>Now calling <code>mountTree()</code> two times with the same type isn't destructive:</p>
+<pre><code class="language-js">var rootEl = document.getElementById('root');
+
+mountTree(&lt;App /&gt;, rootEl);
+// Reuses the existing DOM:
+mountTree(&lt;App /&gt;, rootEl);
+</code></pre>
+<p>These are the basics of how React works internally.</p>
+<h3>What We Left Out {#what-we-left-out}</h3>
+<p>This document is simplified compared to the real codebase. There are a few important aspects we didn't address:</p>
+<ul>
+<li><p>Components can render <code>null</code>, and the reconciler can handle &quot;empty slots&quot; in arrays and rendered output.</p></li>
+<li><p>The reconciler also reads <code>key</code> from the elements, and uses it to establish which internal instance corresponds to which element in an array. A bulk of complexity in the actual React implementation is related to that.</p></li>
+<li><p>In addition to composite and host internal instance classes, there are also classes for &quot;text&quot; and &quot;empty&quot; components. They represent text nodes and the &quot;empty slots&quot; you get by rendering <code>null</code>.</p></li>
+<li><p>Renderers use <a href="/docs/codebase-overview.html#dynamic-injection">injection</a> to pass the host internal class to the reconciler. For example, React DOM tells the reconciler to use <code>ReactDOMComponent</code> as the host internal instance implementation.</p></li>
+<li><p>The logic for updating the list of children is extracted into a mixin called <code>ReactMultiChild</code> which is used by the host internal instance class implementations both in React DOM and React Native.</p></li>
+<li><p>The reconciler also implements support for <code>setState()</code> in composite components. Multiple updates inside event handlers get batched into a single update.</p></li>
+<li><p>The reconciler also takes care of attaching and detaching refs to composite components and host nodes.</p></li>
+<li><p>Lifecycle methods that are called after the DOM is ready, such as <code>componentDidMount()</code> and <code>componentDidUpdate()</code>, get collected into &quot;callback queues&quot; and are executed in a single batch.</p></li>
+<li><p>React puts information about the current update into an internal object called &quot;transaction&quot;. Transactions are useful for keeping track of the queue of pending lifecycle methods, the current DOM nesting for the warnings, and anything else that is &quot;global&quot; to a specific update. Transactions also ensure React &quot;cleans everything up&quot; after updates. For example, the transaction class provided by React DOM restores the input selection after any update.</p></li>
+</ul>
+<h3>Jumping into the Code {#jumping-into-the-code}</h3>
+<ul>
+<li><p><a href="https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/dom/client/ReactMount.js"><code>ReactMount</code></a> is where the code like <code>mountTree()</code> and <code>unmountTree()</code> from this tutorial lives. It takes care of mounting and unmounting top-level components. <a href="https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/native/ReactNativeMount.js"><code>ReactNativeMount</code></a> is its React Native analog.</p></li>
+<li><p><a href="https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/dom/shared/ReactDOMComponent.js"><code>ReactDOMComponent</code></a> is the equivalent of <code>DOMComponent</code> in this tutorial. It implements the host component class for React DOM renderer. <a href="https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/native/ReactNativeBaseComponent.js"><code>ReactNativeBaseComponent</code></a> is its React Native analog.</p></li>
+<li><p><a href="https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/ReactCompositeComponent.js"><code>ReactCompositeComponent</code></a> is the equivalent of <code>CompositeComponent</code> in this tutorial. It handles calling user-defined components and maintaining their state.</p></li>
+<li><p><a href="https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/instantiateReactComponent.js"><code>instantiateReactComponent</code></a> contains the switch that picks the right internal instance class to construct for an element. It is equivalent to <code>instantiateComponent()</code> in this tutorial.</p></li>
+<li><p><a href="https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/ReactReconciler.js"><code>ReactReconciler</code></a> is a wrapper with <code>mountComponent()</code>, <code>receiveComponent()</code>, and <code>unmountComponent()</code> methods. It calls the underlying implementations on the internal instances, but also includes some code around them that is shared by all internal instance implementations.</p></li>
+<li><p><a href="https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/ReactChildReconciler.js"><code>ReactChildReconciler</code></a> implements the logic for mounting, updating, and unmounting children according to the <code>key</code> of their elements.</p></li>
+<li><p><a href="https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/ReactMultiChild.js"><code>ReactMultiChild</code></a> implements processing the operation queue for child insertions, deletions, and moves independently of the renderer.</p></li>
+<li><p><code>mount()</code>, <code>receive()</code>, and <code>unmount()</code> are really called <code>mountComponent()</code>, <code>receiveComponent()</code>, and <code>unmountComponent()</code> in React codebase for legacy reasons, but they receive elements.</p></li>
+<li><p>Properties on the internal instances start with an underscore, e.g. <code>_currentElement</code>. They are considered to be read-only public fields throughout the codebase.</p></li>
+</ul>
+<h3>Future Directions {#future-directions}</h3>
+<p>Stack reconciler has inherent limitations such as being synchronous and unable to interrupt the work or split it in chunks. There is a work in progress on the <a href="/docs/codebase-overview.html#fiber-reconciler">new Fiber reconciler</a> with a <a href="https://github.com/acdlite/react-fiber-architecture">completely different architecture</a>. In the future, we intend to replace stack reconciler with it, but at the moment it is far from feature parity.</p>
+<h3>Next Steps {#next-steps}</h3>
+<p>Read the <a href="/docs/design-principles.html">next section</a> to learn about the guiding principles we use for React development.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: implementation-notes\ntitle: Implementation Notes\nlayout: contributing\npermalink: docs/implementation-notes.html\nprev: codebase-overview.html\nnext: design-principles.html\nredirect_from:\n  - \"contributing/implementation-notes.html\"\n---\n\nThis section is a collection of implementation notes for the [stack reconciler](/docs/codebase-overview.html#stack-reconciler).\n\nIt is very technical and assumes a strong understanding of React public API as well as how it's divided into core, renderers, and the reconciler. If you're not very familiar with the React codebase, read [the codebase overview](/docs/codebase-overview.html) first.\n\nIt also assumes an understanding of the [differences between React components, their instances, and elements](/blog/2015/12/18/react-components-elements-and-instances.html).\n\nThe stack reconciler was used in React 15 and earlier. It is located at [src/renderers/shared/stack/reconciler](https://github.com/facebook/react/tree/15-stable/src/renderers/shared/stack/reconciler).\n\n### Video: Building React from Scratch {#video-building-react-from-scratch}\n\n[Paul O'Shannessy](https://twitter.com/zpao) gave a talk about [building React from scratch](https://www.youtube.com/watch?v=_MAD4Oly9yg) that largely inspired this document.\n\nBoth this document and his talk are simplifications of the real codebase so you might get a better understanding by getting familiar with both of them.\n\n### Overview {#overview}\n\nThe reconciler itself doesn't have a public API. [Renderers](/docs/codebase-overview.html#renderers) like React DOM and React Native use it to efficiently update the user interface according to the React components written by the user.\n\n### Mounting as a Recursive Process {#mounting-as-a-recursive-process}\n\nLet's consider the first time you mount a component:\n\n```js\nReactDOM.render(\u003cApp /\u003e, rootEl);\n```\n\nReact DOM will pass `\u003cApp /\u003e` along to the reconciler. Remember that `\u003cApp /\u003e` is a React element, that is, a description of *what* to render. You can think about it as a plain object:\n\n```js\nconsole.log(\u003cApp /\u003e);\n// { type: App, props: {} }\n```\n\nThe reconciler will check if `App` is a class or a function.\n\nIf `App` is a function, the reconciler will call `App(props)` to get the rendered element.\n\nIf `App` is a class, the reconciler will instantiate an `App` with `new App(props)`, call the `componentWillMount()` lifecycle method, and then will call the `render()` method to get the rendered element.\n\nEither way, the reconciler will learn the element `App` \"rendered to\".\n\nThis process is recursive. `App` may render to a `\u003cGreeting /\u003e`, `Greeting` may render to a `\u003cButton /\u003e`, and so on. The reconciler will \"drill down\" through user-defined components recursively as it learns what each component renders to.\n\nYou can imagine this process as a pseudocode:\n\n```js\nfunction isClass(type) {\n  // React.Component subclasses have this flag\n  return (\n    Boolean(type.prototype) \u0026\u0026\n    Boolean(type.prototype.isReactComponent)\n  );\n}\n\n// This function takes a React element (e.g. \u003cApp /\u003e)\n// and returns a DOM or Native node representing the mounted tree.\nfunction mount(element) {\n  var type = element.type;\n  var props = element.props;\n\n  // We will determine the rendered element\n  // by either running the type as function\n  // or creating an instance and calling render().\n  var renderedElement;\n  if (isClass(type)) {\n    // Component class\n    var publicInstance = new type(props);\n    // Set the props\n    publicInstance.props = props;\n    // Call the lifecycle if necessary\n    if (publicInstance.componentWillMount) {\n      publicInstance.componentWillMount();\n    }\n    // Get the rendered element by calling render()\n    renderedElement = publicInstance.render();\n  } else {\n    // Component function\n    renderedElement = type(props);\n  }\n\n  // This process is recursive because a component may\n  // return an element with a type of another component.\n  return mount(renderedElement);\n\n  // Note: this implementation is incomplete and recurses infinitely!\n  // It only handles elements like \u003cApp /\u003e or \u003cButton /\u003e.\n  // It doesn't handle elements like \u003cdiv /\u003e or \u003cp /\u003e yet.\n}\n\nvar rootEl = document.getElementById('root');\nvar node = mount(\u003cApp /\u003e);\nrootEl.appendChild(node);\n```\n\n\u003e**Note:**\n\u003e\n\u003eThis really *is* a pseudo-code. It isn't similar to the real implementation. It will also cause a stack overflow because we haven't discussed when to stop the recursion.\n\nLet's recap a few key ideas in the example above:\n\n* React elements are plain objects representing the component type (e.g. `App`) and the props.\n* User-defined components (e.g. `App`) can be classes or functions but they all \"render to\" elements.\n* \"Mounting\" is a recursive process that creates a DOM or Native tree given the top-level React element (e.g. `\u003cApp /\u003e`).\n\n### Mounting Host Elements {#mounting-host-elements}\n\nThis process would be useless if we didn't render something to the screen as a result.\n\nIn addition to user-defined (\"composite\") components, React elements may also represent platform-specific (\"host\") components. For example, `Button` might return a `\u003cdiv /\u003e` from its render method.\n\nIf element's `type` property is a string, we are dealing with a host element:\n\n```js\nconsole.log(\u003cdiv /\u003e);\n// { type: 'div', props: {} }\n```\n\nThere is no user-defined code associated with host elements.\n\nWhen the reconciler encounters a host element, it lets the renderer take care of mounting it. For example, React DOM would create a DOM node.\n\nIf the host element has children, the reconciler recursively mounts them following the same algorithm as above. It doesn't matter whether children are host (like `\u003cdiv\u003e\u003chr /\u003e\u003c/div\u003e`), composite (like `\u003cdiv\u003e\u003cButton /\u003e\u003c/div\u003e`), or both.\n\nThe DOM nodes produced by the child components will be appended to the parent DOM node, and recursively, the complete DOM structure will be assembled.\n\n\u003e**Note:**\n\u003e\n\u003eThe reconciler itself is not tied to the DOM. The exact result of mounting (sometimes called \"mount image\" in the source code) depends on the renderer, and can be a DOM node (React DOM), a string (React DOM Server), or a number representing a native view (React Native).\n\nIf we were to extend the code to handle host elements, it would look like this:\n\n```js\nfunction isClass(type) {\n  // React.Component subclasses have this flag\n  return (\n    Boolean(type.prototype) \u0026\u0026\n    Boolean(type.prototype.isReactComponent)\n  );\n}\n\n// This function only handles elements with a composite type.\n// For example, it handles \u003cApp /\u003e and \u003cButton /\u003e, but not a \u003cdiv /\u003e.\nfunction mountComposite(element) {\n  var type = element.type;\n  var props = element.props;\n\n  var renderedElement;\n  if (isClass(type)) {\n    // Component class\n    var publicInstance = new type(props);\n    // Set the props\n    publicInstance.props = props;\n    // Call the lifecycle if necessary\n    if (publicInstance.componentWillMount) {\n      publicInstance.componentWillMount();\n    }\n    renderedElement = publicInstance.render();\n  } else if (typeof type === 'function') {\n    // Component function\n    renderedElement = type(props);\n  }\n\n  // This is recursive but we'll eventually reach the bottom of recursion when\n  // the element is host (e.g. \u003cdiv /\u003e) rather than composite (e.g. \u003cApp /\u003e):\n  return mount(renderedElement);\n}\n\n// This function only handles elements with a host type.\n// For example, it handles \u003cdiv /\u003e and \u003cp /\u003e but not an \u003cApp /\u003e.\nfunction mountHost(element) {\n  var type = element.type;\n  var props = element.props;\n  var children = props.children || [];\n  if (!Array.isArray(children)) {\n    children = [children];\n  }\n  children = children.filter(Boolean);\n\n  // This block of code shouldn't be in the reconciler.\n  // Different renderers might initialize nodes differently.\n  // For example, React Native would create iOS or Android views.\n  var node = document.createElement(type);\n  Object.keys(props).forEach(propName =\u003e {\n    if (propName !== 'children') {\n      node.setAttribute(propName, props[propName]);\n    }\n  });\n\n  // Mount the children\n  children.forEach(childElement =\u003e {\n    // Children may be host (e.g. \u003cdiv /\u003e) or composite (e.g. \u003cButton /\u003e).\n    // We will also mount them recursively:\n    var childNode = mount(childElement);\n\n    // This line of code is also renderer-specific.\n    // It would be different depending on the renderer:\n    node.appendChild(childNode);\n  });\n\n  // Return the DOM node as mount result.\n  // This is where the recursion ends.\n  return node;\n}\n\nfunction mount(element) {\n  var type = element.type;\n  if (typeof type === 'function') {\n    // User-defined components\n    return mountComposite(element);\n  } else if (typeof type === 'string') {\n    // Platform-specific components\n    return mountHost(element);\n  }\n}\n\nvar rootEl = document.getElementById('root');\nvar node = mount(\u003cApp /\u003e);\nrootEl.appendChild(node);\n```\n\nThis is working but still far from how the reconciler is really implemented. The key missing ingredient is support for updates.\n\n### Introducing Internal Instances {#introducing-internal-instances}\n\nThe key feature of React is that you can re-render everything, and it won't recreate the DOM or reset the state:\n\n```js\nReactDOM.render(\u003cApp /\u003e, rootEl);\n// Should reuse the existing DOM:\nReactDOM.render(\u003cApp /\u003e, rootEl);\n```\n\nHowever, our implementation above only knows how to mount the initial tree. It can't perform updates on it because it doesn't store all the necessary information, such as all the `publicInstance`s, or which DOM `node`s correspond to which components.\n\nThe stack reconciler codebase solves this by making the `mount()` function a method and putting it on a class. There are drawbacks to this approach, and we are going in the opposite direction in the [ongoing rewrite of the reconciler](/docs/codebase-overview.html#fiber-reconciler). Nevertheless this is how it works now.\n\nInstead of separate `mountHost` and `mountComposite` functions, we will create two classes: `DOMComponent` and `CompositeComponent`.\n\nBoth classes have a constructor accepting the `element`, as well as a `mount()` method returning the mounted node. We will replace a top-level `mount()` function with a factory that instantiates the correct class:\n\n```js\nfunction instantiateComponent(element) {\n  var type = element.type;\n  if (typeof type === 'function') {\n    // User-defined components\n    return new CompositeComponent(element);\n  } else if (typeof type === 'string') {\n    // Platform-specific components\n    return new DOMComponent(element);\n  }  \n}\n```\n\nFirst, let's consider the implementation of `CompositeComponent`:\n\n```js\nclass CompositeComponent {\n  constructor(element) {\n    this.currentElement = element;\n    this.renderedComponent = null;\n    this.publicInstance = null;\n  }\n\n  getPublicInstance() {\n    // For composite components, expose the class instance.\n    return this.publicInstance;\n  }\n\n  mount() {\n    var element = this.currentElement;\n    var type = element.type;\n    var props = element.props;\n\n    var publicInstance;\n    var renderedElement;\n    if (isClass(type)) {\n      // Component class\n      publicInstance = new type(props);\n      // Set the props\n      publicInstance.props = props;\n      // Call the lifecycle if necessary\n      if (publicInstance.componentWillMount) {\n        publicInstance.componentWillMount();\n      }\n      renderedElement = publicInstance.render();\n    } else if (typeof type === 'function') {\n      // Component function\n      publicInstance = null;\n      renderedElement = type(props);\n    }\n\n    // Save the public instance\n    this.publicInstance = publicInstance;\n\n    // Instantiate the child internal instance according to the element.\n    // It would be a DOMComponent for \u003cdiv /\u003e or \u003cp /\u003e,\n    // and a CompositeComponent for \u003cApp /\u003e or \u003cButton /\u003e:\n    var renderedComponent = instantiateComponent(renderedElement);\n    this.renderedComponent = renderedComponent;\n\n    // Mount the rendered output\n    return renderedComponent.mount();\n  }\n}\n```\n\nThis is not much different from our previous `mountComposite()` implementation, but now we can save some information, such as `this.currentElement`, `this.renderedComponent`, and `this.publicInstance`, for use during updates.\n\nNote that an instance of `CompositeComponent` is not the same thing as an instance of the user-supplied `element.type`. `CompositeComponent` is an implementation detail of our reconciler, and is never exposed to the user. The user-defined class is the one we read from `element.type`, and `CompositeComponent` creates an instance of it.\n\nTo avoid the confusion, we will call instances of `CompositeComponent` and `DOMComponent` \"internal instances\". They exist so we can associate some long-lived data with them. Only the renderer and the reconciler are aware that they exist.\n\nIn contrast, we call an instance of the user-defined class a \"public instance\". The public instance is what you see as `this` in the `render()` and other methods of your custom components.\n\nThe `mountHost()` function, refactored to be a `mount()` method on `DOMComponent` class, also looks familiar:\n\n```js\nclass DOMComponent {\n  constructor(element) {\n    this.currentElement = element;\n    this.renderedChildren = [];\n    this.node = null;\n  }\n\n  getPublicInstance() {\n    // For DOM components, only expose the DOM node.\n    return this.node;\n  }\n\n  mount() {\n    var element = this.currentElement;\n    var type = element.type;\n    var props = element.props;\n    var children = props.children || [];\n    if (!Array.isArray(children)) {\n      children = [children];\n    }\n\n    // Create and save the node\n    var node = document.createElement(type);\n    this.node = node;\n\n    // Set the attributes\n    Object.keys(props).forEach(propName =\u003e {\n      if (propName !== 'children') {\n        node.setAttribute(propName, props[propName]);\n      }\n    });\n\n    // Create and save the contained children.\n    // Each of them can be a DOMComponent or a CompositeComponent,\n    // depending on whether the element type is a string or a function.\n    var renderedChildren = children.map(instantiateComponent);\n    this.renderedChildren = renderedChildren;\n\n    // Collect DOM nodes they return on mount\n    var childNodes = renderedChildren.map(child =\u003e child.mount());\n    childNodes.forEach(childNode =\u003e node.appendChild(childNode));\n\n    // Return the DOM node as mount result\n    return node;\n  }\n}\n```\n\nThe main difference after refactoring from `mountHost()` is that we now keep `this.node` and `this.renderedChildren` associated with the internal DOM component instance. We will also use them for applying non-destructive updates in the future.\n\nAs a result, each internal instance, composite or host, now points to its child internal instances. To help visualize this, if a function `\u003cApp\u003e` component renders a `\u003cButton\u003e` class component, and `Button` class renders a `\u003cdiv\u003e`, the internal instance tree would look like this:\n\n```js\n[object CompositeComponent] {\n  currentElement: \u003cApp /\u003e,\n  publicInstance: null,\n  renderedComponent: [object CompositeComponent] {\n    currentElement: \u003cButton /\u003e,\n    publicInstance: [object Button],\n    renderedComponent: [object DOMComponent] {\n      currentElement: \u003cdiv /\u003e,\n      node: [object HTMLDivElement],\n      renderedChildren: []\n    }\n  }\n}\n```\n\nIn the DOM you would only see the `\u003cdiv\u003e`. However the internal instance tree contains both composite and host internal instances.\n\nThe composite internal instances need to store:\n\n* The current element.\n* The public instance if element type is a class.\n* The single rendered internal instance. It can be either a `DOMComponent` or a `CompositeComponent`.\n\nThe host internal instances need to store:\n\n* The current element.\n* The DOM node.\n* All the child internal instances. Each of them can be either a `DOMComponent` or a `CompositeComponent`.\n\nIf you're struggling to imagine how an internal instance tree is structured in more complex applications, [React DevTools](https://github.com/facebook/react-devtools) can give you a close approximation, as it highlights host instances with grey, and composite instances with purple:\n\n \u003cimg src=\"../images/docs/implementation-notes-tree.png\" width=\"500\" style=\"max-width: 100%\" alt=\"React DevTools tree\" /\u003e\n\nTo complete this refactoring, we will introduce a function that mounts a complete tree into a container node, just like `ReactDOM.render()`. It returns a public instance, also like `ReactDOM.render()`:\n\n```js\nfunction mountTree(element, containerNode) {\n  // Create the top-level internal instance\n  var rootComponent = instantiateComponent(element);\n\n  // Mount the top-level component into the container\n  var node = rootComponent.mount();\n  containerNode.appendChild(node);\n\n  // Return the public instance it provides\n  var publicInstance = rootComponent.getPublicInstance();\n  return publicInstance;\n}\n\nvar rootEl = document.getElementById('root');\nmountTree(\u003cApp /\u003e, rootEl);\n```\n\n### Unmounting {#unmounting}\n\nNow that we have internal instances that hold onto their children and the DOM nodes, we can implement unmounting. For a composite component, unmounting calls a lifecycle method and recurses.\n\n```js\nclass CompositeComponent {\n\n  // ...\n\n  unmount() {\n    // Call the lifecycle method if necessary\n    var publicInstance = this.publicInstance;\n    if (publicInstance) {\n      if (publicInstance.componentWillUnmount) {\n        publicInstance.componentWillUnmount();\n      }\n    }\n\n    // Unmount the single rendered component\n    var renderedComponent = this.renderedComponent;\n    renderedComponent.unmount();\n  }\n}\n```\n\nFor `DOMComponent`, unmounting tells each child to unmount:\n\n```js\nclass DOMComponent {\n\n  // ...\n\n  unmount() {\n    // Unmount all the children\n    var renderedChildren = this.renderedChildren;\n    renderedChildren.forEach(child =\u003e child.unmount());\n  }\n}\n```\n\nIn practice, unmounting DOM components also removes the event listeners and clears some caches, but we will skip those details.\n\nWe can now add a new top-level function called `unmountTree(containerNode)` that is similar to `ReactDOM.unmountComponentAtNode()`:\n\n```js\nfunction unmountTree(containerNode) {\n  // Read the internal instance from a DOM node:\n  // (This doesn't work yet, we will need to change mountTree() to store it.)\n  var node = containerNode.firstChild;\n  var rootComponent = node._internalInstance;\n\n  // Unmount the tree and clear the container\n  rootComponent.unmount();\n  containerNode.innerHTML = '';\n}\n```\n\nIn order for this to work, we need to read an internal root instance from a DOM node. We will modify `mountTree()` to add the `_internalInstance` property to the root DOM node. We will also teach `mountTree()` to destroy any existing tree so it can be called multiple times:\n\n```js\nfunction mountTree(element, containerNode) {\n  // Destroy any existing tree\n  if (containerNode.firstChild) {\n    unmountTree(containerNode);\n  }\n\n  // Create the top-level internal instance\n  var rootComponent = instantiateComponent(element);\n\n  // Mount the top-level component into the container\n  var node = rootComponent.mount();\n  containerNode.appendChild(node);\n\n  // Save a reference to the internal instance\n  node._internalInstance = rootComponent;\n\n  // Return the public instance it provides\n  var publicInstance = rootComponent.getPublicInstance();\n  return publicInstance;\n}\n```\n\nNow, running `unmountTree()`, or running `mountTree()` repeatedly, removes the old tree and runs the `componentWillUnmount()` lifecycle method on components.\n\n### Updating {#updating}\n\nIn the previous section, we implemented unmounting. However React wouldn't be very useful if each prop change unmounted and mounted the whole tree. The goal of the reconciler is to reuse existing instances where possible to preserve the DOM and the state:\n\n```js\nvar rootEl = document.getElementById('root');\n\nmountTree(\u003cApp /\u003e, rootEl);\n// Should reuse the existing DOM:\nmountTree(\u003cApp /\u003e, rootEl);\n```\n\nWe will extend our internal instance contract with one more method. In addition to `mount()` and `unmount()`, both `DOMComponent` and `CompositeComponent` will implement a new method called `receive(nextElement)`:\n\n```js\nclass CompositeComponent {\n  // ...\n\n  receive(nextElement) {\n    // ...\n  }\n}\n\nclass DOMComponent {\n  // ...\n\n  receive(nextElement) {\n    // ...\n  }\n}\n```\n\nIts job is to do whatever is necessary to bring the component (and any of its children) up to date with the description provided by the `nextElement`.\n\nThis is the part that is often described as \"virtual DOM diffing\" although what really happens is that we walk the internal tree recursively and let each internal instance receive an update.\n\n### Updating Composite Components {#updating-composite-components}\n\nWhen a composite component receives a new element, we run the `componentWillUpdate()` lifecycle method.\n\nThen we re-render the component with the new props, and get the next rendered element:\n\n```js\nclass CompositeComponent {\n\n  // ...\n\n  receive(nextElement) {\n    var prevProps = this.currentElement.props;\n    var publicInstance = this.publicInstance;\n    var prevRenderedComponent = this.renderedComponent;\n    var prevRenderedElement = prevRenderedComponent.currentElement;\n\n    // Update *own* element\n    this.currentElement = nextElement;\n    var type = nextElement.type;\n    var nextProps = nextElement.props;\n\n    // Figure out what the next render() output is\n    var nextRenderedElement;\n    if (isClass(type)) {\n      // Component class\n      // Call the lifecycle if necessary\n      if (publicInstance.componentWillUpdate) {\n        publicInstance.componentWillUpdate(nextProps);\n      }\n      // Update the props\n      publicInstance.props = nextProps;\n      // Re-render\n      nextRenderedElement = publicInstance.render();\n    } else if (typeof type === 'function') {\n      // Component function\n      nextRenderedElement = type(nextProps);\n    }\n\n    // ...\n```\n\nNext, we can look at the rendered element's `type`. If the `type` has not changed since the last render, the component below can also be updated in place.\n\nFor example, if it returned `\u003cButton color=\"red\" /\u003e` the first time, and `\u003cButton color=\"blue\" /\u003e` the second time, we can just tell the corresponding internal instance to `receive()` the next element:\n\n```js\n    // ...\n\n    // If the rendered element type has not changed,\n    // reuse the existing component instance and exit.\n    if (prevRenderedElement.type === nextRenderedElement.type) {\n      prevRenderedComponent.receive(nextRenderedElement);\n      return;\n    }\n\n    // ...\n```\n\nHowever, if the next rendered element has a different `type` than the previously rendered element, we can't update the internal instance. A `\u003cbutton\u003e` can't \"become\" an `\u003cinput\u003e`.\n\nInstead, we have to unmount the existing internal instance and mount the new one corresponding to the rendered element type. For example, this is what happens when a component that previously rendered a `\u003cbutton /\u003e` renders an `\u003cinput /\u003e`:\n\n```js\n    // ...\n\n    // If we reached this point, we need to unmount the previously\n    // mounted component, mount the new one, and swap their nodes.\n\n    // Find the old node because it will need to be replaced\n    var prevNode = prevRenderedComponent.getHostNode();\n\n    // Unmount the old child and mount a new child\n    prevRenderedComponent.unmount();\n    var nextRenderedComponent = instantiateComponent(nextRenderedElement);\n    var nextNode = nextRenderedComponent.mount();\n\n    // Replace the reference to the child\n    this.renderedComponent = nextRenderedComponent;\n\n    // Replace the old node with the new one\n    // Note: this is renderer-specific code and\n    // ideally should live outside of CompositeComponent:\n    prevNode.parentNode.replaceChild(nextNode, prevNode);\n  }\n}\n```\n\nTo sum this up, when a composite component receives a new element, it may either delegate the update to its rendered internal instance, or unmount it and mount a new one in its place.\n\nThere is another condition under which a component will re-mount rather than receive an element, and that is when the element's `key` has changed. We don't discuss `key` handling in this document because it adds more complexity to an already complex tutorial.\n\nNote that we needed to add a method called `getHostNode()` to the internal instance contract so that it's possible to locate the platform-specific node and replace it during the update. Its implementation is straightforward for both classes:\n\n```js\nclass CompositeComponent {\n  // ...\n\n  getHostNode() {\n    // Ask the rendered component to provide it.\n    // This will recursively drill down any composites.\n    return this.renderedComponent.getHostNode();\n  }\n}\n\nclass DOMComponent {\n  // ...\n\n  getHostNode() {\n    return this.node;\n  }  \n}\n```\n\n### Updating Host Components {#updating-host-components}\n\nHost component implementations, such as `DOMComponent`, update differently. When they receive an element, they need to update the underlying platform-specific view. In case of React DOM, this means updating the DOM attributes:\n\n```js\nclass DOMComponent {\n  // ...\n\n  receive(nextElement) {\n    var node = this.node;\n    var prevElement = this.currentElement;\n    var prevProps = prevElement.props;\n    var nextProps = nextElement.props;    \n    this.currentElement = nextElement;\n\n    // Remove old attributes.\n    Object.keys(prevProps).forEach(propName =\u003e {\n      if (propName !== 'children' \u0026\u0026 !nextProps.hasOwnProperty(propName)) {\n        node.removeAttribute(propName);\n      }\n    });\n    // Set next attributes.\n    Object.keys(nextProps).forEach(propName =\u003e {\n      if (propName !== 'children') {\n        node.setAttribute(propName, nextProps[propName]);\n      }\n    });\n\n    // ...\n```\n\nThen, host components need to update their children. Unlike composite components, they might contain more than a single child.\n\nIn this simplified example, we use an array of internal instances and iterate over it, either updating or replacing the internal instances depending on whether the received `type` matches their previous `type`. The real reconciler also takes element's `key` in the account and track moves in addition to insertions and deletions, but we will omit this logic.\n\nWe collect DOM operations on children in a list so we can execute them in batch:\n\n```js\n    // ...\n\n    // These are arrays of React elements:\n    var prevChildren = prevProps.children || [];\n    if (!Array.isArray(prevChildren)) {\n      prevChildren = [prevChildren];\n    }\n    var nextChildren = nextProps.children || [];\n    if (!Array.isArray(nextChildren)) {\n      nextChildren = [nextChildren];\n    }\n    // These are arrays of internal instances:\n    var prevRenderedChildren = this.renderedChildren;\n    var nextRenderedChildren = [];\n\n    // As we iterate over children, we will add operations to the array.\n    var operationQueue = [];\n\n    // Note: the section below is extremely simplified!\n    // It doesn't handle reorders, children with holes, or keys.\n    // It only exists to illustrate the overall flow, not the specifics.\n\n    for (var i = 0; i \u003c nextChildren.length; i++) {\n      // Try to get an existing internal instance for this child\n      var prevChild = prevRenderedChildren[i];\n\n      // If there is no internal instance under this index,\n      // a child has been appended to the end. Create a new\n      // internal instance, mount it, and use its node.\n      if (!prevChild) {\n        var nextChild = instantiateComponent(nextChildren[i]);\n        var node = nextChild.mount();\n\n        // Record that we need to append a node\n        operationQueue.push({type: 'ADD', node});\n        nextRenderedChildren.push(nextChild);\n        continue;\n      }\n\n      // We can only update the instance if its element's type matches.\n      // For example, \u003cButton size=\"small\" /\u003e can be updated to\n      // \u003cButton size=\"large\" /\u003e but not to an \u003cApp /\u003e.\n      var canUpdate = prevChildren[i].type === nextChildren[i].type;\n\n      // If we can't update an existing instance, we have to unmount it\n      // and mount a new one instead of it.\n      if (!canUpdate) {\n        var prevNode = prevChild.getHostNode();\n        prevChild.unmount();\n\n        var nextChild = instantiateComponent(nextChildren[i]);\n        var nextNode = nextChild.mount();\n\n        // Record that we need to swap the nodes\n        operationQueue.push({type: 'REPLACE', prevNode, nextNode});\n        nextRenderedChildren.push(nextChild);\n        continue;\n      }\n\n      // If we can update an existing internal instance,\n      // just let it receive the next element and handle its own update.\n      prevChild.receive(nextChildren[i]);\n      nextRenderedChildren.push(prevChild);\n    }\n\n    // Finally, unmount any children that don't exist:\n    for (var j = nextChildren.length; j \u003c prevChildren.length; j++) {\n      var prevChild = prevRenderedChildren[j];\n      var node = prevChild.getHostNode();\n      prevChild.unmount();\n\n      // Record that we need to remove the node\n      operationQueue.push({type: 'REMOVE', node});\n    }\n\n    // Point the list of rendered children to the updated version.\n    this.renderedChildren = nextRenderedChildren;\n\n    // ...\n```\n\nAs the last step, we execute the DOM operations. Again, the real reconciler code is more complex because it also handles moves:\n\n```js\n    // ...\n\n    // Process the operation queue.\n    while (operationQueue.length \u003e 0) {\n      var operation = operationQueue.shift();\n      switch (operation.type) {\n      case 'ADD':\n        this.node.appendChild(operation.node);\n        break;\n      case 'REPLACE':\n        this.node.replaceChild(operation.nextNode, operation.prevNode);\n        break;\n      case 'REMOVE':\n        this.node.removeChild(operation.node);\n        break;\n      }\n    }\n  }\n}\n```\n\nAnd that is it for updating host components.\n\n### Top-Level Updates {#top-level-updates}\n\nNow that both `CompositeComponent` and `DOMComponent` implement the `receive(nextElement)` method, we can change the top-level `mountTree()` function to use it when the element `type` is the same as it was the last time:\n\n```js\nfunction mountTree(element, containerNode) {\n  // Check for an existing tree\n  if (containerNode.firstChild) {\n    var prevNode = containerNode.firstChild;\n    var prevRootComponent = prevNode._internalInstance;\n    var prevElement = prevRootComponent.currentElement;\n\n    // If we can, reuse the existing root component\n    if (prevElement.type === element.type) {\n      prevRootComponent.receive(element);\n      return;\n    }\n\n    // Otherwise, unmount the existing tree\n    unmountTree(containerNode);\n  }\n\n  // ...\n\n}\n```\n\nNow calling `mountTree()` two times with the same type isn't destructive:\n\n```js\nvar rootEl = document.getElementById('root');\n\nmountTree(\u003cApp /\u003e, rootEl);\n// Reuses the existing DOM:\nmountTree(\u003cApp /\u003e, rootEl);\n```\n\nThese are the basics of how React works internally.\n\n### What We Left Out {#what-we-left-out}\n\nThis document is simplified compared to the real codebase. There are a few important aspects we didn't address:\n\n* Components can render `null`, and the reconciler can handle \"empty slots\" in arrays and rendered output.\n\n* The reconciler also reads `key` from the elements, and uses it to establish which internal instance corresponds to which element in an array. A bulk of complexity in the actual React implementation is related to that.\n\n* In addition to composite and host internal instance classes, there are also classes for \"text\" and \"empty\" components. They represent text nodes and the \"empty slots\" you get by rendering `null`.\n\n* Renderers use [injection](/docs/codebase-overview.html#dynamic-injection) to pass the host internal class to the reconciler. For example, React DOM tells the reconciler to use `ReactDOMComponent` as the host internal instance implementation.\n\n* The logic for updating the list of children is extracted into a mixin called `ReactMultiChild` which is used by the host internal instance class implementations both in React DOM and React Native.\n\n* The reconciler also implements support for `setState()` in composite components. Multiple updates inside event handlers get batched into a single update.\n\n* The reconciler also takes care of attaching and detaching refs to composite components and host nodes.\n\n* Lifecycle methods that are called after the DOM is ready, such as `componentDidMount()` and `componentDidUpdate()`, get collected into \"callback queues\" and are executed in a single batch.\n\n* React puts information about the current update into an internal object called \"transaction\". Transactions are useful for keeping track of the queue of pending lifecycle methods, the current DOM nesting for the warnings, and anything else that is \"global\" to a specific update. Transactions also ensure React \"cleans everything up\" after updates. For example, the transaction class provided by React DOM restores the input selection after any update.\n\n### Jumping into the Code {#jumping-into-the-code}\n\n* [`ReactMount`](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/dom/client/ReactMount.js) is where the code like `mountTree()` and `unmountTree()` from this tutorial lives. It takes care of mounting and unmounting top-level components. [`ReactNativeMount`](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/native/ReactNativeMount.js) is its React Native analog.\n* [`ReactDOMComponent`](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/dom/shared/ReactDOMComponent.js) is the equivalent of `DOMComponent` in this tutorial. It implements the host component class for React DOM renderer. [`ReactNativeBaseComponent`](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/native/ReactNativeBaseComponent.js) is its React Native analog.\n* [`ReactCompositeComponent`](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/ReactCompositeComponent.js) is the equivalent of `CompositeComponent` in this tutorial. It handles calling user-defined components and maintaining their state.\n* [`instantiateReactComponent`](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/instantiateReactComponent.js) contains the switch that picks the right internal instance class to construct for an element. It is equivalent to `instantiateComponent()` in this tutorial.\n\n* [`ReactReconciler`](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/ReactReconciler.js) is a wrapper with `mountComponent()`, `receiveComponent()`, and `unmountComponent()` methods. It calls the underlying implementations on the internal instances, but also includes some code around them that is shared by all internal instance implementations.\n\n* [`ReactChildReconciler`](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/ReactChildReconciler.js) implements the logic for mounting, updating, and unmounting children according to the `key` of their elements.\n\n* [`ReactMultiChild`](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/shared/stack/reconciler/ReactMultiChild.js) implements processing the operation queue for child insertions, deletions, and moves independently of the renderer.\n\n* `mount()`, `receive()`, and `unmount()` are really called `mountComponent()`, `receiveComponent()`, and `unmountComponent()` in React codebase for legacy reasons, but they receive elements.\n\n* Properties on the internal instances start with an underscore, e.g. `_currentElement`. They are considered to be read-only public fields throughout the codebase.\n\n### Future Directions {#future-directions}\n\nStack reconciler has inherent limitations such as being synchronous and unable to interrupt the work or split it in chunks. There is a work in progress on the [new Fiber reconciler](/docs/codebase-overview.html#fiber-reconciler) with a [completely different architecture](https://github.com/acdlite/react-fiber-architecture). In the future, we intend to replace stack reconciler with it, but at the moment it is far from feature parity.\n\n### Next Steps {#next-steps}\n\nRead the [next section](/docs/design-principles.html) to learn about the guiding principles we use for React development.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_implementation-notes.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

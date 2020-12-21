@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: two-way-binding-helpers
+title: Two-way Binding Helpers
+permalink: docs/two-way-binding-helpers.html
+layout: docs
+category: Add-Ons</p>
+<hr>
+<blockquote>
+<p>Note:</p>
+<p><code>LinkedStateMixin</code> is deprecated as of React v15. The recommendation is to explicitly set the value and change handler, instead of using <code>LinkedStateMixin</code>.</p>
+</blockquote>
+<p><strong>Importing</strong></p>
+<pre><code class="language-javascript">import LinkedStateMixin from 'react-addons-linked-state-mixin'; // ES6
+var LinkedStateMixin = require('react-addons-linked-state-mixin'); // ES5 with npm
+</code></pre>
+<h2>Overview {#overview}</h2>
+<p><code>LinkedStateMixin</code> is an easy way to express two-way binding with React.</p>
+<p>In React, data flows one way: from owner to child. We think that this makes your app's code easier to understand. You can think of it as &quot;one-way data binding.&quot;</p>
+<p>However, there are lots of applications that require you to read some data and flow it back into your program. For example, when developing forms, you'll often want to update some React <code>state</code> when you receive user input. Or perhaps you want to perform layout in JavaScript and react to changes in some DOM element size.</p>
+<p>In React, you would implement this by listening to a &quot;change&quot; event, read from your data source (usually the DOM) and call <code>setState()</code> on one of your components. &quot;Closing the data flow loop&quot; explicitly leads to more understandable and easier-to-maintain programs. See <a href="/docs/forms.html">our forms documentation</a> for more information.</p>
+<p>Two-way binding -- implicitly enforcing that some value in the DOM is always consistent with some React <code>state</code> -- is concise and supports a wide variety of applications. We've provided <code>LinkedStateMixin</code>: syntactic sugar for setting up the common data flow loop pattern described above, or &quot;linking&quot; some data source to React <code>state</code>.</p>
+<blockquote>
+<p>Note:</p>
+<p><code>LinkedStateMixin</code> is just a thin wrapper and convention around the <code>onChange</code>/<code>setState()</code> pattern. It doesn't fundamentally change how data flows in your React application.</p>
+</blockquote>
+<h2>LinkedStateMixin: Before and After {#linkedstatemixin-before-and-after}</h2>
+<p>Here's a simple form example without using <code>LinkedStateMixin</code>:</p>
+<pre><code class="language-javascript">var createReactClass = require('create-react-class');
+
+var NoLink = createReactClass({
+  getInitialState: function() {
+    return {message: 'Hello!'};
+  },
+  handleChange: function(event) {
+    this.setState({message: event.target.value});
+  },
+  render: function() {
+    var message = this.state.message;
+    return &lt;input type=&quot;text&quot; value={message} onChange={this.handleChange} /&gt;;
+  }
+});
+</code></pre>
+<p>This works really well and it's very clear how data is flowing, however, with a lot of form fields it could get a bit verbose. Let's use <code>LinkedStateMixin</code> to save us some typing:</p>
+<pre><code class="language-javascript{4,9}">var createReactClass = require('create-react-class');
+
+var WithLink = createReactClass({
+  mixins: [LinkedStateMixin],
+  getInitialState: function() {
+    return {message: 'Hello!'};
+  },
+  render: function() {
+    return &lt;input type=&quot;text&quot; valueLink={this.linkState('message')} /&gt;;
+  }
+});
+</code></pre>
+<p><code>LinkedStateMixin</code> adds a method to your React component called <code>linkState()</code>. <code>linkState()</code> returns a <code>valueLink</code> object which contains the current value of the React state and a callback to change it.</p>
+<p><code>valueLink</code> objects can be passed up and down the tree as props, so it's easy (and explicit) to set up two-way binding between a component deep in the hierarchy and state that lives higher in the hierarchy.</p>
+<p>Note that checkboxes have a special behavior regarding their <code>value</code> attribute, which is the value that will be sent on form submit if the checkbox is checked (defaults to <code>on</code>). The <code>value</code> attribute is not updated when the checkbox is checked or unchecked. For checkboxes, you should use <code>checkedLink</code> instead of <code>valueLink</code>:</p>
+<pre><code>&lt;input type=&quot;checkbox&quot; checkedLink={this.linkState('booleanValue')} /&gt;
+</code></pre>
+<h2>Under the Hood {#under-the-hood}</h2>
+<p>There are two sides to <code>LinkedStateMixin</code>: the place where you create the <code>valueLink</code> instance and the place where you use it. To prove how simple <code>LinkedStateMixin</code> is, let's rewrite each side separately to be more explicit.</p>
+<h3>valueLink Without LinkedStateMixin {#valuelink-without-linkedstatemixin}</h3>
+<pre><code class="language-javascript{7-9,11-14}">var createReactClass = require('create-react-class');
+
+var WithoutMixin = createReactClass({
+  getInitialState: function() {
+    return {message: 'Hello!'};
+  },
+  handleChange: function(newValue) {
+    this.setState({message: newValue});
+  },
+  render: function() {
+    var valueLink = {
+      value: this.state.message,
+      requestChange: this.handleChange
+    };
+    return &lt;input type=&quot;text&quot; valueLink={valueLink} /&gt;;
+  }
+});
+</code></pre>
+<p>As you can see, <code>valueLink</code> objects are very simple objects that just have a <code>value</code> and <code>requestChange</code> prop. And <code>LinkedStateMixin</code> is similarly simple: it just populates those fields with a value from <code>this.state</code> and a callback that calls <code>this.setState()</code>.</p>
+<h3>LinkedStateMixin Without valueLink {#linkedstatemixin-without-valuelink}</h3>
+<pre><code class="language-javascript">var LinkedStateMixin = require('react-addons-linked-state-mixin');
+var createReactClass = require('create-react-class');
+
+var WithoutLink = createReactClass({
+  mixins: [LinkedStateMixin],
+  getInitialState: function() {
+    return {message: 'Hello!'};
+  },
+  render: function() {
+    var valueLink = this.linkState('message');
+    var handleChange = function(e) {
+      valueLink.requestChange(e.target.value);
+    };
+    return &lt;input type=&quot;text&quot; value={valueLink.value} onChange={handleChange} /&gt;;
+  }
+});
+</code></pre>
+<p>The <code>valueLink</code> prop is also quite simple. It simply handles the <code>onChange</code> event and calls <code>this.props.valueLink.requestChange()</code> and also uses <code>this.props.valueLink.value</code> instead of <code>this.props.value</code>. That's it!</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: two-way-binding-helpers\ntitle: Two-way Binding Helpers\npermalink: docs/two-way-binding-helpers.html\nlayout: docs\ncategory: Add-Ons\n---\n\n\u003e Note:\n\u003e\n\u003e `LinkedStateMixin` is deprecated as of React v15. The recommendation is to explicitly set the value and change handler, instead of using `LinkedStateMixin`.\n\n**Importing**\n\n```javascript\nimport LinkedStateMixin from 'react-addons-linked-state-mixin'; // ES6\nvar LinkedStateMixin = require('react-addons-linked-state-mixin'); // ES5 with npm\n```\n\n## Overview {#overview}\n\n`LinkedStateMixin` is an easy way to express two-way binding with React.\n\nIn React, data flows one way: from owner to child. We think that this makes your app's code easier to understand. You can think of it as \"one-way data binding.\"\n\nHowever, there are lots of applications that require you to read some data and flow it back into your program. For example, when developing forms, you'll often want to update some React `state` when you receive user input. Or perhaps you want to perform layout in JavaScript and react to changes in some DOM element size.\n\nIn React, you would implement this by listening to a \"change\" event, read from your data source (usually the DOM) and call `setState()` on one of your components. \"Closing the data flow loop\" explicitly leads to more understandable and easier-to-maintain programs. See [our forms documentation](/docs/forms.html) for more information.\n\nTwo-way binding -- implicitly enforcing that some value in the DOM is always consistent with some React `state` -- is concise and supports a wide variety of applications. We've provided `LinkedStateMixin`: syntactic sugar for setting up the common data flow loop pattern described above, or \"linking\" some data source to React `state`.\n\n\u003e Note:\n\u003e\n\u003e `LinkedStateMixin` is just a thin wrapper and convention around the `onChange`/`setState()` pattern. It doesn't fundamentally change how data flows in your React application.\n\n## LinkedStateMixin: Before and After {#linkedstatemixin-before-and-after}\n\nHere's a simple form example without using `LinkedStateMixin`:\n\n```javascript\nvar createReactClass = require('create-react-class');\n\nvar NoLink = createReactClass({\n  getInitialState: function() {\n    return {message: 'Hello!'};\n  },\n  handleChange: function(event) {\n    this.setState({message: event.target.value});\n  },\n  render: function() {\n    var message = this.state.message;\n    return \u003cinput type=\"text\" value={message} onChange={this.handleChange} /\u003e;\n  }\n});\n```\n\nThis works really well and it's very clear how data is flowing, however, with a lot of form fields it could get a bit verbose. Let's use `LinkedStateMixin` to save us some typing:\n\n```javascript{4,9}\nvar createReactClass = require('create-react-class');\n\nvar WithLink = createReactClass({\n  mixins: [LinkedStateMixin],\n  getInitialState: function() {\n    return {message: 'Hello!'};\n  },\n  render: function() {\n    return \u003cinput type=\"text\" valueLink={this.linkState('message')} /\u003e;\n  }\n});\n```\n\n`LinkedStateMixin` adds a method to your React component called `linkState()`. `linkState()` returns a `valueLink` object which contains the current value of the React state and a callback to change it.\n\n`valueLink` objects can be passed up and down the tree as props, so it's easy (and explicit) to set up two-way binding between a component deep in the hierarchy and state that lives higher in the hierarchy.\n\nNote that checkboxes have a special behavior regarding their `value` attribute, which is the value that will be sent on form submit if the checkbox is checked (defaults to `on`). The `value` attribute is not updated when the checkbox is checked or unchecked. For checkboxes, you should use `checkedLink` instead of `valueLink`:\n```\n\u003cinput type=\"checkbox\" checkedLink={this.linkState('booleanValue')} /\u003e\n```\n\n## Under the Hood {#under-the-hood}\n\nThere are two sides to `LinkedStateMixin`: the place where you create the `valueLink` instance and the place where you use it. To prove how simple `LinkedStateMixin` is, let's rewrite each side separately to be more explicit.\n\n### valueLink Without LinkedStateMixin {#valuelink-without-linkedstatemixin}\n\n```javascript{7-9,11-14}\nvar createReactClass = require('create-react-class');\n\nvar WithoutMixin = createReactClass({\n  getInitialState: function() {\n    return {message: 'Hello!'};\n  },\n  handleChange: function(newValue) {\n    this.setState({message: newValue});\n  },\n  render: function() {\n    var valueLink = {\n      value: this.state.message,\n      requestChange: this.handleChange\n    };\n    return \u003cinput type=\"text\" valueLink={valueLink} /\u003e;\n  }\n});\n```\n\nAs you can see, `valueLink` objects are very simple objects that just have a `value` and `requestChange` prop. And `LinkedStateMixin` is similarly simple: it just populates those fields with a value from `this.state` and a callback that calls `this.setState()`.\n\n### LinkedStateMixin Without valueLink {#linkedstatemixin-without-valuelink}\n\n```javascript\nvar LinkedStateMixin = require('react-addons-linked-state-mixin');\nvar createReactClass = require('create-react-class');\n\nvar WithoutLink = createReactClass({\n  mixins: [LinkedStateMixin],\n  getInitialState: function() {\n    return {message: 'Hello!'};\n  },\n  render: function() {\n    var valueLink = this.linkState('message');\n    var handleChange = function(e) {\n      valueLink.requestChange(e.target.value);\n    };\n    return \u003cinput type=\"text\" value={valueLink.value} onChange={handleChange} /\u003e;\n  }\n});\n```\n\nThe `valueLink` prop is also quite simple. It simply handles the `onChange` event and calls `this.props.valueLink.requestChange()` and also uses `this.props.valueLink.value` instead of `this.props.value`. That's it!\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_addons-two-way-binding-helpers.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

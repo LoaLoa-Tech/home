@@ -1,0 +1,236 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: refs-and-the-dom
+title: Refs and the DOM
+permalink: docs/refs-and-the-dom.html
+redirect_from:</p>
+<ul>
+<li>&quot;docs/working-with-the-browser.html&quot;</li>
+<li>&quot;docs/more-about-refs.html&quot;</li>
+<li>&quot;docs/more-about-refs-ko-KR.html&quot;</li>
+<li>&quot;docs/more-about-refs-zh-CN.html&quot;</li>
+<li>&quot;tips/expose-component-functions.html&quot;</li>
+<li>&quot;tips/children-undefined.html&quot;</li>
+</ul>
+<hr>
+<p>Refs provide a way to access DOM nodes or React elements created in the render method.</p>
+<p>In the typical React dataflow, <a href="/docs/components-and-props.html">props</a> are the only way that parent components interact with their children. To modify a child, you re-render it with new props. However, there are a few cases where you need to imperatively modify a child outside of the typical dataflow. The child to be modified could be an instance of a React component, or it could be a DOM element. For both of these cases, React provides an escape hatch.</p>
+<h3>When to Use Refs {#when-to-use-refs}</h3>
+<p>There are a few good use cases for refs:</p>
+<ul>
+<li>Managing focus, text selection, or media playback.</li>
+<li>Triggering imperative animations.</li>
+<li>Integrating with third-party DOM libraries.</li>
+</ul>
+<p>Avoid using refs for anything that can be done declaratively.</p>
+<p>For example, instead of exposing <code>open()</code> and <code>close()</code> methods on a <code>Dialog</code> component, pass an <code>isOpen</code> prop to it.</p>
+<h3>Don't Overuse Refs {#dont-overuse-refs}</h3>
+<p>Your first inclination may be to use refs to &quot;make things happen&quot; in your app. If this is the case, take a moment and think more critically about where state should be owned in the component hierarchy. Often, it becomes clear that the proper place to &quot;own&quot; that state is at a higher level in the hierarchy. See the <a href="/docs/lifting-state-up.html">Lifting State Up</a> guide for examples of this.</p>
+<blockquote>
+<p>Note</p>
+<p>The examples below have been updated to use the <code>React.createRef()</code> API introduced in React 16.3. If you are using an earlier release of React, we recommend using <a href="#callback-refs">callback refs</a> instead.</p>
+</blockquote>
+<h3>Creating Refs {#creating-refs}</h3>
+<p>Refs are created using <code>React.createRef()</code> and attached to React elements via the <code>ref</code> attribute. Refs are commonly assigned to an instance property when a component is constructed so they can be referenced throughout the component.</p>
+<pre><code class="language-javascript{4,7}">class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+  }
+  render() {
+    return &lt;div ref={this.myRef} /&gt;;
+  }
+}
+</code></pre>
+<h3>Accessing Refs {#accessing-refs}</h3>
+<p>When a ref is passed to an element in <code>render</code>, a reference to the node becomes accessible at the <code>current</code> attribute of the ref.</p>
+<pre><code class="language-javascript">const node = this.myRef.current;
+</code></pre>
+<p>The value of the ref differs depending on the type of the node:</p>
+<ul>
+<li>When the <code>ref</code> attribute is used on an HTML element, the <code>ref</code> created in the constructor with <code>React.createRef()</code> receives the underlying DOM element as its <code>current</code> property.</li>
+<li>When the <code>ref</code> attribute is used on a custom class component, the <code>ref</code> object receives the mounted instance of the component as its <code>current</code>.</li>
+<li><strong>You may not use the <code>ref</code> attribute on function components</strong> because they don't have instances.</li>
+</ul>
+<p>The examples below demonstrate the differences.</p>
+<h4>Adding a Ref to a DOM Element {#adding-a-ref-to-a-dom-element}</h4>
+<p>This code uses a <code>ref</code> to store a reference to a DOM node:</p>
+<pre><code class="language-javascript{5,12,22}">class CustomTextInput extends React.Component {
+  constructor(props) {
+    super(props);
+    // create a ref to store the textInput DOM element
+    this.textInput = React.createRef();
+    this.focusTextInput = this.focusTextInput.bind(this);
+  }
+
+  focusTextInput() {
+    // Explicitly focus the text input using the raw DOM API
+    // Note: we're accessing &quot;current&quot; to get the DOM node
+    this.textInput.current.focus();
+  }
+
+  render() {
+    // tell React that we want to associate the &lt;input&gt; ref
+    // with the `textInput` that we created in the constructor
+    return (
+      &lt;div&gt;
+        &lt;input
+          type=&quot;text&quot;
+          ref={this.textInput} /&gt;
+        &lt;input
+          type=&quot;button&quot;
+          value=&quot;Focus the text input&quot;
+          onClick={this.focusTextInput}
+        /&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+</code></pre>
+<p>React will assign the <code>current</code> property with the DOM element when the component mounts, and assign it back to <code>null</code> when it unmounts. <code>ref</code> updates happen before <code>componentDidMount</code> or <code>componentDidUpdate</code> lifecycle methods.</p>
+<h4>Adding a Ref to a Class Component {#adding-a-ref-to-a-class-component}</h4>
+<p>If we wanted to wrap the <code>CustomTextInput</code> above to simulate it being clicked immediately after mounting, we could use a ref to get access to the custom input and call its <code>focusTextInput</code> method manually:</p>
+<pre><code class="language-javascript{4,8,13}">class AutoFocusTextInput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.textInput = React.createRef();
+  }
+
+  componentDidMount() {
+    this.textInput.current.focusTextInput();
+  }
+
+  render() {
+    return (
+      &lt;CustomTextInput ref={this.textInput} /&gt;
+    );
+  }
+}
+</code></pre>
+<p>Note that this only works if <code>CustomTextInput</code> is declared as a class:</p>
+<pre><code class="language-js{1}">class CustomTextInput extends React.Component {
+  // ...
+}
+</code></pre>
+<h4>Refs and Function Components {#refs-and-function-components}</h4>
+<p>By default, <strong>you may not use the <code>ref</code> attribute on function components</strong> because they don't have instances:</p>
+<pre><code class="language-javascript{1,8,13}">function MyFunctionComponent() {
+  return &lt;input /&gt;;
+}
+
+class Parent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.textInput = React.createRef();
+  }
+  render() {
+    // This will *not* work!
+    return (
+      &lt;MyFunctionComponent ref={this.textInput} /&gt;
+    );
+  }
+}
+</code></pre>
+<p>If you want to allow people to take a <code>ref</code> to your function component, you can use <a href="/docs/forwarding-refs.html"><code>forwardRef</code></a> (possibly in conjunction with <a href="/docs/hooks-reference.html#useimperativehandle"><code>useImperativeHandle</code></a>), or you can convert the component to a class.</p>
+<p>You can, however, <strong>use the <code>ref</code> attribute inside a function component</strong> as long as you refer to a DOM element or a class component:</p>
+<pre><code class="language-javascript{2,3,6,13}">function CustomTextInput(props) {
+  // textInput must be declared here so the ref can refer to it
+  const textInput = useRef(null);
+  
+  function handleClick() {
+    textInput.current.focus();
+  }
+
+  return (
+    &lt;div&gt;
+      &lt;input
+        type=&quot;text&quot;
+        ref={textInput} /&gt;
+      &lt;input
+        type=&quot;button&quot;
+        value=&quot;Focus the text input&quot;
+        onClick={handleClick}
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h3>Exposing DOM Refs to Parent Components {#exposing-dom-refs-to-parent-components}</h3>
+<p>In rare cases, you might want to have access to a child's DOM node from a parent component. This is generally not recommended because it breaks component encapsulation, but it can occasionally be useful for triggering focus or measuring the size or position of a child DOM node.</p>
+<p>While you could <a href="#adding-a-ref-to-a-class-component">add a ref to the child component</a>, this is not an ideal solution, as you would only get a component instance rather than a DOM node. Additionally, this wouldn't work with function components.</p>
+<p>If you use React 16.3 or higher, we recommend to use <a href="/docs/forwarding-refs.html">ref forwarding</a> for these cases. <strong>Ref forwarding lets components opt into exposing any child component's ref as their own</strong>. You can find a detailed example of how to expose a child's DOM node to a parent component <a href="/docs/forwarding-refs.html#forwarding-refs-to-dom-components">in the ref forwarding documentation</a>.</p>
+<p>If you use React 16.2 or lower, or if you need more flexibility than provided by ref forwarding, you can use <a href="https://gist.github.com/gaearon/1a018a023347fe1c2476073330cc5509">this alternative approach</a> and explicitly pass a ref as a differently named prop.</p>
+<p>When possible, we advise against exposing DOM nodes, but it can be a useful escape hatch. Note that this approach requires you to add some code to the child component. If you have absolutely no control over the child component implementation, your last option is to use <a href="/docs/react-dom.html#finddomnode"><code>findDOMNode()</code></a>, but it is discouraged and deprecated in <a href="/docs/strict-mode.html#warning-about-deprecated-finddomnode-usage"><code>StrictMode</code></a>.</p>
+<h3>Callback Refs {#callback-refs}</h3>
+<p>React also supports another way to set refs called &quot;callback refs&quot;, which gives more fine-grain control over when refs are set and unset.</p>
+<p>Instead of passing a <code>ref</code> attribute created by <code>createRef()</code>, you pass a function. The function receives the React component instance or HTML DOM element as its argument, which can be stored and accessed elsewhere.</p>
+<p>The example below implements a common pattern: using the <code>ref</code> callback to store a reference to a DOM node in an instance property.</p>
+<pre><code class="language-javascript{5,7-9,11-14,19,29,34}">class CustomTextInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.textInput = null;
+
+    this.setTextInputRef = element =&gt; {
+      this.textInput = element;
+    };
+
+    this.focusTextInput = () =&gt; {
+      // Focus the text input using the raw DOM API
+      if (this.textInput) this.textInput.focus();
+    };
+  }
+
+  componentDidMount() {
+    // autofocus the input on mount
+    this.focusTextInput();
+  }
+
+  render() {
+    // Use the `ref` callback to store a reference to the text input DOM
+    // element in an instance field (for example, this.textInput).
+    return (
+      &lt;div&gt;
+        &lt;input
+          type=&quot;text&quot;
+          ref={this.setTextInputRef}
+        /&gt;
+        &lt;input
+          type=&quot;button&quot;
+          value=&quot;Focus the text input&quot;
+          onClick={this.focusTextInput}
+        /&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+</code></pre>
+<p>React will call the <code>ref</code> callback with the DOM element when the component mounts, and call it with <code>null</code> when it unmounts. Refs are guaranteed to be up-to-date before <code>componentDidMount</code> or <code>componentDidUpdate</code> fires.</p>
+<p>You can pass callback refs between components like you can with object refs that were created with <code>React.createRef()</code>.</p>
+<pre><code class="language-javascript{4,13}">function CustomTextInput(props) {
+  return (
+    &lt;div&gt;
+      &lt;input ref={props.inputRef} /&gt;
+    &lt;/div&gt;
+  );
+}
+
+class Parent extends React.Component {
+  render() {
+    return (
+      &lt;CustomTextInput
+        inputRef={el =&gt; this.inputElement = el}
+      /&gt;
+    );
+  }
+}
+</code></pre>
+<p>In the example above, <code>Parent</code> passes its ref callback as an <code>inputRef</code> prop to the <code>CustomTextInput</code>, and the <code>CustomTextInput</code> passes the same function as a special <code>ref</code> attribute to the <code>&lt;input&gt;</code>. As a result, <code>this.inputElement</code> in <code>Parent</code> will be set to the DOM node corresponding to the <code>&lt;input&gt;</code> element in the <code>CustomTextInput</code>.</p>
+<h3>Legacy API: String Refs {#legacy-api-string-refs}</h3>
+<p>If you worked with React before, you might be familiar with an older API where the <code>ref</code> attribute is a string, like <code>&quot;textInput&quot;</code>, and the DOM node is accessed as <code>this.refs.textInput</code>. We advise against it because string refs have <a href="https://github.com/facebook/react/pull/8333#issuecomment-271648615">some issues</a>, are considered legacy, and <strong>are likely to be removed in one of the future releases</strong>.</p>
+<blockquote>
+<p>Note</p>
+<p>If you're currently using <code>this.refs.textInput</code> to access refs, we recommend using either the <a href="#callback-refs">callback pattern</a> or the <a href="#creating-refs"><code>createRef</code> API</a> instead.</p>
+</blockquote>
+<h3>Caveats with callback refs {#caveats-with-callback-refs}</h3>
+<p>If the <code>ref</code> callback is defined as an inline function, it will get called twice during updates, first with <code>null</code> and then again with the DOM element. This is because a new instance of the function is created with each render, so React needs to clear the old ref and set up the new one. You can avoid this by defining the <code>ref</code> callback as a bound method on the class, but note that it shouldn't matter in most cases.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: refs-and-the-dom\ntitle: Refs and the DOM\npermalink: docs/refs-and-the-dom.html\nredirect_from:\n  - \"docs/working-with-the-browser.html\"\n  - \"docs/more-about-refs.html\"\n  - \"docs/more-about-refs-ko-KR.html\"\n  - \"docs/more-about-refs-zh-CN.html\"\n  - \"tips/expose-component-functions.html\"\n  - \"tips/children-undefined.html\"\n---\n\nRefs provide a way to access DOM nodes or React elements created in the render method.\n\nIn the typical React dataflow, [props](/docs/components-and-props.html) are the only way that parent components interact with their children. To modify a child, you re-render it with new props. However, there are a few cases where you need to imperatively modify a child outside of the typical dataflow. The child to be modified could be an instance of a React component, or it could be a DOM element. For both of these cases, React provides an escape hatch.\n\n### When to Use Refs {#when-to-use-refs}\n\nThere are a few good use cases for refs:\n\n* Managing focus, text selection, or media playback.\n* Triggering imperative animations.\n* Integrating with third-party DOM libraries.\n\nAvoid using refs for anything that can be done declaratively.\n\nFor example, instead of exposing `open()` and `close()` methods on a `Dialog` component, pass an `isOpen` prop to it.\n\n### Don't Overuse Refs {#dont-overuse-refs}\n\nYour first inclination may be to use refs to \"make things happen\" in your app. If this is the case, take a moment and think more critically about where state should be owned in the component hierarchy. Often, it becomes clear that the proper place to \"own\" that state is at a higher level in the hierarchy. See the [Lifting State Up](/docs/lifting-state-up.html) guide for examples of this.\n\n\u003e Note\n\u003e\n\u003e The examples below have been updated to use the `React.createRef()` API introduced in React 16.3. If you are using an earlier release of React, we recommend using [callback refs](#callback-refs) instead.\n\n### Creating Refs {#creating-refs}\n\nRefs are created using `React.createRef()` and attached to React elements via the `ref` attribute. Refs are commonly assigned to an instance property when a component is constructed so they can be referenced throughout the component.\n\n```javascript{4,7}\nclass MyComponent extends React.Component {\n  constructor(props) {\n    super(props);\n    this.myRef = React.createRef();\n  }\n  render() {\n    return \u003cdiv ref={this.myRef} /\u003e;\n  }\n}\n```\n\n### Accessing Refs {#accessing-refs}\n\nWhen a ref is passed to an element in `render`, a reference to the node becomes accessible at the `current` attribute of the ref.\n\n```javascript\nconst node = this.myRef.current;\n```\n\nThe value of the ref differs depending on the type of the node:\n\n- When the `ref` attribute is used on an HTML element, the `ref` created in the constructor with `React.createRef()` receives the underlying DOM element as its `current` property.\n- When the `ref` attribute is used on a custom class component, the `ref` object receives the mounted instance of the component as its `current`.\n- **You may not use the `ref` attribute on function components** because they don't have instances.\n\nThe examples below demonstrate the differences.\n\n#### Adding a Ref to a DOM Element {#adding-a-ref-to-a-dom-element}\n\nThis code uses a `ref` to store a reference to a DOM node:\n\n```javascript{5,12,22}\nclass CustomTextInput extends React.Component {\n  constructor(props) {\n    super(props);\n    // create a ref to store the textInput DOM element\n    this.textInput = React.createRef();\n    this.focusTextInput = this.focusTextInput.bind(this);\n  }\n\n  focusTextInput() {\n    // Explicitly focus the text input using the raw DOM API\n    // Note: we're accessing \"current\" to get the DOM node\n    this.textInput.current.focus();\n  }\n\n  render() {\n    // tell React that we want to associate the \u003cinput\u003e ref\n    // with the `textInput` that we created in the constructor\n    return (\n      \u003cdiv\u003e\n        \u003cinput\n          type=\"text\"\n          ref={this.textInput} /\u003e\n        \u003cinput\n          type=\"button\"\n          value=\"Focus the text input\"\n          onClick={this.focusTextInput}\n        /\u003e\n      \u003c/div\u003e\n    );\n  }\n}\n```\n\nReact will assign the `current` property with the DOM element when the component mounts, and assign it back to `null` when it unmounts. `ref` updates happen before `componentDidMount` or `componentDidUpdate` lifecycle methods.\n\n#### Adding a Ref to a Class Component {#adding-a-ref-to-a-class-component}\n\nIf we wanted to wrap the `CustomTextInput` above to simulate it being clicked immediately after mounting, we could use a ref to get access to the custom input and call its `focusTextInput` method manually:\n\n```javascript{4,8,13}\nclass AutoFocusTextInput extends React.Component {\n  constructor(props) {\n    super(props);\n    this.textInput = React.createRef();\n  }\n\n  componentDidMount() {\n    this.textInput.current.focusTextInput();\n  }\n\n  render() {\n    return (\n      \u003cCustomTextInput ref={this.textInput} /\u003e\n    );\n  }\n}\n```\n\nNote that this only works if `CustomTextInput` is declared as a class:\n\n```js{1}\nclass CustomTextInput extends React.Component {\n  // ...\n}\n```\n\n#### Refs and Function Components {#refs-and-function-components}\n\nBy default, **you may not use the `ref` attribute on function components** because they don't have instances:\n\n```javascript{1,8,13}\nfunction MyFunctionComponent() {\n  return \u003cinput /\u003e;\n}\n\nclass Parent extends React.Component {\n  constructor(props) {\n    super(props);\n    this.textInput = React.createRef();\n  }\n  render() {\n    // This will *not* work!\n    return (\n      \u003cMyFunctionComponent ref={this.textInput} /\u003e\n    );\n  }\n}\n```\n\nIf you want to allow people to take a `ref` to your function component, you can use [`forwardRef`](/docs/forwarding-refs.html) (possibly in conjunction with [`useImperativeHandle`](/docs/hooks-reference.html#useimperativehandle)), or you can convert the component to a class.\n\nYou can, however, **use the `ref` attribute inside a function component** as long as you refer to a DOM element or a class component:\n\n```javascript{2,3,6,13}\nfunction CustomTextInput(props) {\n  // textInput must be declared here so the ref can refer to it\n  const textInput = useRef(null);\n  \n  function handleClick() {\n    textInput.current.focus();\n  }\n\n  return (\n    \u003cdiv\u003e\n      \u003cinput\n        type=\"text\"\n        ref={textInput} /\u003e\n      \u003cinput\n        type=\"button\"\n        value=\"Focus the text input\"\n        onClick={handleClick}\n      /\u003e\n    \u003c/div\u003e\n  );\n}\n```\n\n### Exposing DOM Refs to Parent Components {#exposing-dom-refs-to-parent-components}\n\nIn rare cases, you might want to have access to a child's DOM node from a parent component. This is generally not recommended because it breaks component encapsulation, but it can occasionally be useful for triggering focus or measuring the size or position of a child DOM node.\n\nWhile you could [add a ref to the child component](#adding-a-ref-to-a-class-component), this is not an ideal solution, as you would only get a component instance rather than a DOM node. Additionally, this wouldn't work with function components.\n\nIf you use React 16.3 or higher, we recommend to use [ref forwarding](/docs/forwarding-refs.html) for these cases. **Ref forwarding lets components opt into exposing any child component's ref as their own**. You can find a detailed example of how to expose a child's DOM node to a parent component [in the ref forwarding documentation](/docs/forwarding-refs.html#forwarding-refs-to-dom-components).\n\nIf you use React 16.2 or lower, or if you need more flexibility than provided by ref forwarding, you can use [this alternative approach](https://gist.github.com/gaearon/1a018a023347fe1c2476073330cc5509) and explicitly pass a ref as a differently named prop.\n\nWhen possible, we advise against exposing DOM nodes, but it can be a useful escape hatch. Note that this approach requires you to add some code to the child component. If you have absolutely no control over the child component implementation, your last option is to use [`findDOMNode()`](/docs/react-dom.html#finddomnode), but it is discouraged and deprecated in [`StrictMode`](/docs/strict-mode.html#warning-about-deprecated-finddomnode-usage).\n\n### Callback Refs {#callback-refs}\n\nReact also supports another way to set refs called \"callback refs\", which gives more fine-grain control over when refs are set and unset.\n\nInstead of passing a `ref` attribute created by `createRef()`, you pass a function. The function receives the React component instance or HTML DOM element as its argument, which can be stored and accessed elsewhere. \n\nThe example below implements a common pattern: using the `ref` callback to store a reference to a DOM node in an instance property.\n\n```javascript{5,7-9,11-14,19,29,34}\nclass CustomTextInput extends React.Component {\n  constructor(props) {\n    super(props);\n\n    this.textInput = null;\n\n    this.setTextInputRef = element =\u003e {\n      this.textInput = element;\n    };\n\n    this.focusTextInput = () =\u003e {\n      // Focus the text input using the raw DOM API\n      if (this.textInput) this.textInput.focus();\n    };\n  }\n\n  componentDidMount() {\n    // autofocus the input on mount\n    this.focusTextInput();\n  }\n\n  render() {\n    // Use the `ref` callback to store a reference to the text input DOM\n    // element in an instance field (for example, this.textInput).\n    return (\n      \u003cdiv\u003e\n        \u003cinput\n          type=\"text\"\n          ref={this.setTextInputRef}\n        /\u003e\n        \u003cinput\n          type=\"button\"\n          value=\"Focus the text input\"\n          onClick={this.focusTextInput}\n        /\u003e\n      \u003c/div\u003e\n    );\n  }\n}\n```\n\nReact will call the `ref` callback with the DOM element when the component mounts, and call it with `null` when it unmounts. Refs are guaranteed to be up-to-date before `componentDidMount` or `componentDidUpdate` fires.\n\nYou can pass callback refs between components like you can with object refs that were created with `React.createRef()`.\n\n```javascript{4,13}\nfunction CustomTextInput(props) {\n  return (\n    \u003cdiv\u003e\n      \u003cinput ref={props.inputRef} /\u003e\n    \u003c/div\u003e\n  );\n}\n\nclass Parent extends React.Component {\n  render() {\n    return (\n      \u003cCustomTextInput\n        inputRef={el =\u003e this.inputElement = el}\n      /\u003e\n    );\n  }\n}\n```\n\nIn the example above, `Parent` passes its ref callback as an `inputRef` prop to the `CustomTextInput`, and the `CustomTextInput` passes the same function as a special `ref` attribute to the `\u003cinput\u003e`. As a result, `this.inputElement` in `Parent` will be set to the DOM node corresponding to the `\u003cinput\u003e` element in the `CustomTextInput`.\n\n### Legacy API: String Refs {#legacy-api-string-refs}\n\nIf you worked with React before, you might be familiar with an older API where the `ref` attribute is a string, like `\"textInput\"`, and the DOM node is accessed as `this.refs.textInput`. We advise against it because string refs have [some issues](https://github.com/facebook/react/pull/8333#issuecomment-271648615), are considered legacy, and **are likely to be removed in one of the future releases**. \n\n\u003e Note\n\u003e\n\u003e If you're currently using `this.refs.textInput` to access refs, we recommend using either the [callback pattern](#callback-refs) or the [`createRef` API](#creating-refs) instead.\n\n### Caveats with callback refs {#caveats-with-callback-refs}\n\nIf the `ref` callback is defined as an inline function, it will get called twice during updates, first with `null` and then again with the DOM element. This is because a new instance of the function is created with each render, so React needs to clear the old ref and set up the new one. You can avoid this by defining the `ref` callback as a bound method on the class, but note that it shouldn't matter in most cases.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_refs-and-the-dom.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

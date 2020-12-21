@@ -1,0 +1,156 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: code-splitting
+title: Code-Splitting
+permalink: docs/code-splitting.html</p>
+<hr>
+<h2>Bundling {#bundling}</h2>
+<p>Most React apps will have their files &quot;bundled&quot; using tools like <a href="https://webpack.js.org/">Webpack</a>, <a href="https://rollupjs.org/">Rollup</a> or <a href="http://browserify.org/">Browserify</a>. Bundling is the process of following imported files and merging them into a single file: a &quot;bundle&quot;. This bundle can then be included on a webpage to load an entire app at once.</p>
+<h4>Example {#example}</h4>
+<p><strong>App:</strong></p>
+<pre><code class="language-js">// app.js
+import { add } from './math.js';
+
+console.log(add(16, 26)); // 42
+</code></pre>
+<pre><code class="language-js">// math.js
+export function add(a, b) {
+  return a + b;
+}
+</code></pre>
+<p><strong>Bundle:</strong></p>
+<pre><code class="language-js">function add(a, b) {
+  return a + b;
+}
+
+console.log(add(16, 26)); // 42
+</code></pre>
+<blockquote>
+<p>Note:</p>
+<p>Your bundles will end up looking a lot different than this.</p>
+</blockquote>
+<p>If you're using <a href="https://create-react-app.dev/">Create React App</a>, <a href="https://nextjs.org/">Next.js</a>, <a href="https://www.gatsbyjs.org/">Gatsby</a>, or a similar tool, you will have a Webpack setup out of the box to bundle your app.</p>
+<p>If you aren't, you'll need to setup bundling yourself. For example, see the <a href="https://webpack.js.org/guides/installation/">Installation</a> and <a href="https://webpack.js.org/guides/getting-started/">Getting Started</a> guides on the Webpack docs.</p>
+<h2>Code Splitting {#code-splitting}</h2>
+<p>Bundling is great, but as your app grows, your bundle will grow too. Especially if you are including large third-party libraries. You need to keep an eye on the code you are including in your bundle so that you don't accidentally make it so large that your app takes a long time to load.</p>
+<p>To avoid winding up with a large bundle, it's good to get ahead of the problem and start &quot;splitting&quot; your bundle. Code-Splitting is a feature
+supported by bundlers like <a href="https://webpack.js.org/guides/code-splitting/">Webpack</a>, <a href="https://rollupjs.org/guide/en/#code-splitting">Rollup</a> and Browserify (via <a href="https://github.com/browserify/factor-bundle">factor-bundle</a>) which can create multiple bundles that can be dynamically loaded at runtime.</p>
+<p>Code-splitting your app can help you &quot;lazy-load&quot; just the things that are currently needed by the user, which can dramatically improve the performance of your app. While you haven't reduced the overall amount of code in your app, you've avoided loading code that the user may never need, and reduced the amount of code needed during the initial load.</p>
+<h2><code>import()</code> {#import}</h2>
+<p>The best way to introduce code-splitting into your app is through the dynamic <code>import()</code> syntax.</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-js">import { add } from './math';
+
+console.log(add(16, 26));
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-js">import(&quot;./math&quot;).then(math =&gt; {
+  console.log(math.add(16, 26));
+});
+</code></pre>
+<p>When Webpack comes across this syntax, it automatically starts code-splitting your app. If you're using Create React App, this is already configured for you and you can <a href="https://create-react-app.dev/docs/code-splitting/">start using it</a> immediately. It's also supported out of the box in <a href="https://nextjs.org/docs/advanced-features/dynamic-import">Next.js</a>.</p>
+<p>If you're setting up Webpack yourself, you'll probably want to read Webpack's <a href="https://webpack.js.org/guides/code-splitting/">guide on code splitting</a>. Your Webpack config should look vaguely <a href="https://gist.github.com/gaearon/ca6e803f5c604d37468b0091d9959269">like this</a>.</p>
+<p>When using <a href="https://babeljs.io/">Babel</a>, you'll need to make sure that Babel can parse the dynamic import syntax but is not transforming it. For that you will need <a href="https://classic.yarnpkg.com/en/package/@babel/plugin-syntax-dynamic-import">@babel/plugin-syntax-dynamic-import</a>.</p>
+<h2><code>React.lazy</code> {#reactlazy}</h2>
+<blockquote>
+<p>Note:</p>
+<p><code>React.lazy</code> and Suspense are not yet available for server-side rendering. If you want to do code-splitting in a server rendered app, we recommend <a href="https://github.com/gregberge/loadable-components">Loadable Components</a>. It has a nice <a href="https://loadable-components.com/docs/server-side-rendering/">guide for bundle splitting with server-side rendering</a>.</p>
+</blockquote>
+<p>The <code>React.lazy</code> function lets you render a dynamic import as a regular component.</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-js">import OtherComponent from './OtherComponent';
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-js">const OtherComponent = React.lazy(() =&gt; import('./OtherComponent'));
+</code></pre>
+<p>This will automatically load the bundle containing the <code>OtherComponent</code> when this component is first rendered.</p>
+<p><code>React.lazy</code> takes a function that must call a dynamic <code>import()</code>. This must return a <code>Promise</code> which resolves to a module with a <code>default</code> export containing a React component.</p>
+<p>The lazy component should then be rendered inside a <code>Suspense</code> component, which allows us to show some fallback content (such as a loading indicator) while we're waiting for the lazy component to load.</p>
+<pre><code class="language-js">import React, { Suspense } from 'react';
+
+const OtherComponent = React.lazy(() =&gt; import('./OtherComponent'));
+
+function MyComponent() {
+  return (
+    &lt;div&gt;
+      &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+        &lt;OtherComponent /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>The <code>fallback</code> prop accepts any React elements that you want to render while waiting for the component to load. You can place the <code>Suspense</code> component anywhere above the lazy component. You can even wrap multiple lazy components with a single <code>Suspense</code> component.</p>
+<pre><code class="language-js">import React, { Suspense } from 'react';
+
+const OtherComponent = React.lazy(() =&gt; import('./OtherComponent'));
+const AnotherComponent = React.lazy(() =&gt; import('./AnotherComponent'));
+
+function MyComponent() {
+  return (
+    &lt;div&gt;
+      &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+        &lt;section&gt;
+          &lt;OtherComponent /&gt;
+          &lt;AnotherComponent /&gt;
+        &lt;/section&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h3>Error boundaries {#error-boundaries}</h3>
+<p>If the other module fails to load (for example, due to network failure), it will trigger an error. You can handle these errors to show a nice user experience and manage recovery with <a href="/docs/error-boundaries.html">Error Boundaries</a>. Once you've created your Error Boundary, you can use it anywhere above your lazy components to display an error state when there's a network error.</p>
+<pre><code class="language-js">import React, { Suspense } from 'react';
+import MyErrorBoundary from './MyErrorBoundary';
+
+const OtherComponent = React.lazy(() =&gt; import('./OtherComponent'));
+const AnotherComponent = React.lazy(() =&gt; import('./AnotherComponent'));
+
+const MyComponent = () =&gt; (
+  &lt;div&gt;
+    &lt;MyErrorBoundary&gt;
+      &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+        &lt;section&gt;
+          &lt;OtherComponent /&gt;
+          &lt;AnotherComponent /&gt;
+        &lt;/section&gt;
+      &lt;/Suspense&gt;
+    &lt;/MyErrorBoundary&gt;
+  &lt;/div&gt;
+);
+</code></pre>
+<h2>Route-based code splitting {#route-based-code-splitting}</h2>
+<p>Deciding where in your app to introduce code splitting can be a bit tricky. You want to make sure you choose places that will split bundles evenly, but won't disrupt the user experience.</p>
+<p>A good place to start is with routes. Most people on the web are used to page transitions taking some amount of time to load. You also tend to be re-rendering the entire page at once so your users are unlikely to be interacting with other elements on the page at the same time.</p>
+<p>Here's an example of how to setup route-based code splitting into your app using libraries like <a href="https://reacttraining.com/react-router/">React Router</a> with <code>React.lazy</code>.</p>
+<pre><code class="language-js">import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
+const Home = lazy(() =&gt; import('./routes/Home'));
+const About = lazy(() =&gt; import('./routes/About'));
+
+const App = () =&gt; (
+  &lt;Router&gt;
+    &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+      &lt;Switch&gt;
+        &lt;Route exact path=&quot;/&quot; component={Home}/&gt;
+        &lt;Route path=&quot;/about&quot; component={About}/&gt;
+      &lt;/Switch&gt;
+    &lt;/Suspense&gt;
+  &lt;/Router&gt;
+);
+</code></pre>
+<h2>Named Exports {#named-exports}</h2>
+<p><code>React.lazy</code> currently only supports default exports. If the module you want to import uses named exports, you can create an intermediate module that reexports it as the default. This ensures that tree shaking keeps working and that you don't pull in unused components.</p>
+<pre><code class="language-js">// ManyComponents.js
+export const MyComponent = /* ... */;
+export const MyUnusedComponent = /* ... */;
+</code></pre>
+<pre><code class="language-js">// MyComponent.js
+export { MyComponent as default } from &quot;./ManyComponents.js&quot;;
+</code></pre>
+<pre><code class="language-js">// MyApp.js
+import React, { lazy } from 'react';
+const MyComponent = lazy(() =&gt; import(&quot;./MyComponent.js&quot;));
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: code-splitting\ntitle: Code-Splitting\npermalink: docs/code-splitting.html\n---\n\n## Bundling {#bundling}\n\nMost React apps will have their files \"bundled\" using tools like [Webpack](https://webpack.js.org/), [Rollup](https://rollupjs.org/) or [Browserify](http://browserify.org/). Bundling is the process of following imported files and merging them into a single file: a \"bundle\". This bundle can then be included on a webpage to load an entire app at once.\n\n#### Example {#example}\n\n**App:**\n\n```js\n// app.js\nimport { add } from './math.js';\n\nconsole.log(add(16, 26)); // 42\n```\n\n```js\n// math.js\nexport function add(a, b) {\n  return a + b;\n}\n```\n\n**Bundle:**\n\n```js\nfunction add(a, b) {\n  return a + b;\n}\n\nconsole.log(add(16, 26)); // 42\n```\n\n\u003e Note:\n\u003e\n\u003e Your bundles will end up looking a lot different than this.\n\nIf you're using [Create React App](https://create-react-app.dev/), [Next.js](https://nextjs.org/), [Gatsby](https://www.gatsbyjs.org/), or a similar tool, you will have a Webpack setup out of the box to bundle your app.\n\nIf you aren't, you'll need to setup bundling yourself. For example, see the [Installation](https://webpack.js.org/guides/installation/) and [Getting Started](https://webpack.js.org/guides/getting-started/) guides on the Webpack docs.\n\n## Code Splitting {#code-splitting}\n\nBundling is great, but as your app grows, your bundle will grow too. Especially if you are including large third-party libraries. You need to keep an eye on the code you are including in your bundle so that you don't accidentally make it so large that your app takes a long time to load.\n\nTo avoid winding up with a large bundle, it's good to get ahead of the problem and start \"splitting\" your bundle. Code-Splitting is a feature\nsupported by bundlers like [Webpack](https://webpack.js.org/guides/code-splitting/), [Rollup](https://rollupjs.org/guide/en/#code-splitting) and Browserify (via [factor-bundle](https://github.com/browserify/factor-bundle)) which can create multiple bundles that can be dynamically loaded at runtime.\n\nCode-splitting your app can help you \"lazy-load\" just the things that are currently needed by the user, which can dramatically improve the performance of your app. While you haven't reduced the overall amount of code in your app, you've avoided loading code that the user may never need, and reduced the amount of code needed during the initial load.\n\n## `import()` {#import}\n\nThe best way to introduce code-splitting into your app is through the dynamic `import()` syntax.\n\n**Before:**\n\n```js\nimport { add } from './math';\n\nconsole.log(add(16, 26));\n```\n\n**After:**\n\n```js\nimport(\"./math\").then(math =\u003e {\n  console.log(math.add(16, 26));\n});\n```\n\nWhen Webpack comes across this syntax, it automatically starts code-splitting your app. If you're using Create React App, this is already configured for you and you can [start using it](https://create-react-app.dev/docs/code-splitting/) immediately. It's also supported out of the box in [Next.js](https://nextjs.org/docs/advanced-features/dynamic-import).\n\nIf you're setting up Webpack yourself, you'll probably want to read Webpack's [guide on code splitting](https://webpack.js.org/guides/code-splitting/). Your Webpack config should look vaguely [like this](https://gist.github.com/gaearon/ca6e803f5c604d37468b0091d9959269).\n\nWhen using [Babel](https://babeljs.io/), you'll need to make sure that Babel can parse the dynamic import syntax but is not transforming it. For that you will need [@babel/plugin-syntax-dynamic-import](https://classic.yarnpkg.com/en/package/@babel/plugin-syntax-dynamic-import).\n\n## `React.lazy` {#reactlazy}\n\n\u003e Note:\n\u003e\n\u003e `React.lazy` and Suspense are not yet available for server-side rendering. If you want to do code-splitting in a server rendered app, we recommend [Loadable Components](https://github.com/gregberge/loadable-components). It has a nice [guide for bundle splitting with server-side rendering](https://loadable-components.com/docs/server-side-rendering/).\n\nThe `React.lazy` function lets you render a dynamic import as a regular component.\n\n**Before:**\n\n```js\nimport OtherComponent from './OtherComponent';\n```\n\n**After:**\n\n```js\nconst OtherComponent = React.lazy(() =\u003e import('./OtherComponent'));\n```\n\nThis will automatically load the bundle containing the `OtherComponent` when this component is first rendered.\n\n`React.lazy` takes a function that must call a dynamic `import()`. This must return a `Promise` which resolves to a module with a `default` export containing a React component.\n\nThe lazy component should then be rendered inside a `Suspense` component, which allows us to show some fallback content (such as a loading indicator) while we're waiting for the lazy component to load.\n\n```js\nimport React, { Suspense } from 'react';\n\nconst OtherComponent = React.lazy(() =\u003e import('./OtherComponent'));\n\nfunction MyComponent() {\n  return (\n    \u003cdiv\u003e\n      \u003cSuspense fallback={\u003cdiv\u003eLoading...\u003c/div\u003e}\u003e\n        \u003cOtherComponent /\u003e\n      \u003c/Suspense\u003e\n    \u003c/div\u003e\n  );\n}\n```\n\nThe `fallback` prop accepts any React elements that you want to render while waiting for the component to load. You can place the `Suspense` component anywhere above the lazy component. You can even wrap multiple lazy components with a single `Suspense` component.\n\n```js\nimport React, { Suspense } from 'react';\n\nconst OtherComponent = React.lazy(() =\u003e import('./OtherComponent'));\nconst AnotherComponent = React.lazy(() =\u003e import('./AnotherComponent'));\n\nfunction MyComponent() {\n  return (\n    \u003cdiv\u003e\n      \u003cSuspense fallback={\u003cdiv\u003eLoading...\u003c/div\u003e}\u003e\n        \u003csection\u003e\n          \u003cOtherComponent /\u003e\n          \u003cAnotherComponent /\u003e\n        \u003c/section\u003e\n      \u003c/Suspense\u003e\n    \u003c/div\u003e\n  );\n}\n```\n\n### Error boundaries {#error-boundaries}\n\nIf the other module fails to load (for example, due to network failure), it will trigger an error. You can handle these errors to show a nice user experience and manage recovery with [Error Boundaries](/docs/error-boundaries.html). Once you've created your Error Boundary, you can use it anywhere above your lazy components to display an error state when there's a network error.\n\n```js\nimport React, { Suspense } from 'react';\nimport MyErrorBoundary from './MyErrorBoundary';\n\nconst OtherComponent = React.lazy(() =\u003e import('./OtherComponent'));\nconst AnotherComponent = React.lazy(() =\u003e import('./AnotherComponent'));\n\nconst MyComponent = () =\u003e (\n  \u003cdiv\u003e\n    \u003cMyErrorBoundary\u003e\n      \u003cSuspense fallback={\u003cdiv\u003eLoading...\u003c/div\u003e}\u003e\n        \u003csection\u003e\n          \u003cOtherComponent /\u003e\n          \u003cAnotherComponent /\u003e\n        \u003c/section\u003e\n      \u003c/Suspense\u003e\n    \u003c/MyErrorBoundary\u003e\n  \u003c/div\u003e\n);\n```\n\n## Route-based code splitting {#route-based-code-splitting}\n\nDeciding where in your app to introduce code splitting can be a bit tricky. You want to make sure you choose places that will split bundles evenly, but won't disrupt the user experience.\n\nA good place to start is with routes. Most people on the web are used to page transitions taking some amount of time to load. You also tend to be re-rendering the entire page at once so your users are unlikely to be interacting with other elements on the page at the same time.\n\nHere's an example of how to setup route-based code splitting into your app using libraries like [React Router](https://reacttraining.com/react-router/) with `React.lazy`.\n\n```js\nimport React, { Suspense, lazy } from 'react';\nimport { BrowserRouter as Router, Route, Switch } from 'react-router-dom';\n\nconst Home = lazy(() =\u003e import('./routes/Home'));\nconst About = lazy(() =\u003e import('./routes/About'));\n\nconst App = () =\u003e (\n  \u003cRouter\u003e\n    \u003cSuspense fallback={\u003cdiv\u003eLoading...\u003c/div\u003e}\u003e\n      \u003cSwitch\u003e\n        \u003cRoute exact path=\"/\" component={Home}/\u003e\n        \u003cRoute path=\"/about\" component={About}/\u003e\n      \u003c/Switch\u003e\n    \u003c/Suspense\u003e\n  \u003c/Router\u003e\n);\n```\n\n## Named Exports {#named-exports}\n\n`React.lazy` currently only supports default exports. If the module you want to import uses named exports, you can create an intermediate module that reexports it as the default. This ensures that tree shaking keeps working and that you don't pull in unused components.\n\n```js\n// ManyComponents.js\nexport const MyComponent = /* ... */;\nexport const MyUnusedComponent = /* ... */;\n```\n\n```js\n// MyComponent.js\nexport { MyComponent as default } from \"./ManyComponents.js\";\n```\n\n```js\n// MyApp.js\nimport React, { lazy } from 'react';\nconst MyComponent = lazy(() =\u003e import(\"./MyComponent.js\"));\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_code-splitting.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

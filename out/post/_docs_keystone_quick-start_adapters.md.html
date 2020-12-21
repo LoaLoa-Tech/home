@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: quick-start
+title: Database setup
+[meta]-->
+<h1>Database Setup</h1>
+<p>Before starting your Keystone project you need to have a database set up and ready for Keystone to use.</p>
+<h2>Choosing A Database</h2>
+<p>Keystone currently provides support for <a href="https://www.mongodb.com/">MongoDB</a> or <a href="https://www.postgresql.org/">PostgreSQL</a> databases.
+You will need to pick one of these databases to use for your system.
+Both databases are fully supported, and you should consider the <a href="https://www.google.com/search?q=mongodb+vs+postgresql">pros and cons</a> of each to determine which one is best suited to your situation.</p>
+<p>Once you have chosen a database to use you will need to make sure that it is correctly installed and set up, and that you are able to connect to it.
+The instructions below will take you through this process to ensure that you are ready to continue with your Keystone project.</p>
+<blockquote>
+<p><strong>Tip</strong> Take note of the <code>connection string</code> that you use to connect to your database, as you will need to know this to set up your Keystone project.</p>
+</blockquote>
+<h2>MongoDB</h2>
+<h3>Installation</h3>
+<h4>MacOS</h4>
+<p>The simplest way to install MongoDB is using <a href="https://brew.sh/">Homebrew</a>.
+Refer the <a href="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/">official guide</a> for more information.</p>
+<h4>Windows</h4>
+<p>Follow the <a href="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/">official guide</a> for installing MongoDB on Windows.</p>
+<h4>Other Platforms</h4>
+<p><a href="https://www.mongodb.com/download-center/community">Downloads</a> and <a href="https://docs.mongodb.com/manual/administration/install-on-linux/">instructions</a> for installation on various Linux systems are also available.</p>
+<h3>Connection</h3>
+<p>Once you have installed MongoDB you can connect to your database using the command:</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">$ mongo mongodb://localhost/my-keystone-project
+</code></pre>
+<p>In this case the connection string <code>mongodb://localhost/my-keystone-project</code> tells MongoDB to connect to a database called <code>my-keystone-project</code> on your computer (<code>localhost</code>). You should see output which looks like this:</p>
+<pre><code class="language-none allowCopy=false showLanguage=false">$ mongo mongodb://localhost/my-keystone-project
+MongoDB shell version v4.0.3
+connecting to: mongodb://localhost/my-keystone-project
+Implicit session: session { &quot;id&quot; : UUID(&quot;2f47e753-d347-4305-92e2-347c095c8072&quot;) }
+MongoDB server version: 4.0.3
+Server has startup warnings:
+2020-04-08T09:31:10.824+1000 I CONTROL  [initandlisten]
+2020-04-08T09:31:10.825+1000 I CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+2020-04-08T09:31:10.825+1000 I CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+2020-04-08T09:31:10.825+1000 I CONTROL  [initandlisten]
+---
+Enable MongoDB's free cloud-based monitoring service, which will then receive and display
+metrics about your deployment (disk utilization, CPU, operation statistics, etc).
+
+The monitoring data will be available on a MongoDB website with a unique URL accessible to you
+and anyone you share the URL with. MongoDB may use this information to make product
+improvements and to suggest MongoDB products and deployment options to you.
+
+To enable free monitoring, run the following command: db.enableFreeMonitoring()
+To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
+---
+
+&gt;
+</code></pre>
+<p>If this works then you are ready to start setting up your Keystone project, and can head back to the <a href="/docs/quick-start/README.md">getting started guide</a>.</p>
+<p>If you run into problems please consult the <a href="https://docs.mongodb.com/manual/installation/">MongoDB docs</a> for troubleshooting tips.</p>
+<h2>PostgreSQL</h2>
+<h3>Installation</h3>
+<h4>MacOS</h4>
+<p>The simplest way to install PostgreSQL is using <a href="https://brew.sh/">Homebrew</a>.</p>
+<pre><code class="language-shell">brew install postgres
+</code></pre>
+<h4>Other Platforms</h4>
+<p>For Windows and other platforms see the <a href="https://www.postgresql.org/download/">download instructions</a> on the <a href="https://postgresql.org">postgresql.org</a> website.</p>
+<h3>Setup</h3>
+<p>Once you have installed PostgreSQL you will need to create a database for Keystone to use.
+To create the database run the following command:</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">createdb my-keystone-project
+</code></pre>
+<p>If the command runs with no output then you have successfully created your database.
+You may see an error which looks like this:</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">createdb: error: could not connect to database template1: FATAL:  password authentication failed for user ...
+</code></pre>
+<p>If this is the case then you will need to configure the user permissions for your database. Please consult the <a href="https://www.postgresql.org/docs/">PostgreSQL docs</a> for instructions on how to do this.</p>
+<h3>Connection</h3>
+<p>Once you have created your database you can connect to it using the command:</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">$ psql postgres://localhost/my-keystone-project
+</code></pre>
+<p>In this case the connection string <code>postgres://localhost/my-keystone-project</code> tells PostgreSQL to connect to a database called <code>my-keystone-project</code> on your computer (<code>localhost</code>). You should see output which looks like this:</p>
+<pre><code>$ psql postgres://localhost/my-keystone-project
+psql (12.2, server 9.6.8)
+Type &quot;help&quot; for help.
+
+my-keystone-project=#
+</code></pre>
+<p>If you need to connect to to your database as a particular user then you can include the username and password in the connection string:</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">$ psql postgres://&lt;username&gt;:&lt;password&gt;@localhost/my-keystone-project
+</code></pre>
+<p>If this works then you are ready to start setting up your Keystone project, and can head back to the <a href="/docs/quick-start/README.md">getting started guide</a>.</p>
+<p>If you run into problems please consult the <a href="https://www.postgresql.org/docs/">PostgreSQL docs</a> for troubleshooting tips.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: quick-start\ntitle: Database setup\n[meta]--\u003e\n\n# Database Setup\n\nBefore starting your Keystone project you need to have a database set up and ready for Keystone to use.\n\n## Choosing A Database\n\nKeystone currently provides support for [MongoDB](https://www.mongodb.com/) or [PostgreSQL](https://www.postgresql.org/) databases.\nYou will need to pick one of these databases to use for your system.\nBoth databases are fully supported, and you should consider the [pros and cons](https://www.google.com/search?q=mongodb+vs+postgresql) of each to determine which one is best suited to your situation.\n\nOnce you have chosen a database to use you will need to make sure that it is correctly installed and set up, and that you are able to connect to it.\nThe instructions below will take you through this process to ensure that you are ready to continue with your Keystone project.\n\n\u003e **Tip** Take note of the `connection string` that you use to connect to your database, as you will need to know this to set up your Keystone project.\n\n## MongoDB\n\n### Installation\n\n#### MacOS\n\nThe simplest way to install MongoDB is using [Homebrew](https://brew.sh/).\nRefer the [official guide](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/) for more information.\n\n#### Windows\n\nFollow the [official guide](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/) for installing MongoDB on Windows.\n\n#### Other Platforms\n\n[Downloads](https://www.mongodb.com/download-center/community) and [instructions](https://docs.mongodb.com/manual/administration/install-on-linux/) for installation on various Linux systems are also available.\n\n### Connection\n\nOnce you have installed MongoDB you can connect to your database using the command:\n\n```shell allowCopy=false showLanguage=false\n$ mongo mongodb://localhost/my-keystone-project\n```\n\nIn this case the connection string `mongodb://localhost/my-keystone-project` tells MongoDB to connect to a database called `my-keystone-project` on your computer (`localhost`). You should see output which looks like this:\n\n```none allowCopy=false showLanguage=false\n$ mongo mongodb://localhost/my-keystone-project\nMongoDB shell version v4.0.3\nconnecting to: mongodb://localhost/my-keystone-project\nImplicit session: session { \"id\" : UUID(\"2f47e753-d347-4305-92e2-347c095c8072\") }\nMongoDB server version: 4.0.3\nServer has startup warnings:\n2020-04-08T09:31:10.824+1000 I CONTROL  [initandlisten]\n2020-04-08T09:31:10.825+1000 I CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.\n2020-04-08T09:31:10.825+1000 I CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.\n2020-04-08T09:31:10.825+1000 I CONTROL  [initandlisten]\n---\nEnable MongoDB's free cloud-based monitoring service, which will then receive and display\nmetrics about your deployment (disk utilization, CPU, operation statistics, etc).\n\nThe monitoring data will be available on a MongoDB website with a unique URL accessible to you\nand anyone you share the URL with. MongoDB may use this information to make product\nimprovements and to suggest MongoDB products and deployment options to you.\n\nTo enable free monitoring, run the following command: db.enableFreeMonitoring()\nTo permanently disable this reminder, run the following command: db.disableFreeMonitoring()\n---\n\n\u003e\n```\n\nIf this works then you are ready to start setting up your Keystone project, and can head back to the [getting started guide](/docs/quick-start/README.md).\n\nIf you run into problems please consult the [MongoDB docs](https://docs.mongodb.com/manual/installation/) for troubleshooting tips.\n\n## PostgreSQL\n\n### Installation\n\n#### MacOS\n\nThe simplest way to install PostgreSQL is using [Homebrew](https://brew.sh/).\n\n```shell\nbrew install postgres\n```\n\n#### Other Platforms\n\nFor Windows and other platforms see the [download instructions](https://www.postgresql.org/download/) on the [postgresql.org](https://postgresql.org) website.\n\n### Setup\n\nOnce you have installed PostgreSQL you will need to create a database for Keystone to use.\nTo create the database run the following command:\n\n```shell allowCopy=false showLanguage=false\ncreatedb my-keystone-project\n```\n\nIf the command runs with no output then you have successfully created your database.\nYou may see an error which looks like this:\n\n```shell allowCopy=false showLanguage=false\ncreatedb: error: could not connect to database template1: FATAL:  password authentication failed for user ...\n```\n\nIf this is the case then you will need to configure the user permissions for your database. Please consult the [PostgreSQL docs](https://www.postgresql.org/docs/) for instructions on how to do this.\n\n### Connection\n\nOnce you have created your database you can connect to it using the command:\n\n```shell allowCopy=false showLanguage=false\n$ psql postgres://localhost/my-keystone-project\n```\n\nIn this case the connection string `postgres://localhost/my-keystone-project` tells PostgreSQL to connect to a database called `my-keystone-project` on your computer (`localhost`). You should see output which looks like this:\n\n```\n$ psql postgres://localhost/my-keystone-project\npsql (12.2, server 9.6.8)\nType \"help\" for help.\n\nmy-keystone-project=#\n```\n\nIf you need to connect to to your database as a particular user then you can include the username and password in the connection string:\n\n```shell allowCopy=false showLanguage=false\n$ psql postgres://\u003cusername\u003e:\u003cpassword\u003e@localhost/my-keystone-project\n```\n\nIf this works then you are ready to start setting up your Keystone project, and can head back to the [getting started guide](/docs/quick-start/README.md).\n\nIf you run into problems please consult the [PostgreSQL docs](https://www.postgresql.org/docs/) for troubleshooting tips.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_quick-start_adapters.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

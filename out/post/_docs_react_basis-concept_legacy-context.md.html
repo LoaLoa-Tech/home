@@ -1,0 +1,195 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: legacy-context
+title: Legacy Context
+permalink: docs/legacy-context.html</p>
+<hr>
+<blockquote>
+<p>Note:</p>
+<p>The legacy context API will be removed in a future major version.
+Use the <a href="/docs/context.html">new context API</a> introduced with version 16.3.
+The legacy API will continue working for all 16.x releases.</p>
+</blockquote>
+<h2>How To Use Context {#how-to-use-context}</h2>
+<blockquote>
+<p>This section documents a legacy API. See the <a href="/docs/context.html">new API</a>.</p>
+</blockquote>
+<p>Suppose you have a structure like:</p>
+<pre><code class="language-javascript">class Button extends React.Component {
+  render() {
+    return (
+      &lt;button style={{background: this.props.color}}&gt;
+        {this.props.children}
+      &lt;/button&gt;
+    );
+  }
+}
+
+class Message extends React.Component {
+  render() {
+    return (
+      &lt;div&gt;
+        {this.props.text} &lt;Button color={this.props.color}&gt;Delete&lt;/Button&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+
+class MessageList extends React.Component {
+  render() {
+    const color = &quot;purple&quot;;
+    const children = this.props.messages.map((message) =&gt;
+      &lt;Message text={message.text} color={color} /&gt;
+    );
+    return &lt;div&gt;{children}&lt;/div&gt;;
+  }
+}
+</code></pre>
+<p>In this example, we manually thread through a <code>color</code> prop in order to style the <code>Button</code> and <code>Message</code> components appropriately. Using context, we can pass this through the tree automatically:</p>
+<pre><code class="language-javascript{6,13-15,21,28-30,40-42}">import PropTypes from 'prop-types';
+
+class Button extends React.Component {
+  render() {
+    return (
+      &lt;button style={{background: this.context.color}}&gt;
+        {this.props.children}
+      &lt;/button&gt;
+    );
+  }
+}
+
+Button.contextTypes = {
+  color: PropTypes.string
+};
+
+class Message extends React.Component {
+  render() {
+    return (
+      &lt;div&gt;
+        {this.props.text} &lt;Button&gt;Delete&lt;/Button&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+
+class MessageList extends React.Component {
+  getChildContext() {
+    return {color: &quot;purple&quot;};
+  }
+
+  render() {
+    const children = this.props.messages.map((message) =&gt;
+      &lt;Message text={message.text} /&gt;
+    );
+    return &lt;div&gt;{children}&lt;/div&gt;;
+  }
+}
+
+MessageList.childContextTypes = {
+  color: PropTypes.string
+};
+</code></pre>
+<p>By adding <code>childContextTypes</code> and <code>getChildContext</code> to <code>MessageList</code> (the context provider), React passes the information down automatically and any component in the subtree (in this case, <code>Button</code>) can access it by defining <code>contextTypes</code>.</p>
+<p>If <code>contextTypes</code> is not defined, then <code>context</code> will be an empty object.</p>
+<blockquote>
+<p>Note:</p>
+<p><code>React.PropTypes</code> has moved into a different package since React v15.5. Please use <a href="https://www.npmjs.com/package/prop-types">the <code>prop-types</code> library instead</a> to define <code>contextTypes</code>.</p>
+<p>We provide <a href="/blog/2017/04/07/react-v15.5.0.html#migrating-from-react.proptypes">a codemod script</a> to automate the conversion.</p>
+</blockquote>
+<h3>Parent-Child Coupling {#parent-child-coupling}</h3>
+<blockquote>
+<p>This section documents a legacy API. See the <a href="/docs/context.html">new API</a>.</p>
+</blockquote>
+<p>Context can also let you build an API where parents and children communicate. For example, one library that works this way is <a href="https://reacttraining.com/react-router">React Router V4</a>:</p>
+<pre><code class="language-javascript">import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+
+const BasicExample = () =&gt; (
+  &lt;Router&gt;
+    &lt;div&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;Link to=&quot;/&quot;&gt;Home&lt;/Link&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;Link to=&quot;/about&quot;&gt;About&lt;/Link&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;Link to=&quot;/topics&quot;&gt;Topics&lt;/Link&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+
+      &lt;hr /&gt;
+
+      &lt;Route exact path=&quot;/&quot; component={Home} /&gt;
+      &lt;Route path=&quot;/about&quot; component={About} /&gt;
+      &lt;Route path=&quot;/topics&quot; component={Topics} /&gt;
+    &lt;/div&gt;
+  &lt;/Router&gt;
+);
+</code></pre>
+<p>By passing down some information from the <code>Router</code> component, each <code>Link</code> and <code>Route</code> can communicate back to the containing <code>Router</code>.</p>
+<p>Before you build components with an API similar to this, consider if there are cleaner alternatives. For example, you can pass entire React components as props if you'd like to.</p>
+<h3>Referencing Context in Lifecycle Methods {#referencing-context-in-lifecycle-methods}</h3>
+<blockquote>
+<p>This section documents a legacy API. See the <a href="/docs/context.html">new API</a>.</p>
+</blockquote>
+<p>If <code>contextTypes</code> is defined within a component, the following <a href="/docs/react-component.html#the-component-lifecycle">lifecycle methods</a> will receive an additional parameter, the <code>context</code> object:</p>
+<ul>
+<li><a href="/docs/react-component.html#constructor"><code>constructor(props, context)</code></a></li>
+<li><a href="/docs/react-component.html#componentwillreceiveprops"><code>componentWillReceiveProps(nextProps, nextContext)</code></a></li>
+<li><a href="/docs/react-component.html#shouldcomponentupdate"><code>shouldComponentUpdate(nextProps, nextState, nextContext)</code></a></li>
+<li><a href="/docs/react-component.html#componentwillupdate"><code>componentWillUpdate(nextProps, nextState, nextContext)</code></a></li>
+</ul>
+<blockquote>
+<p>Note:</p>
+<p>As of React 16, <code>componentDidUpdate</code> no longer receives <code>prevContext</code>.</p>
+</blockquote>
+<h3>Referencing Context in Function Components {#referencing-context-in-stateless-function-components}</h3>
+<blockquote>
+<p>This section documents a legacy API. See the <a href="/docs/context.html">new API</a>.</p>
+</blockquote>
+<p>Function components are also able to reference <code>context</code> if <code>contextTypes</code> is defined as a property of the function. The following code shows a <code>Button</code> component written as a function component.</p>
+<pre><code class="language-javascript">import PropTypes from 'prop-types';
+
+const Button = ({children}, context) =&gt;
+  &lt;button style={{background: context.color}}&gt;
+    {children}
+  &lt;/button&gt;;
+
+Button.contextTypes = {color: PropTypes.string};
+</code></pre>
+<h3>Updating Context {#updating-context}</h3>
+<blockquote>
+<p>This section documents a legacy API. See the <a href="/docs/context.html">new API</a>.</p>
+</blockquote>
+<p>Don't do it.</p>
+<p>React has an API to update context, but it is fundamentally broken and you should not use it.</p>
+<p>The <code>getChildContext</code> function will be called when the state or props changes. In order to update data in the context, trigger a local state update with <code>this.setState</code>. This will trigger a new context and changes will be received by the children.</p>
+<pre><code class="language-javascript">import PropTypes from 'prop-types';
+
+class MediaQuery extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {type:'desktop'};
+  }
+
+  getChildContext() {
+    return {type: this.state.type};
+  }
+
+  componentDidMount() {
+    const checkMediaQuery = () =&gt; {
+      const type = window.matchMedia(&quot;(min-width: 1025px)&quot;).matches ? 'desktop' : 'mobile';
+      if (type !== this.state.type) {
+        this.setState({type});
+      }
+    };
+
+    window.addEventListener('resize', checkMediaQuery);
+    checkMediaQuery();
+  }
+
+  render() {
+    return this.props.children;
+  }
+}
+
+MediaQuery.childContextTypes = {
+  type: PropTypes.string
+};
+</code></pre>
+<p>The problem is, if a context value provided by component changes, descendants that use that value won't update if an intermediate parent returns <code>false</code> from <code>shouldComponentUpdate</code>. This is totally out of control of the components using context, so there's basically no way to reliably update the context. <a href="https://medium.com/@mweststrate/how-to-safely-use-react-context-b7e343eff076">This blog post</a> has a good explanation of why this is a problem and how you might get around it.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: legacy-context\ntitle: Legacy Context\npermalink: docs/legacy-context.html\n---\n\n\u003e Note:\n\u003e\n\u003e The legacy context API will be removed in a future major version.\n\u003e Use the [new context API](/docs/context.html) introduced with version 16.3.\n\u003e The legacy API will continue working for all 16.x releases.\n\n## How To Use Context {#how-to-use-context}\n\n\u003e This section documents a legacy API. See the [new API](/docs/context.html).\n\nSuppose you have a structure like:\n\n```javascript\nclass Button extends React.Component {\n  render() {\n    return (\n      \u003cbutton style={{background: this.props.color}}\u003e\n        {this.props.children}\n      \u003c/button\u003e\n    );\n  }\n}\n\nclass Message extends React.Component {\n  render() {\n    return (\n      \u003cdiv\u003e\n        {this.props.text} \u003cButton color={this.props.color}\u003eDelete\u003c/Button\u003e\n      \u003c/div\u003e\n    );\n  }\n}\n\nclass MessageList extends React.Component {\n  render() {\n    const color = \"purple\";\n    const children = this.props.messages.map((message) =\u003e\n      \u003cMessage text={message.text} color={color} /\u003e\n    );\n    return \u003cdiv\u003e{children}\u003c/div\u003e;\n  }\n}\n```\n\nIn this example, we manually thread through a `color` prop in order to style the `Button` and `Message` components appropriately. Using context, we can pass this through the tree automatically:\n\n```javascript{6,13-15,21,28-30,40-42}\nimport PropTypes from 'prop-types';\n\nclass Button extends React.Component {\n  render() {\n    return (\n      \u003cbutton style={{background: this.context.color}}\u003e\n        {this.props.children}\n      \u003c/button\u003e\n    );\n  }\n}\n\nButton.contextTypes = {\n  color: PropTypes.string\n};\n\nclass Message extends React.Component {\n  render() {\n    return (\n      \u003cdiv\u003e\n        {this.props.text} \u003cButton\u003eDelete\u003c/Button\u003e\n      \u003c/div\u003e\n    );\n  }\n}\n\nclass MessageList extends React.Component {\n  getChildContext() {\n    return {color: \"purple\"};\n  }\n\n  render() {\n    const children = this.props.messages.map((message) =\u003e\n      \u003cMessage text={message.text} /\u003e\n    );\n    return \u003cdiv\u003e{children}\u003c/div\u003e;\n  }\n}\n\nMessageList.childContextTypes = {\n  color: PropTypes.string\n};\n```\n\nBy adding `childContextTypes` and `getChildContext` to `MessageList` (the context provider), React passes the information down automatically and any component in the subtree (in this case, `Button`) can access it by defining `contextTypes`.\n\nIf `contextTypes` is not defined, then `context` will be an empty object.\n\n\u003e Note:\n\u003e\n\u003e `React.PropTypes` has moved into a different package since React v15.5. Please use [the `prop-types` library instead](https://www.npmjs.com/package/prop-types) to define `contextTypes`.\n\u003e\n\u003e We provide [a codemod script](/blog/2017/04/07/react-v15.5.0.html#migrating-from-react.proptypes) to automate the conversion.\n\n### Parent-Child Coupling {#parent-child-coupling}\n\n\u003e This section documents a legacy API. See the [new API](/docs/context.html).\n\nContext can also let you build an API where parents and children communicate. For example, one library that works this way is [React Router V4](https://reacttraining.com/react-router):\n\n```javascript\nimport { BrowserRouter as Router, Route, Link } from 'react-router-dom';\n\nconst BasicExample = () =\u003e (\n  \u003cRouter\u003e\n    \u003cdiv\u003e\n      \u003cul\u003e\n        \u003cli\u003e\u003cLink to=\"/\"\u003eHome\u003c/Link\u003e\u003c/li\u003e\n        \u003cli\u003e\u003cLink to=\"/about\"\u003eAbout\u003c/Link\u003e\u003c/li\u003e\n        \u003cli\u003e\u003cLink to=\"/topics\"\u003eTopics\u003c/Link\u003e\u003c/li\u003e\n      \u003c/ul\u003e\n\n      \u003chr /\u003e\n\n      \u003cRoute exact path=\"/\" component={Home} /\u003e\n      \u003cRoute path=\"/about\" component={About} /\u003e\n      \u003cRoute path=\"/topics\" component={Topics} /\u003e\n    \u003c/div\u003e\n  \u003c/Router\u003e\n);\n```\n\nBy passing down some information from the `Router` component, each `Link` and `Route` can communicate back to the containing `Router`.\n\nBefore you build components with an API similar to this, consider if there are cleaner alternatives. For example, you can pass entire React components as props if you'd like to.\n\n### Referencing Context in Lifecycle Methods {#referencing-context-in-lifecycle-methods}\n\n\u003e This section documents a legacy API. See the [new API](/docs/context.html).\n\nIf `contextTypes` is defined within a component, the following [lifecycle methods](/docs/react-component.html#the-component-lifecycle) will receive an additional parameter, the `context` object:\n\n- [`constructor(props, context)`](/docs/react-component.html#constructor)\n- [`componentWillReceiveProps(nextProps, nextContext)`](/docs/react-component.html#componentwillreceiveprops)\n- [`shouldComponentUpdate(nextProps, nextState, nextContext)`](/docs/react-component.html#shouldcomponentupdate)\n- [`componentWillUpdate(nextProps, nextState, nextContext)`](/docs/react-component.html#componentwillupdate)\n\n\u003e Note:\n\u003e\n\u003e As of React 16, `componentDidUpdate` no longer receives `prevContext`.\n\n### Referencing Context in Function Components {#referencing-context-in-stateless-function-components}\n\n\u003e This section documents a legacy API. See the [new API](/docs/context.html).\n\nFunction components are also able to reference `context` if `contextTypes` is defined as a property of the function. The following code shows a `Button` component written as a function component.\n\n```javascript\nimport PropTypes from 'prop-types';\n\nconst Button = ({children}, context) =\u003e\n  \u003cbutton style={{background: context.color}}\u003e\n    {children}\n  \u003c/button\u003e;\n\nButton.contextTypes = {color: PropTypes.string};\n```\n\n### Updating Context {#updating-context}\n\n\u003e This section documents a legacy API. See the [new API](/docs/context.html).\n\nDon't do it.\n\nReact has an API to update context, but it is fundamentally broken and you should not use it.\n\nThe `getChildContext` function will be called when the state or props changes. In order to update data in the context, trigger a local state update with `this.setState`. This will trigger a new context and changes will be received by the children.\n\n```javascript\nimport PropTypes from 'prop-types';\n\nclass MediaQuery extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = {type:'desktop'};\n  }\n\n  getChildContext() {\n    return {type: this.state.type};\n  }\n\n  componentDidMount() {\n    const checkMediaQuery = () =\u003e {\n      const type = window.matchMedia(\"(min-width: 1025px)\").matches ? 'desktop' : 'mobile';\n      if (type !== this.state.type) {\n        this.setState({type});\n      }\n    };\n\n    window.addEventListener('resize', checkMediaQuery);\n    checkMediaQuery();\n  }\n\n  render() {\n    return this.props.children;\n  }\n}\n\nMediaQuery.childContextTypes = {\n  type: PropTypes.string\n};\n```\n\nThe problem is, if a context value provided by component changes, descendants that use that value won't update if an intermediate parent returns `false` from `shouldComponentUpdate`. This is totally out of control of the components using context, so there's basically no way to reliably update the context. [This blog post](https://medium.com/@mweststrate/how-to-safely-use-react-context-b7e343eff076) has a good explanation of why this is a problem and how you might get around it.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_legacy-context.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

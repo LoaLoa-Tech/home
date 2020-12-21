@@ -1,0 +1,219 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: test-renderer
+title: Test Renderer
+permalink: docs/test-renderer.html
+layout: docs
+category: Reference</p>
+<hr>
+<p><strong>Importing</strong></p>
+<pre><code class="language-javascript">import TestRenderer from 'react-test-renderer'; // ES6
+const TestRenderer = require('react-test-renderer'); // ES5 with npm
+</code></pre>
+<h2>Overview {#overview}</h2>
+<p>This package provides a React renderer that can be used to render React components to pure JavaScript objects, without depending on the DOM or a native mobile environment.</p>
+<p>Essentially, this package makes it easy to grab a snapshot of the platform view hierarchy (similar to a DOM tree) rendered by a React DOM or React Native component without using a browser or <a href="https://github.com/tmpvar/jsdom">jsdom</a>.</p>
+<p>Example:</p>
+<pre><code class="language-javascript">import TestRenderer from 'react-test-renderer';
+
+function Link(props) {
+  return &lt;a href={props.page}&gt;{props.children}&lt;/a&gt;;
+}
+
+const testRenderer = TestRenderer.create(
+  &lt;Link page=&quot;https://www.facebook.com/&quot;&gt;Facebook&lt;/Link&gt;
+);
+
+console.log(testRenderer.toJSON());
+// { type: 'a',
+//   props: { href: 'https://www.facebook.com/' },
+//   children: [ 'Facebook' ] }
+</code></pre>
+<p>You can use Jest's snapshot testing feature to automatically save a copy of the JSON tree to a file and check in your tests that it hasn't changed: <a href="https://jestjs.io/docs/en/snapshot-testing">Learn more about it</a>.</p>
+<p>You can also traverse the output to find specific nodes and make assertions about them.</p>
+<pre><code class="language-javascript">import TestRenderer from 'react-test-renderer';
+
+function MyComponent() {
+  return (
+    &lt;div&gt;
+      &lt;SubComponent foo=&quot;bar&quot; /&gt;
+      &lt;p className=&quot;my&quot;&gt;Hello&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+
+function SubComponent() {
+  return (
+    &lt;p className=&quot;sub&quot;&gt;Sub&lt;/p&gt;
+  );
+}
+
+const testRenderer = TestRenderer.create(&lt;MyComponent /&gt;);
+const testInstance = testRenderer.root;
+
+expect(testInstance.findByType(SubComponent).props.foo).toBe('bar');
+expect(testInstance.findByProps({className: &quot;sub&quot;}).children).toEqual(['Sub']);
+</code></pre>
+<h3>TestRenderer {#testrenderer}</h3>
+<ul>
+<li><a href="#testrenderercreate"><code>TestRenderer.create()</code></a></li>
+<li><a href="#testrendereract"><code>TestRenderer.act()</code></a></li>
+</ul>
+<h3>TestRenderer instance {#testrenderer-instance}</h3>
+<ul>
+<li><a href="#testrenderertojson"><code>testRenderer.toJSON()</code></a></li>
+<li><a href="#testrenderertotree"><code>testRenderer.toTree()</code></a></li>
+<li><a href="#testrendererupdate"><code>testRenderer.update()</code></a></li>
+<li><a href="#testrendererunmount"><code>testRenderer.unmount()</code></a></li>
+<li><a href="#testrenderergetinstance"><code>testRenderer.getInstance()</code></a></li>
+<li><a href="#testrendererroot"><code>testRenderer.root</code></a></li>
+</ul>
+<h3>TestInstance {#testinstance}</h3>
+<ul>
+<li><a href="#testinstancefind"><code>testInstance.find()</code></a></li>
+<li><a href="#testinstancefindbytype"><code>testInstance.findByType()</code></a></li>
+<li><a href="#testinstancefindbyprops"><code>testInstance.findByProps()</code></a></li>
+<li><a href="#testinstancefindall"><code>testInstance.findAll()</code></a></li>
+<li><a href="#testinstancefindallbytype"><code>testInstance.findAllByType()</code></a></li>
+<li><a href="#testinstancefindallbyprops"><code>testInstance.findAllByProps()</code></a></li>
+<li><a href="#testinstanceinstance"><code>testInstance.instance</code></a></li>
+<li><a href="#testinstancetype"><code>testInstance.type</code></a></li>
+<li><a href="#testinstanceprops"><code>testInstance.props</code></a></li>
+<li><a href="#testinstanceparent"><code>testInstance.parent</code></a></li>
+<li><a href="#testinstancechildren"><code>testInstance.children</code></a></li>
+</ul>
+<h2>Reference {#reference}</h2>
+<h3><code>TestRenderer.create()</code> {#testrenderercreate}</h3>
+<pre><code class="language-javascript">TestRenderer.create(element, options);
+</code></pre>
+<p>Create a <code>TestRenderer</code> instance with the passed React element. It doesn't use the real DOM, but it still fully renders the component tree into memory so you can make assertions about it. Returns a <a href="#testrenderer-instance">TestRenderer instance</a>.</p>
+<h3><code>TestRenderer.act()</code> {#testrendereract}</h3>
+<pre><code class="language-javascript">TestRenderer.act(callback);
+</code></pre>
+<p>Similar to the <a href="/docs/test-utils.html#act"><code>act()</code> helper from <code>react-dom/test-utils</code></a>, <code>TestRenderer.act</code> prepares a component for assertions. Use this version of <code>act()</code> to wrap calls to <code>TestRenderer.create</code> and <code>testRenderer.update</code>.</p>
+<pre><code class="language-javascript">import {create, act} from 'react-test-renderer';
+import App from './app.js'; // The component being tested
+
+// render the component
+let root; 
+act(() =&gt; {
+  root = create(&lt;App value={1}/&gt;)
+});
+
+// make assertions on root 
+expect(root.toJSON()).toMatchSnapshot();
+
+// update with some different props
+act(() =&gt; {
+  root.update(&lt;App value={2}/&gt;);
+})
+
+// make assertions on root 
+expect(root.toJSON()).toMatchSnapshot();
+</code></pre>
+<h3><code>testRenderer.toJSON()</code> {#testrenderertojson}</h3>
+<pre><code class="language-javascript">testRenderer.toJSON()
+</code></pre>
+<p>Return an object representing the rendered tree. This tree only contains the platform-specific nodes like <code>&lt;div&gt;</code> or <code>&lt;View&gt;</code> and their props, but doesn't contain any user-written components. This is handy for <a href="https://facebook.github.io/jest/docs/en/snapshot-testing.html#snapshot-testing-with-jest">snapshot testing</a>.</p>
+<h3><code>testRenderer.toTree()</code> {#testrenderertotree}</h3>
+<pre><code class="language-javascript">testRenderer.toTree()
+</code></pre>
+<p>Return an object representing the rendered tree. The representation is more detailed than the one provided by <code>toJSON()</code>, and includes the user-written components. You probably don't need this method unless you're writing your own assertion library on top of the test renderer.</p>
+<h3><code>testRenderer.update()</code> {#testrendererupdate}</h3>
+<pre><code class="language-javascript">testRenderer.update(element)
+</code></pre>
+<p>Re-render the in-memory tree with a new root element. This simulates a React update at the root. If the new element has the same type and key as the previous element, the tree will be updated; otherwise, it will re-mount a new tree.</p>
+<h3><code>testRenderer.unmount()</code> {#testrendererunmount}</h3>
+<pre><code class="language-javascript">testRenderer.unmount()
+</code></pre>
+<p>Unmount the in-memory tree, triggering the appropriate lifecycle events.</p>
+<h3><code>testRenderer.getInstance()</code> {#testrenderergetinstance}</h3>
+<pre><code class="language-javascript">testRenderer.getInstance()
+</code></pre>
+<p>Return the instance corresponding to the root element, if available. This will not work if the root element is a function component because they don't have instances.</p>
+<h3><code>testRenderer.root</code> {#testrendererroot}</h3>
+<pre><code class="language-javascript">testRenderer.root
+</code></pre>
+<p>Returns the root &quot;test instance&quot; object that is useful for making assertions about specific nodes in the tree. You can use it to find other &quot;test instances&quot; deeper below.</p>
+<h3><code>testInstance.find()</code> {#testinstancefind}</h3>
+<pre><code class="language-javascript">testInstance.find(test)
+</code></pre>
+<p>Find a single descendant test instance for which <code>test(testInstance)</code> returns <code>true</code>. If <code>test(testInstance)</code> does not return <code>true</code> for exactly one test instance, it will throw an error.</p>
+<h3><code>testInstance.findByType()</code> {#testinstancefindbytype}</h3>
+<pre><code class="language-javascript">testInstance.findByType(type)
+</code></pre>
+<p>Find a single descendant test instance with the provided <code>type</code>. If there is not exactly one test instance with the provided <code>type</code>, it will throw an error.</p>
+<h3><code>testInstance.findByProps()</code> {#testinstancefindbyprops}</h3>
+<pre><code class="language-javascript">testInstance.findByProps(props)
+</code></pre>
+<p>Find a single descendant test instance with the provided <code>props</code>. If there is not exactly one test instance with the provided <code>props</code>, it will throw an error.</p>
+<h3><code>testInstance.findAll()</code> {#testinstancefindall}</h3>
+<pre><code class="language-javascript">testInstance.findAll(test)
+</code></pre>
+<p>Find all descendant test instances for which <code>test(testInstance)</code> returns <code>true</code>.</p>
+<h3><code>testInstance.findAllByType()</code> {#testinstancefindallbytype}</h3>
+<pre><code class="language-javascript">testInstance.findAllByType(type)
+</code></pre>
+<p>Find all descendant test instances with the provided <code>type</code>.</p>
+<h3><code>testInstance.findAllByProps()</code> {#testinstancefindallbyprops}</h3>
+<pre><code class="language-javascript">testInstance.findAllByProps(props)
+</code></pre>
+<p>Find all descendant test instances with the provided <code>props</code>.</p>
+<h3><code>testInstance.instance</code> {#testinstanceinstance}</h3>
+<pre><code class="language-javascript">testInstance.instance
+</code></pre>
+<p>The component instance corresponding to this test instance. It is only available for class components, as function components don't have instances. It matches the <code>this</code> value inside the given component.</p>
+<h3><code>testInstance.type</code> {#testinstancetype}</h3>
+<pre><code class="language-javascript">testInstance.type
+</code></pre>
+<p>The component type corresponding to this test instance. For example, a <code>&lt;Button /&gt;</code> component has a type of <code>Button</code>.</p>
+<h3><code>testInstance.props</code> {#testinstanceprops}</h3>
+<pre><code class="language-javascript">testInstance.props
+</code></pre>
+<p>The props corresponding to this test instance. For example, a <code>&lt;Button size=&quot;small&quot; /&gt;</code> component has <code>{size: 'small'}</code> as props.</p>
+<h3><code>testInstance.parent</code> {#testinstanceparent}</h3>
+<pre><code class="language-javascript">testInstance.parent
+</code></pre>
+<p>The parent test instance of this test instance.</p>
+<h3><code>testInstance.children</code> {#testinstancechildren}</h3>
+<pre><code class="language-javascript">testInstance.children
+</code></pre>
+<p>The children test instances of this test instance.</p>
+<h2>Ideas {#ideas}</h2>
+<p>You can pass <code>createNodeMock</code> function to <code>TestRenderer.create</code> as the option, which allows for custom mock refs.
+<code>createNodeMock</code> accepts the current element and should return a mock ref object.
+This is useful when you test a component that relies on refs.</p>
+<pre><code class="language-javascript">import TestRenderer from 'react-test-renderer';
+
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.input = null;
+  }
+  componentDidMount() {
+    this.input.focus();
+  }
+  render() {
+    return &lt;input type=&quot;text&quot; ref={el =&gt; this.input = el} /&gt;
+  }
+}
+
+let focused = false;
+TestRenderer.create(
+  &lt;MyComponent /&gt;,
+  {
+    createNodeMock: (element) =&gt; {
+      if (element.type === 'input') {
+        // mock a focus function
+        return {
+          focus: () =&gt; {
+            focused = true;
+          }
+        };
+      }
+      return null;
+    }
+  }
+);
+expect(focused).toBe(true);
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: test-renderer\ntitle: Test Renderer\npermalink: docs/test-renderer.html\nlayout: docs\ncategory: Reference\n---\n\n**Importing**\n\n```javascript\nimport TestRenderer from 'react-test-renderer'; // ES6\nconst TestRenderer = require('react-test-renderer'); // ES5 with npm\n```\n\n## Overview {#overview}\n\nThis package provides a React renderer that can be used to render React components to pure JavaScript objects, without depending on the DOM or a native mobile environment.\n\nEssentially, this package makes it easy to grab a snapshot of the platform view hierarchy (similar to a DOM tree) rendered by a React DOM or React Native component without using a browser or [jsdom](https://github.com/tmpvar/jsdom).\n\nExample:\n\n```javascript\nimport TestRenderer from 'react-test-renderer';\n\nfunction Link(props) {\n  return \u003ca href={props.page}\u003e{props.children}\u003c/a\u003e;\n}\n\nconst testRenderer = TestRenderer.create(\n  \u003cLink page=\"https://www.facebook.com/\"\u003eFacebook\u003c/Link\u003e\n);\n\nconsole.log(testRenderer.toJSON());\n// { type: 'a',\n//   props: { href: 'https://www.facebook.com/' },\n//   children: [ 'Facebook' ] }\n```\n\nYou can use Jest's snapshot testing feature to automatically save a copy of the JSON tree to a file and check in your tests that it hasn't changed: [Learn more about it](https://jestjs.io/docs/en/snapshot-testing).\n\nYou can also traverse the output to find specific nodes and make assertions about them.\n\n```javascript\nimport TestRenderer from 'react-test-renderer';\n\nfunction MyComponent() {\n  return (\n    \u003cdiv\u003e\n      \u003cSubComponent foo=\"bar\" /\u003e\n      \u003cp className=\"my\"\u003eHello\u003c/p\u003e\n    \u003c/div\u003e\n  )\n}\n\nfunction SubComponent() {\n  return (\n    \u003cp className=\"sub\"\u003eSub\u003c/p\u003e\n  );\n}\n\nconst testRenderer = TestRenderer.create(\u003cMyComponent /\u003e);\nconst testInstance = testRenderer.root;\n\nexpect(testInstance.findByType(SubComponent).props.foo).toBe('bar');\nexpect(testInstance.findByProps({className: \"sub\"}).children).toEqual(['Sub']);\n```\n\n### TestRenderer {#testrenderer}\n\n* [`TestRenderer.create()`](#testrenderercreate)\n* [`TestRenderer.act()`](#testrendereract)\n\n### TestRenderer instance {#testrenderer-instance}\n\n* [`testRenderer.toJSON()`](#testrenderertojson)\n* [`testRenderer.toTree()`](#testrenderertotree)\n* [`testRenderer.update()`](#testrendererupdate)\n* [`testRenderer.unmount()`](#testrendererunmount)\n* [`testRenderer.getInstance()`](#testrenderergetinstance)\n* [`testRenderer.root`](#testrendererroot)\n\n### TestInstance {#testinstance}\n\n* [`testInstance.find()`](#testinstancefind)\n* [`testInstance.findByType()`](#testinstancefindbytype)\n* [`testInstance.findByProps()`](#testinstancefindbyprops)\n* [`testInstance.findAll()`](#testinstancefindall)\n* [`testInstance.findAllByType()`](#testinstancefindallbytype)\n* [`testInstance.findAllByProps()`](#testinstancefindallbyprops)\n* [`testInstance.instance`](#testinstanceinstance)\n* [`testInstance.type`](#testinstancetype)\n* [`testInstance.props`](#testinstanceprops)\n* [`testInstance.parent`](#testinstanceparent)\n* [`testInstance.children`](#testinstancechildren)\n\n## Reference {#reference}\n\n### `TestRenderer.create()` {#testrenderercreate}\n\n```javascript\nTestRenderer.create(element, options);\n```\n\nCreate a `TestRenderer` instance with the passed React element. It doesn't use the real DOM, but it still fully renders the component tree into memory so you can make assertions about it. Returns a [TestRenderer instance](#testrenderer-instance).\n\n### `TestRenderer.act()` {#testrendereract}\n\n```javascript\nTestRenderer.act(callback);\n```\n\nSimilar to the [`act()` helper from `react-dom/test-utils`](/docs/test-utils.html#act), `TestRenderer.act` prepares a component for assertions. Use this version of `act()` to wrap calls to `TestRenderer.create` and `testRenderer.update`.\n\n```javascript\nimport {create, act} from 'react-test-renderer';\nimport App from './app.js'; // The component being tested\n\n// render the component\nlet root; \nact(() =\u003e {\n  root = create(\u003cApp value={1}/\u003e)\n});\n\n// make assertions on root \nexpect(root.toJSON()).toMatchSnapshot();\n\n// update with some different props\nact(() =\u003e {\n  root.update(\u003cApp value={2}/\u003e);\n})\n\n// make assertions on root \nexpect(root.toJSON()).toMatchSnapshot();\n```\n\n### `testRenderer.toJSON()` {#testrenderertojson}\n\n```javascript\ntestRenderer.toJSON()\n```\n\nReturn an object representing the rendered tree. This tree only contains the platform-specific nodes like `\u003cdiv\u003e` or `\u003cView\u003e` and their props, but doesn't contain any user-written components. This is handy for [snapshot testing](https://facebook.github.io/jest/docs/en/snapshot-testing.html#snapshot-testing-with-jest).\n\n### `testRenderer.toTree()` {#testrenderertotree}\n\n```javascript\ntestRenderer.toTree()\n```\n\nReturn an object representing the rendered tree. The representation is more detailed than the one provided by `toJSON()`, and includes the user-written components. You probably don't need this method unless you're writing your own assertion library on top of the test renderer.\n\n### `testRenderer.update()` {#testrendererupdate}\n\n```javascript\ntestRenderer.update(element)\n```\n\nRe-render the in-memory tree with a new root element. This simulates a React update at the root. If the new element has the same type and key as the previous element, the tree will be updated; otherwise, it will re-mount a new tree.\n\n### `testRenderer.unmount()` {#testrendererunmount}\n\n```javascript\ntestRenderer.unmount()\n```\n\nUnmount the in-memory tree, triggering the appropriate lifecycle events.\n\n### `testRenderer.getInstance()` {#testrenderergetinstance}\n\n```javascript\ntestRenderer.getInstance()\n```\n\nReturn the instance corresponding to the root element, if available. This will not work if the root element is a function component because they don't have instances.\n\n### `testRenderer.root` {#testrendererroot}\n\n```javascript\ntestRenderer.root\n```\n\nReturns the root \"test instance\" object that is useful for making assertions about specific nodes in the tree. You can use it to find other \"test instances\" deeper below.\n\n### `testInstance.find()` {#testinstancefind}\n\n```javascript\ntestInstance.find(test)\n```\n\nFind a single descendant test instance for which `test(testInstance)` returns `true`. If `test(testInstance)` does not return `true` for exactly one test instance, it will throw an error.\n\n### `testInstance.findByType()` {#testinstancefindbytype}\n\n```javascript\ntestInstance.findByType(type)\n```\n\nFind a single descendant test instance with the provided `type`. If there is not exactly one test instance with the provided `type`, it will throw an error.\n\n### `testInstance.findByProps()` {#testinstancefindbyprops}\n\n```javascript\ntestInstance.findByProps(props)\n```\n\nFind a single descendant test instance with the provided `props`. If there is not exactly one test instance with the provided `props`, it will throw an error.\n\n### `testInstance.findAll()` {#testinstancefindall}\n\n```javascript\ntestInstance.findAll(test)\n```\n\nFind all descendant test instances for which `test(testInstance)` returns `true`.\n\n### `testInstance.findAllByType()` {#testinstancefindallbytype}\n\n```javascript\ntestInstance.findAllByType(type)\n```\n\nFind all descendant test instances with the provided `type`.\n\n### `testInstance.findAllByProps()` {#testinstancefindallbyprops}\n\n```javascript\ntestInstance.findAllByProps(props)\n```\n\nFind all descendant test instances with the provided `props`.\n\n### `testInstance.instance` {#testinstanceinstance}\n\n```javascript\ntestInstance.instance\n```\n\nThe component instance corresponding to this test instance. It is only available for class components, as function components don't have instances. It matches the `this` value inside the given component.\n\n### `testInstance.type` {#testinstancetype}\n\n```javascript\ntestInstance.type\n```\n\nThe component type corresponding to this test instance. For example, a `\u003cButton /\u003e` component has a type of `Button`.\n\n### `testInstance.props` {#testinstanceprops}\n\n```javascript\ntestInstance.props\n```\n\nThe props corresponding to this test instance. For example, a `\u003cButton size=\"small\" /\u003e` component has `{size: 'small'}` as props.\n\n### `testInstance.parent` {#testinstanceparent}\n\n```javascript\ntestInstance.parent\n```\n\nThe parent test instance of this test instance.\n\n### `testInstance.children` {#testinstancechildren}\n\n```javascript\ntestInstance.children\n```\n\nThe children test instances of this test instance.\n\n## Ideas {#ideas}\n\nYou can pass `createNodeMock` function to `TestRenderer.create` as the option, which allows for custom mock refs.\n`createNodeMock` accepts the current element and should return a mock ref object.\nThis is useful when you test a component that relies on refs.\n\n```javascript\nimport TestRenderer from 'react-test-renderer';\n\nclass MyComponent extends React.Component {\n  constructor(props) {\n    super(props);\n    this.input = null;\n  }\n  componentDidMount() {\n    this.input.focus();\n  }\n  render() {\n    return \u003cinput type=\"text\" ref={el =\u003e this.input = el} /\u003e\n  }\n}\n\nlet focused = false;\nTestRenderer.create(\n  \u003cMyComponent /\u003e,\n  {\n    createNodeMock: (element) =\u003e {\n      if (element.type === 'input') {\n        // mock a focus function\n        return {\n          focus: () =\u003e {\n            focused = true;\n          }\n        };\n      }\n      return null;\n    }\n  }\n);\nexpect(focused).toBe(true);\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_reference-test-renderer.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

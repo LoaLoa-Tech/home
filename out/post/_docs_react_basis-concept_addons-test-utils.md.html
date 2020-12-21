@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: test-utils
+title: Test Utilities
+permalink: docs/test-utils.html
+layout: docs
+category: Reference</p>
+<hr>
+<p><strong>Importing</strong></p>
+<pre><code class="language-javascript">import ReactTestUtils from 'react-dom/test-utils'; // ES6
+var ReactTestUtils = require('react-dom/test-utils'); // ES5 with npm
+</code></pre>
+<h2>Overview {#overview}</h2>
+<p><code>ReactTestUtils</code> makes it easy to test React components in the testing framework of your choice. At Facebook we use <a href="https://facebook.github.io/jest/">Jest</a> for painless JavaScript testing. Learn how to get started with Jest through the Jest website's <a href="https://jestjs.io/docs/tutorial-react">React Tutorial</a>.</p>
+<blockquote>
+<p>Note:</p>
+<p>We recommend using <a href="https://testing-library.com/react">React Testing Library</a> which is designed to enable and encourage writing tests that use your components as the end users do.</p>
+<p>Alternatively, Airbnb has released a testing utility called <a href="https://airbnb.io/enzyme/">Enzyme</a>, which makes it easy to assert, manipulate, and traverse your React Components' output.</p>
+</blockquote>
+<ul>
+<li><a href="#act"><code>act()</code></a></li>
+<li><a href="#mockcomponent"><code>mockComponent()</code></a></li>
+<li><a href="#iselement"><code>isElement()</code></a></li>
+<li><a href="#iselementoftype"><code>isElementOfType()</code></a></li>
+<li><a href="#isdomcomponent"><code>isDOMComponent()</code></a></li>
+<li><a href="#iscompositecomponent"><code>isCompositeComponent()</code></a></li>
+<li><a href="#iscompositecomponentwithtype"><code>isCompositeComponentWithType()</code></a></li>
+<li><a href="#findallinrenderedtree"><code>findAllInRenderedTree()</code></a></li>
+<li><a href="#scryrendereddomcomponentswithclass"><code>scryRenderedDOMComponentsWithClass()</code></a></li>
+<li><a href="#findrendereddomcomponentwithclass"><code>findRenderedDOMComponentWithClass()</code></a></li>
+<li><a href="#scryrendereddomcomponentswithtag"><code>scryRenderedDOMComponentsWithTag()</code></a></li>
+<li><a href="#findrendereddomcomponentwithtag"><code>findRenderedDOMComponentWithTag()</code></a></li>
+<li><a href="#scryrenderedcomponentswithtype"><code>scryRenderedComponentsWithType()</code></a></li>
+<li><a href="#findrenderedcomponentwithtype"><code>findRenderedComponentWithType()</code></a></li>
+<li><a href="#renderintodocument"><code>renderIntoDocument()</code></a></li>
+<li><a href="#simulate"><code>Simulate</code></a></li>
+</ul>
+<h2>Reference {#reference}</h2>
+<h3><code>act()</code> {#act}</h3>
+<p>To prepare a component for assertions, wrap the code rendering it and performing updates inside an <code>act()</code> call. This makes your test run closer to how React works in the browser.</p>
+<blockquote>
+<p>Note</p>
+<p>If you use <code>react-test-renderer</code>, it also provides an <code>act</code> export that behaves the same way.</p>
+</blockquote>
+<p>For example, let's say we have this <code>Counter</code> component:</p>
+<pre><code class="language-js">class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {count: 0};
+    this.handleClick = this.handleClick.bind(this);
+  }
+  componentDidMount() {
+    document.title = `You clicked ${this.state.count} times`;
+  }
+  componentDidUpdate() {
+    document.title = `You clicked ${this.state.count} times`;
+  }
+  handleClick() {
+    this.setState(state =&gt; ({
+      count: state.count + 1,
+    }));
+  }
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;p&gt;You clicked {this.state.count} times&lt;/p&gt;
+        &lt;button onClick={this.handleClick}&gt;
+          Click me
+        &lt;/button&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+</code></pre>
+<p>Here is how we can test it:</p>
+<pre><code class="language-js{3,20-22,29-31}">import React from 'react';
+import ReactDOM from 'react-dom';
+import { act } from 'react-dom/test-utils';
+import Counter from './Counter';
+
+let container;
+
+beforeEach(() =&gt; {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+});
+
+afterEach(() =&gt; {
+  document.body.removeChild(container);
+  container = null;
+});
+
+it('can render and update a counter', () =&gt; {
+  // Test first render and componentDidMount
+  act(() =&gt; {
+    ReactDOM.render(&lt;Counter /&gt;, container);
+  });
+  const button = container.querySelector('button');
+  const label = container.querySelector('p');
+  expect(label.textContent).toBe('You clicked 0 times');
+  expect(document.title).toBe('You clicked 0 times');
+
+  // Test second render and componentDidUpdate
+  act(() =&gt; {
+    button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+  });
+  expect(label.textContent).toBe('You clicked 1 times');
+  expect(document.title).toBe('You clicked 1 times');
+});
+</code></pre>
+<ul>
+<li><p>Don't forget that dispatching DOM events only works when the DOM container is added to the <code>document</code>. You can use a library like <a href="https://testing-library.com/react">React Testing Library</a> to reduce the boilerplate code.</p></li>
+<li><p>The <a href="/docs/testing-recipes.html"><code>recipes</code></a> document contains more details on how <code>act()</code> behaves, with examples and usage.</p></li>
+</ul>
+<hr>
+<h3><code>mockComponent()</code> {#mockcomponent}</h3>
+<pre><code class="language-javascript">mockComponent(
+  componentClass,
+  [mockTagName]
+)
+</code></pre>
+<p>Pass a mocked component module to this method to augment it with useful methods that allow it to be used as a dummy React component. Instead of rendering as usual, the component will become a simple <code>&lt;div&gt;</code> (or other tag if <code>mockTagName</code> is provided) containing any provided children.</p>
+<blockquote>
+<p>Note:</p>
+<p><code>mockComponent()</code> is a legacy API. We recommend using <a href="https://facebook.github.io/jest/docs/en/tutorial-react-native.html#mock-native-modules-using-jestmock"><code>jest.mock()</code></a> instead.</p>
+</blockquote>
+<hr>
+<h3><code>isElement()</code> {#iselement}</h3>
+<pre><code class="language-javascript">isElement(element)
+</code></pre>
+<p>Returns <code>true</code> if <code>element</code> is any React element.</p>
+<hr>
+<h3><code>isElementOfType()</code> {#iselementoftype}</h3>
+<pre><code class="language-javascript">isElementOfType(
+  element,
+  componentClass
+)
+</code></pre>
+<p>Returns <code>true</code> if <code>element</code> is a React element whose type is of a React <code>componentClass</code>.</p>
+<hr>
+<h3><code>isDOMComponent()</code> {#isdomcomponent}</h3>
+<pre><code class="language-javascript">isDOMComponent(instance)
+</code></pre>
+<p>Returns <code>true</code> if <code>instance</code> is a DOM component (such as a <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code>).</p>
+<hr>
+<h3><code>isCompositeComponent()</code> {#iscompositecomponent}</h3>
+<pre><code class="language-javascript">isCompositeComponent(instance)
+</code></pre>
+<p>Returns <code>true</code> if <code>instance</code> is a user-defined component, such as a class or a function.</p>
+<hr>
+<h3><code>isCompositeComponentWithType()</code> {#iscompositecomponentwithtype}</h3>
+<pre><code class="language-javascript">isCompositeComponentWithType(
+  instance,
+  componentClass
+)
+</code></pre>
+<p>Returns <code>true</code> if <code>instance</code> is a component whose type is of a React <code>componentClass</code>.</p>
+<hr>
+<h3><code>findAllInRenderedTree()</code> {#findallinrenderedtree}</h3>
+<pre><code class="language-javascript">findAllInRenderedTree(
+  tree,
+  test
+)
+</code></pre>
+<p>Traverse all components in <code>tree</code> and accumulate all components where <code>test(component)</code> is <code>true</code>. This is not that useful on its own, but it's used as a primitive for other test utils.</p>
+<hr>
+<h3><code>scryRenderedDOMComponentsWithClass()</code> {#scryrendereddomcomponentswithclass}</h3>
+<pre><code class="language-javascript">scryRenderedDOMComponentsWithClass(
+  tree,
+  className
+)
+</code></pre>
+<p>Finds all DOM elements of components in the rendered tree that are DOM components with the class name matching <code>className</code>.</p>
+<hr>
+<h3><code>findRenderedDOMComponentWithClass()</code> {#findrendereddomcomponentwithclass}</h3>
+<pre><code class="language-javascript">findRenderedDOMComponentWithClass(
+  tree,
+  className
+)
+</code></pre>
+<p>Like <a href="#scryrendereddomcomponentswithclass"><code>scryRenderedDOMComponentsWithClass()</code></a> but expects there to be one result, and returns that one result, or throws exception if there is any other number of matches besides one.</p>
+<hr>
+<h3><code>scryRenderedDOMComponentsWithTag()</code> {#scryrendereddomcomponentswithtag}</h3>
+<pre><code class="language-javascript">scryRenderedDOMComponentsWithTag(
+  tree,
+  tagName
+)
+</code></pre>
+<p>Finds all DOM elements of components in the rendered tree that are DOM components with the tag name matching <code>tagName</code>.</p>
+<hr>
+<h3><code>findRenderedDOMComponentWithTag()</code> {#findrendereddomcomponentwithtag}</h3>
+<pre><code class="language-javascript">findRenderedDOMComponentWithTag(
+  tree,
+  tagName
+)
+</code></pre>
+<p>Like <a href="#scryrendereddomcomponentswithtag"><code>scryRenderedDOMComponentsWithTag()</code></a> but expects there to be one result, and returns that one result, or throws exception if there is any other number of matches besides one.</p>
+<hr>
+<h3><code>scryRenderedComponentsWithType()</code> {#scryrenderedcomponentswithtype}</h3>
+<pre><code class="language-javascript">scryRenderedComponentsWithType(
+  tree,
+  componentClass
+)
+</code></pre>
+<p>Finds all instances of components with type equal to <code>componentClass</code>.</p>
+<hr>
+<h3><code>findRenderedComponentWithType()</code> {#findrenderedcomponentwithtype}</h3>
+<pre><code class="language-javascript">findRenderedComponentWithType(
+  tree,
+  componentClass
+)
+</code></pre>
+<p>Same as <a href="#scryrenderedcomponentswithtype"><code>scryRenderedComponentsWithType()</code></a> but expects there to be one result and returns that one result, or throws exception if there is any other number of matches besides one.</p>
+<hr>
+<h3><code>renderIntoDocument()</code> {#renderintodocument}</h3>
+<pre><code class="language-javascript">renderIntoDocument(element)
+</code></pre>
+<p>Render a React element into a detached DOM node in the document. <strong>This function requires a DOM.</strong> It is effectively equivalent to:</p>
+<pre><code class="language-js">const domContainer = document.createElement('div');
+ReactDOM.render(element, domContainer);
+</code></pre>
+<blockquote>
+<p>Note:</p>
+<p>You will need to have <code>window</code>, <code>window.document</code> and <code>window.document.createElement</code> globally available <strong>before</strong> you import <code>React</code>. Otherwise React will think it can't access the DOM and methods like <code>setState</code> won't work.</p>
+</blockquote>
+<hr>
+<h2>Other Utilities {#other-utilities}</h2>
+<h3><code>Simulate</code> {#simulate}</h3>
+<pre><code class="language-javascript">Simulate.{eventName}(
+  element,
+  [eventData]
+)
+</code></pre>
+<p>Simulate an event dispatch on a DOM node with optional <code>eventData</code> event data.</p>
+<p><code>Simulate</code> has a method for <a href="/docs/events.html#supported-events">every event that React understands</a>.</p>
+<p><strong>Clicking an element</strong></p>
+<pre><code class="language-javascript">// &lt;button ref={(node) =&gt; this.button = node}&gt;...&lt;/button&gt;
+const node = this.button;
+ReactTestUtils.Simulate.click(node);
+</code></pre>
+<p><strong>Changing the value of an input field and then pressing ENTER.</strong></p>
+<pre><code class="language-javascript">// &lt;input ref={(node) =&gt; this.textInput = node} /&gt;
+const node = this.textInput;
+node.value = 'giraffe';
+ReactTestUtils.Simulate.change(node);
+ReactTestUtils.Simulate.keyDown(node, {key: &quot;Enter&quot;, keyCode: 13, which: 13});
+</code></pre>
+<blockquote>
+<p>Note</p>
+<p>You will have to provide any event property that you're using in your component (e.g. keyCode, which, etc...) as React is not creating any of these for you.</p>
+</blockquote>
+<hr>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: test-utils\ntitle: Test Utilities\npermalink: docs/test-utils.html\nlayout: docs\ncategory: Reference\n---\n\n**Importing**\n\n```javascript\nimport ReactTestUtils from 'react-dom/test-utils'; // ES6\nvar ReactTestUtils = require('react-dom/test-utils'); // ES5 with npm\n```\n\n## Overview {#overview}\n\n`ReactTestUtils` makes it easy to test React components in the testing framework of your choice. At Facebook we use [Jest](https://facebook.github.io/jest/) for painless JavaScript testing. Learn how to get started with Jest through the Jest website's [React Tutorial](https://jestjs.io/docs/tutorial-react).\n\n\u003e Note:\n\u003e\n\u003e We recommend using [React Testing Library](https://testing-library.com/react) which is designed to enable and encourage writing tests that use your components as the end users do.\n\u003e\n\u003e Alternatively, Airbnb has released a testing utility called [Enzyme](https://airbnb.io/enzyme/), which makes it easy to assert, manipulate, and traverse your React Components' output.\n\n - [`act()`](#act)\n - [`mockComponent()`](#mockcomponent)\n - [`isElement()`](#iselement)\n - [`isElementOfType()`](#iselementoftype)\n - [`isDOMComponent()`](#isdomcomponent)\n - [`isCompositeComponent()`](#iscompositecomponent)\n - [`isCompositeComponentWithType()`](#iscompositecomponentwithtype)\n - [`findAllInRenderedTree()`](#findallinrenderedtree)\n - [`scryRenderedDOMComponentsWithClass()`](#scryrendereddomcomponentswithclass)\n - [`findRenderedDOMComponentWithClass()`](#findrendereddomcomponentwithclass)\n - [`scryRenderedDOMComponentsWithTag()`](#scryrendereddomcomponentswithtag)\n - [`findRenderedDOMComponentWithTag()`](#findrendereddomcomponentwithtag)\n - [`scryRenderedComponentsWithType()`](#scryrenderedcomponentswithtype)\n - [`findRenderedComponentWithType()`](#findrenderedcomponentwithtype)\n - [`renderIntoDocument()`](#renderintodocument)\n - [`Simulate`](#simulate)\n\n## Reference {#reference}\n\n### `act()` {#act}\n\nTo prepare a component for assertions, wrap the code rendering it and performing updates inside an `act()` call. This makes your test run closer to how React works in the browser.\n\n\u003eNote\n\u003e\n\u003eIf you use `react-test-renderer`, it also provides an `act` export that behaves the same way.\n\nFor example, let's say we have this `Counter` component:\n\n```js\nclass Counter extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = {count: 0};\n    this.handleClick = this.handleClick.bind(this);\n  }\n  componentDidMount() {\n    document.title = `You clicked ${this.state.count} times`;\n  }\n  componentDidUpdate() {\n    document.title = `You clicked ${this.state.count} times`;\n  }\n  handleClick() {\n    this.setState(state =\u003e ({\n      count: state.count + 1,\n    }));\n  }\n  render() {\n    return (\n      \u003cdiv\u003e\n        \u003cp\u003eYou clicked {this.state.count} times\u003c/p\u003e\n        \u003cbutton onClick={this.handleClick}\u003e\n          Click me\n        \u003c/button\u003e\n      \u003c/div\u003e\n    );\n  }\n}\n```\n\nHere is how we can test it:\n\n```js{3,20-22,29-31}\nimport React from 'react';\nimport ReactDOM from 'react-dom';\nimport { act } from 'react-dom/test-utils';\nimport Counter from './Counter';\n\nlet container;\n\nbeforeEach(() =\u003e {\n  container = document.createElement('div');\n  document.body.appendChild(container);\n});\n\nafterEach(() =\u003e {\n  document.body.removeChild(container);\n  container = null;\n});\n\nit('can render and update a counter', () =\u003e {\n  // Test first render and componentDidMount\n  act(() =\u003e {\n    ReactDOM.render(\u003cCounter /\u003e, container);\n  });\n  const button = container.querySelector('button');\n  const label = container.querySelector('p');\n  expect(label.textContent).toBe('You clicked 0 times');\n  expect(document.title).toBe('You clicked 0 times');\n\n  // Test second render and componentDidUpdate\n  act(() =\u003e {\n    button.dispatchEvent(new MouseEvent('click', {bubbles: true}));\n  });\n  expect(label.textContent).toBe('You clicked 1 times');\n  expect(document.title).toBe('You clicked 1 times');\n});\n```\n\n- Don't forget that dispatching DOM events only works when the DOM container is added to the `document`. You can use a library like [React Testing Library](https://testing-library.com/react) to reduce the boilerplate code.\n\n- The [`recipes`](/docs/testing-recipes.html) document contains more details on how `act()` behaves, with examples and usage.\n\n* * *\n\n### `mockComponent()` {#mockcomponent}\n\n```javascript\nmockComponent(\n  componentClass,\n  [mockTagName]\n)\n```\n\nPass a mocked component module to this method to augment it with useful methods that allow it to be used as a dummy React component. Instead of rendering as usual, the component will become a simple `\u003cdiv\u003e` (or other tag if `mockTagName` is provided) containing any provided children.\n\n\u003e Note:\n\u003e\n\u003e `mockComponent()` is a legacy API. We recommend using [`jest.mock()`](https://facebook.github.io/jest/docs/en/tutorial-react-native.html#mock-native-modules-using-jestmock) instead.\n\n* * *\n\n### `isElement()` {#iselement}\n\n```javascript\nisElement(element)\n```\n\nReturns `true` if `element` is any React element.\n\n* * *\n\n### `isElementOfType()` {#iselementoftype}\n\n```javascript\nisElementOfType(\n  element,\n  componentClass\n)\n```\n\nReturns `true` if `element` is a React element whose type is of a React `componentClass`.\n\n* * *\n\n### `isDOMComponent()` {#isdomcomponent}\n\n```javascript\nisDOMComponent(instance)\n```\n\nReturns `true` if `instance` is a DOM component (such as a `\u003cdiv\u003e` or `\u003cspan\u003e`).\n\n* * *\n\n### `isCompositeComponent()` {#iscompositecomponent}\n\n```javascript\nisCompositeComponent(instance)\n```\n\nReturns `true` if `instance` is a user-defined component, such as a class or a function.\n\n* * *\n\n### `isCompositeComponentWithType()` {#iscompositecomponentwithtype}\n\n```javascript\nisCompositeComponentWithType(\n  instance,\n  componentClass\n)\n```\n\nReturns `true` if `instance` is a component whose type is of a React `componentClass`.\n\n* * *\n\n### `findAllInRenderedTree()` {#findallinrenderedtree}\n\n```javascript\nfindAllInRenderedTree(\n  tree,\n  test\n)\n```\n\nTraverse all components in `tree` and accumulate all components where `test(component)` is `true`. This is not that useful on its own, but it's used as a primitive for other test utils.\n\n* * *\n\n### `scryRenderedDOMComponentsWithClass()` {#scryrendereddomcomponentswithclass}\n\n```javascript\nscryRenderedDOMComponentsWithClass(\n  tree,\n  className\n)\n```\n\nFinds all DOM elements of components in the rendered tree that are DOM components with the class name matching `className`.\n\n* * *\n\n### `findRenderedDOMComponentWithClass()` {#findrendereddomcomponentwithclass}\n\n```javascript\nfindRenderedDOMComponentWithClass(\n  tree,\n  className\n)\n```\n\nLike [`scryRenderedDOMComponentsWithClass()`](#scryrendereddomcomponentswithclass) but expects there to be one result, and returns that one result, or throws exception if there is any other number of matches besides one.\n\n* * *\n\n### `scryRenderedDOMComponentsWithTag()` {#scryrendereddomcomponentswithtag}\n\n```javascript\nscryRenderedDOMComponentsWithTag(\n  tree,\n  tagName\n)\n```\n\nFinds all DOM elements of components in the rendered tree that are DOM components with the tag name matching `tagName`.\n\n* * *\n\n### `findRenderedDOMComponentWithTag()` {#findrendereddomcomponentwithtag}\n\n```javascript\nfindRenderedDOMComponentWithTag(\n  tree,\n  tagName\n)\n```\n\nLike [`scryRenderedDOMComponentsWithTag()`](#scryrendereddomcomponentswithtag) but expects there to be one result, and returns that one result, or throws exception if there is any other number of matches besides one.\n\n* * *\n\n### `scryRenderedComponentsWithType()` {#scryrenderedcomponentswithtype}\n\n```javascript\nscryRenderedComponentsWithType(\n  tree,\n  componentClass\n)\n```\n\nFinds all instances of components with type equal to `componentClass`.\n\n* * *\n\n### `findRenderedComponentWithType()` {#findrenderedcomponentwithtype}\n\n```javascript\nfindRenderedComponentWithType(\n  tree,\n  componentClass\n)\n```\n\nSame as [`scryRenderedComponentsWithType()`](#scryrenderedcomponentswithtype) but expects there to be one result and returns that one result, or throws exception if there is any other number of matches besides one.\n\n***\n\n### `renderIntoDocument()` {#renderintodocument}\n\n```javascript\nrenderIntoDocument(element)\n```\n\nRender a React element into a detached DOM node in the document. **This function requires a DOM.** It is effectively equivalent to:\n\n```js\nconst domContainer = document.createElement('div');\nReactDOM.render(element, domContainer);\n```\n\n\u003e Note:\n\u003e\n\u003e You will need to have `window`, `window.document` and `window.document.createElement` globally available **before** you import `React`. Otherwise React will think it can't access the DOM and methods like `setState` won't work.\n\n* * *\n\n## Other Utilities {#other-utilities}\n\n### `Simulate` {#simulate}\n\n```javascript\nSimulate.{eventName}(\n  element,\n  [eventData]\n)\n```\n\nSimulate an event dispatch on a DOM node with optional `eventData` event data.\n\n`Simulate` has a method for [every event that React understands](/docs/events.html#supported-events).\n\n**Clicking an element**\n\n```javascript\n// \u003cbutton ref={(node) =\u003e this.button = node}\u003e...\u003c/button\u003e\nconst node = this.button;\nReactTestUtils.Simulate.click(node);\n```\n\n**Changing the value of an input field and then pressing ENTER.**\n\n```javascript\n// \u003cinput ref={(node) =\u003e this.textInput = node} /\u003e\nconst node = this.textInput;\nnode.value = 'giraffe';\nReactTestUtils.Simulate.change(node);\nReactTestUtils.Simulate.keyDown(node, {key: \"Enter\", keyCode: 13, which: 13});\n```\n\n\u003e Note\n\u003e\n\u003e You will have to provide any event property that you're using in your component (e.g. keyCode, which, etc...) as React is not creating any of these for you.\n\n* * *\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_addons-test-utils.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

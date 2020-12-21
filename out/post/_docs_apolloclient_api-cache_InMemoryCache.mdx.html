@@ -1,0 +1,265 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: InMemoryCache
+description: InMemoryCache API reference</p>
+<hr>
+<h2><code>readQuery</code></h2>
+<p>Run GraphQL queries directly against the cache.</p>
+<p>For usage instructions, refer to <a href="../../caching/cache-interaction/#readquery">Interacting with cached data: <code>readQuery</code></a>.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/core/cache.ts">readQuery&lt;QueryType, TVariables = any&gt;(
+  options: DataProxy.Query&lt;TVariables&gt;,
+  optimistic: boolean = false,
+): QueryType | null
+</code></pre>
+<h3>Input</h3>
+<h4><code>options</code></h4>
+<table>
+<thead>
+<tr><th>Option</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>query</code></td><td><code>DocumentNode</code></td><td>The GraphQL query shape to be used constructed using the <code>gql</code> template string tag from <code>graphql-tag</code>. The query will be used to determine the shape of the data to be read.</td></tr>
+<tr><td><code>variables?</code></td><td><code>TVariables</code></td><td>Any variables that the GraphQL query may depend on.</td></tr>
+<tr><td><code>id?</code></td><td><code>string</code></td><td>The root <code>id</code> to be used. Defaults to <code>ROOT_QUERY</code>, which is the ID of the root query object.</td></tr>
+</tbody>
+</table>
+<h4><code>optimistic</code></h4>
+<table>
+<thead>
+<tr><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>boolean</code></td><td>Set to <code>true</code> to allow <code>readQuery</code> to return optimistic results. Is <code>false</code> by default.</td></tr>
+</tbody>
+</table>
+<h3>Output</h3>
+<p>Query result data object (optionally typed by <code>QueryType</code>) or <code>null</code> if no matching data can be found.</p>
+<h2><code>writeQuery</code></h2>
+<p>Write data in the shape of the provided GraphQL query, into the cache.</p>
+<p>For usage instructions, refer to <a href="../../caching/cache-interaction/#writequery-and-writefragment">Interacting with cached data: <code>writeQuery</code></a>.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/core/cache.ts">writeQuery&lt;TData = any, TVariables = any&gt;(
+  options: Cache.WriteQueryOptions&lt;TData, TVariables&gt;,
+): Reference | undefined
+</code></pre>
+<h3>Input</h3>
+<h4><code>options</code></h4>
+<table>
+<thead>
+<tr><th>Option</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>query</code></td><td><code>DocumentNode</code></td><td>The GraphQL query shape to be used constructed using the <code>gql</code> template string tag from <code>graphql-tag</code>. The query will be used to determine the shape of the data to be written.</td></tr>
+<tr><td><code>variables?</code></td><td><code>TVariables</code></td><td>Any variables that the GraphQL query may depend on.</td></tr>
+<tr><td><code>id?</code></td><td><code>string</code></td><td>The root <code>id</code> to be used. Defaults to <code>ROOT_QUERY</code>, which is the ID of the root query object. This property makes <code>writeQuery</code> capable of writing data to any object in the cache, which renders <code>writeFragment</code> mostly useless.</td></tr>
+<tr><td><code>data</code></td><td><code>TData</code></td><td>The data you will be writing to the cache.</td></tr>
+<tr><td><code>broadcast?</code></td><td><code>boolean</code></td><td>Whether to notify query watchers (default: true).</td></tr>
+</tbody>
+</table>
+<h3>Output</h3>
+<p>Returns a <code>Reference</code> to the written object, or <code>undefined</code> if the write failed.</p>
+<h2><code>readFragment</code></h2>
+<p>Read data from the cache in the shape of the provided GraphQL fragment.</p>
+<p>For usage instructions, refer to <a href="../../caching/cache-interaction/#readfragment">Interacting with cached data: <code>readFragment</code></a>.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/core/cache.ts">readFragment&lt;FragmentType, TVariables = any&gt;(
+  options: DataProxy.Fragment&lt;TVariables&gt;,
+  optimistic: boolean = false,
+): FragmentType | null
+</code></pre>
+<h3>Input</h3>
+<h4><code>options</code></h4>
+<table>
+<thead>
+<tr><th>Option</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>id?</code></td><td><code>string</code></td><td>The root <code>id</code> to be used. If a value with your id does not exist in the cache, <code>null</code> will be returned.</td></tr>
+<tr><td><code>fragment</code></td><td><code>DocumentNode</code></td><td>A GraphQL document created using the <code>gql</code> template string tag from <code>graphql-tag</code> with one or more fragments which will be used to determine the shape of data to read. If you provide more than one fragment in this document then you must also specify <code>fragmentName</code> to select a single fragment.</td></tr>
+<tr><td><code>fragmentName?</code></td><td><code>string</code></td><td>The name of the fragment in your GraphQL document to be used. If you do not provide a <code>fragmentName</code> and there is only one fragment in your <code>fragment</code> document, then that fragment will be used.</td></tr>
+<tr><td><code>variables?</code></td><td><code>TVariables</code></td><td>Any variables that your GraphQL fragments depend on.</td></tr>
+</tbody>
+</table>
+<h4><code>optimistic</code></h4>
+<table>
+<thead>
+<tr><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>boolean</code></td><td>Set to <code>true</code> to allow <code>readFragment</code> to return optimistic results. Is <code>false</code> by default.</td></tr>
+</tbody>
+</table>
+<h3>Output</h3>
+<p>Fragment result data object (optionally typed by <code>FragmentType</code>) or <code>null</code> if no matching data can be found.</p>
+<h2><code>writeFragment</code></h2>
+<p>Write data in the shape of the provided GraphQL fragment, into the cache.</p>
+<p>For usage instructions, refer to <a href="../../caching/cache-interaction/#writequery-and-writefragment">Interacting with cached data: <code>writeFragment</code></a>.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/core/cache.ts">writeFragment&lt;TData = any, TVariables = any&gt;(
+  options: Cache.WriteFragmentOptions&lt;TData, TVariables&gt;,
+): Reference | undefined
+</code></pre>
+<h3>Input</h3>
+<h4><code>options</code></h4>
+<table>
+<thead>
+<tr><th>Option</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>id?</code></td><td><code>string</code></td><td>The root <code>id</code> to be used.</td></tr>
+<tr><td><code>fragment</code></td><td><code>DocumentNode</code></td><td>A GraphQL document created using the <code>gql</code> template string tag from <code>graphql-tag</code> with one or more fragments which will be used to determine the shape of data to write. If you provide more than one fragment in this document then you must also specify <code>fragmentName</code> to select a single fragment.</td></tr>
+<tr><td><code>fragmentName?</code></td><td><code>string</code></td><td>The name of the fragment in your GraphQL document to be used. If you do not provide a <code>fragmentName</code> and there is only one fragment in your <code>fragment</code> document, then that fragment will be used.</td></tr>
+<tr><td><code>variables?</code></td><td><code>TVariables</code></td><td>Any variables that your GraphQL fragments depend on.</td></tr>
+<tr><td><code>data</code></td><td><code>TData</code></td><td>The data you will be writing to the cache.</td></tr>
+<tr><td><code>broadcast?</code></td><td><code>boolean</code></td><td>Whether to notify query watchers (default: true).</td></tr>
+</tbody>
+</table>
+<h3>Output</h3>
+<p>Returns a <code>Reference</code> to the written object, or <code>undefined</code> if the write failed.</p>
+<h2><code>identify</code></h2>
+<p>Returns the canonical ID for a given cache object or reference.</p>
+<p>For usage instructions, refer to <a href="../../caching/cache-interaction/#obtaining-an-objects-custom-id">Interacting with cached data: Identify cached entities</a>.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/inmemory/inMemoryCache.ts">identify(object: StoreObject | Reference): string | undefined
+</code></pre>
+<h3>Input</h3>
+<h4><code>object</code></h4>
+<table>
+<thead>
+<tr><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>StoreObject</code> \</td><td><code>Reference</code></td><td>Either a cache object (an object with a <code>__typename</code> and any primary key fields required to identify entities of that type) or a <code>Reference</code> (an object with a <code>__ref</code> property).</td></tr>
+</tbody>
+</table>
+<h3>Output</h3>
+<p>If <code>object</code> is a <code>StoreObject</code>, <code>identify</code> will return its string based ID (e.g. <code>Car:1</code>). If <code>object</code> a <code>Reference</code> object, <code>identify</code> will return its <code>__ref</code> ID string.</p>
+<h2><code>modify</code></h2>
+<p>Takes an entity ID and an object mapping field names to modifier functions. For the specified entity, each field modifier function is called with the current value or references of the field, and should return a new value for the field to be written into the cache.</p>
+<p>For usage instructions, see <a href="../../caching/cache-interaction/#cachemodify"><code>cache.modify</code></a>.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/inmemory/inMemoryCache.ts">modify(options: Cache.ModifyOptions): boolean
+</code></pre>
+<h3>Input</h3>
+<h4><code>options</code></h4>
+<table>
+<thead>
+<tr><th>Option</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>id?</code></td><td><code>string</code></td><td>ID of the cache object to be modified.</td></tr>
+<tr><td><code>fields</code></td><td><code>Modifiers</code> \</td><td><code>Modifier&lt;any&gt;</code></td><td>Map of field names to one or more <code>Modifier</code> functions, that are to be run for each field, returning a new value for the field that is then written into the cache. The <code>Modifier</code> function API is explained below.</td></tr>
+<tr><td><code>optimistic?</code></td><td><code>boolean</code></td><td>Set to <code>true</code> to modify optimistic data. Is <code>false</code> by default.</td></tr>
+<tr><td><code>broadcast?</code></td><td><code>boolean</code></td><td>Whether to notify query watchers (default: true).</td></tr>
+</tbody>
+</table>
+<h5><code>Modifier</code> functions</h5>
+<p>E.g. A <code>Modifier</code> function for an <code>author</code> field:</p>
+<pre><code class="language-ts">// ...
+fields: {
+  author(author: Reference, { readField }) {
+    // ...
+    return author;
+  }
+}
+// ...
+</code></pre>
+<p>The first parameter of a modifier function is the current value of the field being modified (<code>author</code> in the example above). The second parameter is a helper object that contains several utilities:</p>
+<table>
+<thead>
+<tr><th>Property</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>fieldName</code></td><td><code>string</code></td><td>The name of the field being modified.</td></tr>
+<tr><td><code>storeFieldName</code></td><td><code>string</code></td><td>The full field key used internally, including serialized key arguments.</td></tr>
+<tr><td><code>readField</code></td><td><code>ReadFieldFunction</code></td><td>A helper function for reading other fields within the current object.</td></tr>
+<tr><td><code>canRead</code></td><td><code>CanReadFunction</code></td><td>Returns <code>true</code> for non-normalized <code>StoreObjects</code> and non-dangling <code>Reference</code>s, indicating that <code>readField(name, objOrRef)</code> has a chance of working. Useful for filtering out dangling references from lists.</td></tr>
+<tr><td><code>isReference</code></td><td><code>boolean</code></td><td>Utility to check if an object is a <code>{ __ref }</code> object.</td></tr>
+<tr><td><code>DELETE</code></td><td><code>any</code></td><td>Sentinel object that can be returned from a modifier function to delete the field being modified.</td></tr>
+<tr><td><code>INVALIDATE</code></td><td><code>any</code></td><td>Sentinel object that can be returned from a modifier function to invalidate the field, causing affected queries to rerun, without changing or deleting the field value.</td></tr>
+</tbody>
+</table>
+<p><code>Modifier</code> functions should return the value that is to be written into the cache for the field being modified, or a <code>DELETE</code> sentinel to remove the field.</p>
+<h3>Output</h3>
+<p><code>cache.modify</code> returns <code>true</code> if the cache was modified successfully, <code>false</code> otherwise.</p>
+<h2><code>gc</code></h2>
+<p>Request the garbage collection of unreachable normalized entities.</p>
+<p>For usage instructions, see <a href="../../caching/garbage-collection/#cachegc"><code>cache.gc</code></a>.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/inmemory/inMemoryCache.ts">gc()
+</code></pre>
+<h3>Input</h3>
+<p>None</p>
+<h3>Output</h3>
+<p>Returns an array of ID strings that were removed from the cache, if any.</p>
+<h2><code>evict</code></h2>
+<p>Remove whole objects from the cache by passing <code>options.id</code>, or specific fields by passing <code>options.field</code> and/or <code>options.args</code>. If no <code>options.args</code> are provided, all fields matching <code>options.field</code> (even those with arguments) will be removed.</p>
+<p>For usage instructions, see <a href="../../caching/garbage-collection/#cacheevict">`cache.evict</a>.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/inmemory/inMemoryCache.ts">evict(options: Cache.EvictOptions): boolean
+</code></pre>
+<h3>Input</h3>
+<h4><code>options</code></h4>
+<table>
+<thead>
+<tr><th>Option</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>id?</code></td><td><code>string</code></td><td>ID of object to remove from the cache.</td></tr>
+<tr><td><code>fieldName?</code></td><td><code>string</code></td><td>Specific field of an object to remove from the cache.</td></tr>
+<tr><td><code>args?</code></td><td><code>Record&lt;string, any&gt;</code></td><td>Ensure only fields with these arguments are removed from the cache.</td></tr>
+<tr><td><code>broadcast?</code></td><td><code>boolean</code></td><td>Whether to notify query watchers (default: true).</td></tr>
+</tbody>
+</table>
+<h3>Output</h3>
+<p>Returns <code>true</code> if any data was removed from the cache, <code>false</code> otherwise.</p>
+<h2><code>extract</code></h2>
+<p>Get a serialized representation of the cache's current state.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/inmemory/inMemoryCache.ts">extract(optimistic: boolean = false): NormalizedCacheObject
+</code></pre>
+<h3>Input</h3>
+<table>
+<thead>
+<tr><th>Param</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>optimistic</code></td><td><code>boolean</code></td><td>Set to <code>true</code> to include optimistic data in the extract. Is <code>false</code> by default.</td></tr>
+</tbody>
+</table>
+<h3>Output</h3>
+<p>Returns a serialized representation of all cache contents (<code>NormalizedCacheObject</code>).</p>
+<h2><code>restore</code></h2>
+<p>Replaces existing state in the cache (if any).</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/inmemory/inMemoryCache.ts">restore(data: NormalizedCacheObject): this
+</code></pre>
+<h3>Input</h3>
+<table>
+<thead>
+<tr><th>Param</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>data</code></td><td><code>NormalizedCacheObject</code></td><td>New cache state that will overwrite the existing cache state.</td></tr>
+</tbody>
+</table>
+<h3>Output</h3>
+<p>Returns the current <code>InMemoryCache</code> instance.</p>
+<h2><code>makeVar</code></h2>
+<p>Create/update/read reactive variables.</p>
+<p>For usage instructions, refer to <a href="../../local-state/reactive-variables/">Local state: Reactive variables</a>.</p>
+<h3>Method</h3>
+<pre><code class="language-ts:title=src/cache/inmemory/inMemoryCache.ts">makeVar&lt;T&gt;(value: T): ReactiveVar&lt;T&gt;
+</code></pre>
+<h3>Input</h3>
+<table>
+<thead>
+<tr><th>Param</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>value</code></td><td><code>T</code></td><td>New or updated value of the reactive variable.</td></tr>
+</tbody>
+</table>
+<h3>Output</h3>
+<p>Returns a reactive variable function. Calling the function will return the value of the current reactive variable.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: InMemoryCache\ndescription: InMemoryCache API reference\n---\n\n## `readQuery`\n\nRun GraphQL queries directly against the cache.\n\nFor usage instructions, refer to [Interacting with cached data: `readQuery`](../../caching/cache-interaction/#readquery).\n\n### Method\n\n```ts:title=src/cache/core/cache.ts\nreadQuery\u003cQueryType, TVariables = any\u003e(\n  options: DataProxy.Query\u003cTVariables\u003e,\n  optimistic: boolean = false,\n): QueryType | null\n```\n\n### Input\n\n#### `options`\n\n| Option | Type | Description |\n| - | - | - |\n| `query` | `DocumentNode` | The GraphQL query shape to be used constructed using the `gql` template string tag from `graphql-tag`. The query will be used to determine the shape of the data to be read. |\n| `variables?` | `TVariables` | Any variables that the GraphQL query may depend on. |\n| `id?` | `string` | The root `id` to be used. Defaults to `ROOT_QUERY`, which is the ID of the root query object. |\n\n#### `optimistic`\n\n| Type | Description |\n| - | - |\n| `boolean` | Set to `true` to allow `readQuery` to return optimistic results. Is `false` by default. |\n\n### Output\n\nQuery result data object (optionally typed by `QueryType`) or `null` if no matching data can be found.\n\n## `writeQuery`\n\nWrite data in the shape of the provided GraphQL query, into the cache.\n\nFor usage instructions, refer to [Interacting with cached data: `writeQuery`](../../caching/cache-interaction/#writequery-and-writefragment).\n\n### Method\n\n```ts:title=src/cache/core/cache.ts\nwriteQuery\u003cTData = any, TVariables = any\u003e(\n  options: Cache.WriteQueryOptions\u003cTData, TVariables\u003e,\n): Reference | undefined\n```\n\n### Input\n\n#### `options`\n\n| Option | Type | Description |\n| - | - | - |\n| `query` | `DocumentNode` | The GraphQL query shape to be used constructed using the `gql` template string tag from `graphql-tag`. The query will be used to determine the shape of the data to be written. |\n| `variables?` | `TVariables` | Any variables that the GraphQL query may depend on. |\n| `id?` | `string` | The root `id` to be used. Defaults to `ROOT_QUERY`, which is the ID of the root query object. This property makes `writeQuery` capable of writing data to any object in the cache, which renders `writeFragment` mostly useless. |\n| `data` | `TData` | The data you will be writing to the cache. |\n| `broadcast?` | `boolean` | Whether to notify query watchers (default: true). |\n\n### Output\n\nReturns a `Reference` to the written object, or `undefined` if the write failed.\n\n## `readFragment`\n\nRead data from the cache in the shape of the provided GraphQL fragment.\n\nFor usage instructions, refer to [Interacting with cached data: `readFragment`](../../caching/cache-interaction/#readfragment).\n\n### Method\n\n```ts:title=src/cache/core/cache.ts\nreadFragment\u003cFragmentType, TVariables = any\u003e(\n  options: DataProxy.Fragment\u003cTVariables\u003e,\n  optimistic: boolean = false,\n): FragmentType | null\n```\n\n### Input\n\n#### `options`\n\n| Option | Type | Description |\n| - | - | - |\n| `id?` | `string` | The root `id` to be used. If a value with your id does not exist in the cache, `null` will be returned. |\n| `fragment` | `DocumentNode` | A GraphQL document created using the `gql` template string tag from `graphql-tag` with one or more fragments which will be used to determine the shape of data to read. If you provide more than one fragment in this document then you must also specify `fragmentName` to select a single fragment. |\n| `fragmentName?` | `string` |  The name of the fragment in your GraphQL document to be used. If you do not provide a `fragmentName` and there is only one fragment in your `fragment` document, then that fragment will be used. |\n| `variables?` | `TVariables` | Any variables that your GraphQL fragments depend on. |\n\n#### `optimistic`\n\n| Type | Description |\n| - | - |\n| `boolean` | Set to `true` to allow `readFragment` to return optimistic results. Is `false` by default. |\n\n### Output\n\nFragment result data object (optionally typed by `FragmentType`) or `null` if no matching data can be found.\n\n## `writeFragment`\n\nWrite data in the shape of the provided GraphQL fragment, into the cache.\n\nFor usage instructions, refer to [Interacting with cached data: `writeFragment`](../../caching/cache-interaction/#writequery-and-writefragment).\n\n### Method\n\n```ts:title=src/cache/core/cache.ts\nwriteFragment\u003cTData = any, TVariables = any\u003e(\n  options: Cache.WriteFragmentOptions\u003cTData, TVariables\u003e,\n): Reference | undefined\n```\n\n### Input\n\n#### `options`\n\n| Option | Type | Description |\n| - | - | - |\n| `id?` | `string` | The root `id` to be used. |\n| `fragment` | `DocumentNode` | A GraphQL document created using the `gql` template string tag from `graphql-tag` with one or more fragments which will be used to determine the shape of data to write. If you provide more than one fragment in this document then you must also specify `fragmentName` to select a single fragment. |\n| `fragmentName?` | `string` |  The name of the fragment in your GraphQL document to be used. If you do not provide a `fragmentName` and there is only one fragment in your `fragment` document, then that fragment will be used. |\n| `variables?` | `TVariables` | Any variables that your GraphQL fragments depend on. |\n| `data` | `TData` | The data you will be writing to the cache. |\n| `broadcast?` | `boolean` | Whether to notify query watchers (default: true). |\n\n### Output\n\nReturns a `Reference` to the written object, or `undefined` if the write failed.\n\n## `identify`\n\nReturns the canonical ID for a given cache object or reference.\n\nFor usage instructions, refer to [Interacting with cached data: Identify cached entities](../../caching/cache-interaction/#obtaining-an-objects-custom-id).\n\n### Method\n\n```ts:title=src/cache/inmemory/inMemoryCache.ts\nidentify(object: StoreObject | Reference): string | undefined\n```\n\n### Input\n\n#### `object`\n\n| Type | Description |\n| - | - |\n| `StoreObject` \\| `Reference` | Either a cache object (an object with a `__typename` and any primary key fields required to identify entities of that type) or a `Reference` (an object with a `__ref` property). |\n\n### Output\n\nIf `object` is a `StoreObject`, `identify` will return its string based ID (e.g. `Car:1`). If `object` a `Reference` object, `identify` will return its `__ref` ID string.\n\n## `modify`\n\nTakes an entity ID and an object mapping field names to modifier functions. For the specified entity, each field modifier function is called with the current value or references of the field, and should return a new value for the field to be written into the cache.\n\nFor usage instructions, see [`cache.modify`](../../caching/cache-interaction/#cachemodify).\n\n### Method\n\n```ts:title=src/cache/inmemory/inMemoryCache.ts\nmodify(options: Cache.ModifyOptions): boolean\n```\n\n### Input\n\n#### `options`\n\n| Option | Type | Description |\n| - | - | - |\n| `id?` | `string` | ID of the cache object to be modified. |\n| `fields` | `Modifiers` \\| `Modifier\u003cany\u003e` | Map of field names to one or more `Modifier` functions, that are to be run for each field, returning a new value for the field that is then written into the cache. The `Modifier` function API is explained below. |\n| `optimistic?` | `boolean` | Set to `true` to modify optimistic data. Is `false` by default. |\n| `broadcast?` | `boolean` | Whether to notify query watchers (default: true). |\n\n##### `Modifier` functions\n\nE.g. A `Modifier` function for an `author` field:\n\n```ts\n// ...\nfields: {\n  author(author: Reference, { readField }) {\n    // ...\n    return author;\n  }\n}\n// ...\n```\n\nThe first parameter of a modifier function is the current value of the field being modified (`author` in the example above). The second parameter is a helper object that contains several utilities:\n\n| Property | Type | Description |\n| - | - | - |\n| `fieldName` | `string` | The name of the field being modified. |\n| `storeFieldName` | `string` | The full field key used internally, including serialized key arguments. |\n| `readField` | `ReadFieldFunction` | A helper function for reading other fields within the current object. |\n| `canRead` | `CanReadFunction` | Returns `true` for non-normalized `StoreObjects` and non-dangling `Reference`s, indicating that `readField(name, objOrRef)` has a chance of working. Useful for filtering out dangling references from lists. |\n| `isReference` | `boolean` | Utility to check if an object is a `{ __ref }` object. |\n| `DELETE` | `any` | Sentinel object that can be returned from a modifier function to delete the field being modified. |\n| `INVALIDATE` | `any` | Sentinel object that can be returned from a modifier function to invalidate the field, causing affected queries to rerun, without changing or deleting the field value. |\n\n`Modifier` functions should return the value that is to be written into the cache for the field being modified, or a `DELETE` sentinel to remove the field.\n\n### Output\n\n`cache.modify` returns `true` if the cache was modified successfully, `false` otherwise.\n\n## `gc`\n\nRequest the garbage collection of unreachable normalized entities.\n\nFor usage instructions, see [`cache.gc`](../../caching/garbage-collection/#cachegc).\n\n### Method\n\n```ts:title=src/cache/inmemory/inMemoryCache.ts\ngc()\n```\n\n### Input\n\nNone\n\n### Output\n\nReturns an array of ID strings that were removed from the cache, if any.\n\n## `evict`\n\nRemove whole objects from the cache by passing `options.id`, or specific fields by passing `options.field` and/or `options.args`. If no `options.args` are provided, all fields matching `options.field` (even those with arguments) will be removed.\n\nFor usage instructions, see [`cache.evict](../../caching/garbage-collection/#cacheevict).\n\n### Method\n\n```ts:title=src/cache/inmemory/inMemoryCache.ts\nevict(options: Cache.EvictOptions): boolean\n```\n\n### Input\n\n#### `options`\n\n| Option | Type | Description |\n| - | - | - |\n| `id?` | `string` | ID of object to remove from the cache. |\n| `fieldName?` | `string` | Specific field of an object to remove from the cache. |\n| `args?` | `Record\u003cstring, any\u003e` | Ensure only fields with these arguments are removed from the cache. |\n| `broadcast?` | `boolean` | Whether to notify query watchers (default: true). |\n\n### Output\n\nReturns `true` if any data was removed from the cache, `false` otherwise.\n\n## `extract`\n\nGet a serialized representation of the cache's current state.\n\n### Method\n\n```ts:title=src/cache/inmemory/inMemoryCache.ts\nextract(optimistic: boolean = false): NormalizedCacheObject\n```\n\n### Input\n\n| Param | Type | Description |\n| - | - | - |\n| `optimistic` | `boolean` | Set to `true` to include optimistic data in the extract. Is `false` by default. |\n\n### Output\n\nReturns a serialized representation of all cache contents (`NormalizedCacheObject`).\n\n## `restore`\n\nReplaces existing state in the cache (if any).\n\n### Method\n\n```ts:title=src/cache/inmemory/inMemoryCache.ts\nrestore(data: NormalizedCacheObject): this\n```\n\n### Input\n\n| Param | Type | Description |\n| - | - | - |\n| `data` | `NormalizedCacheObject` | New cache state that will overwrite the existing cache state. |\n\n### Output\n\nReturns the current `InMemoryCache` instance.\n\n## `makeVar`\n\nCreate/update/read reactive variables.\n\nFor usage instructions, refer to [Local state: Reactive variables](../../local-state/reactive-variables/).\n\n### Method\n\n```ts:title=src/cache/inmemory/inMemoryCache.ts\nmakeVar\u003cT\u003e(value: T): ReactiveVar\u003cT\u003e\n```\n\n### Input\n\n| Param | Type | Description |\n| - | - | - |\n| `value` | `T` | New or updated value of the reactive variable. |\n\n### Output\n\nReturns a reactive variable function. Calling the function will return the value of the current reactive variable.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_api-cache_InMemoryCache.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

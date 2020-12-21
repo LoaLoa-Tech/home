@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Heroku
+subSection: deployment
+[meta]-->
+<h1>Deploying Keystone to Heroku</h1>
+<p>This quick start guide shows how to deploy your first KeystoneJS app to Heroku and use MongoDB Atlas as our database service.</p>
+<h2>Requirements</h2>
+<p>Before we start, make sure you have <a href="https://git-scm.com/downloads">Git</a> installed with <code>git --version</code>, and that you have created your first KeystoneJS app.</p>
+<p>If not, see the guide <a href="https://www.keystonejs.com/quick-start/">Your first KeystoneJS app in 5 minutes</a>.</p>
+<blockquote>
+<p><strong>Note:</strong> Deploying <a href="#deploy-the-starter-starter-project">the STARTER starter project</a> requires a few tweaks.</p>
+</blockquote>
+<h2>MongoDB Atlas</h2>
+<p>MongoDB Atlas has a free tier that we can use as our database service. You need to create an account, but you can use the free tier.</p>
+<ul>
+<li>Create <a href="https://www.mongodb.com/cloud/atlas/signup">MongoDB Atlas</a> account and add a free tier Cluster.</li>
+</ul>
+<h3>Allow Heroku to access our database</h3>
+<ul>
+<li>Make sure to enable access from any network by going to SECURITY/Network Access, press [+Add ip address], [Allow access from anywhere] and confirm. This should add a rule that allow traffic from 0.0.0.0/0 (all networks).</li>
+</ul>
+<h3>Create a new user and get the database connection string</h3>
+<ul>
+<li><p>Go to SECURITY/Database access, press [+Add new database user] and create a new user with read and write privileges.</p></li>
+<li><p>Take a note of the database connection string by selecting Clusters, press [Connect], [Connect your application], select Node.js and copy the connection string. It should look something like this <code>mongodb+srv://&lt;username&gt;:&lt;password&gt;@cluster0-szafh.azure.mongodb.net/test?retryWrites=true&amp;w=majority</code>.</p></li>
+</ul>
+<h2>Heroku</h2>
+<p>Also Heroku has a free option. To use that we need to start to create a new account and install Heroku CLI.</p>
+<h3>Install Heroku CLI</h3>
+<p>Heroku CLI is used to push the app to Heroku.</p>
+<ul>
+<li>Download and install <a href="https://devcenter.heroku.com/articles/heroku-cli">Heroku CLI</a>.</li>
+</ul>
+<h3>Create a new Heroku app</h3>
+<ul>
+<li>Create an account on <a href="https://heroku.com">Heroku</a>.</li>
+<li>A new app can then be <a href="https://dashboard.heroku.com/new-app">created from the dashboard</a>.</li>
+</ul>
+<h3>Setup your database connection</h3>
+<p>KeystoneJS automatically fetches the database connection string from an environment variable. And as Heroku apps also can handle environment variables we use that to provide our database connection string to the KeystonJS app.</p>
+<ul>
+<li><p>Go to your Heroku app in the dashboard, select Settings and press [Reveal config vars].</p></li>
+<li><p>Create a new environment variable called <code>MONGO_URI</code> set it to the database connection string we got from MongoDB Atlas, e.g. <code>mongodb+srv://&lt;username&gt;:&lt;password&gt;@cluster0-szafh.azure.mongodb.net/test?retryWrites=true&amp;w=majority</code>.</p></li>
+</ul>
+<h3>Push the KeystoneJS app to Heroku</h3>
+<p>Make sure you are in the root folder of your newly created KeystoneJS app and run below commands.</p>
+<p>Login to Heroku CLI</p>
+<pre><code class="language-sh">heroku login
+</code></pre>
+<p>Initialize a new git repo and add it to Heroku Git</p>
+<pre><code class="language-sh">git init
+heroku git:remote -a &lt;heroku-app-name&gt;
+</code></pre>
+<p>Commit you app and push it to Heroku</p>
+<pre><code class="language-sh">git add .
+git commit -am &quot;initial commit&quot;
+git push heroku master
+</code></pre>
+<p>Your KeystoneJS project is now pushed to Heroku and the build process is started. The Overview page for your Heroku app shows real-time status of the current build.</p>
+<h2>Congratulations! 🎉</h2>
+<p>You should now be able to open your new app by pressing [Open App].</p>
+<h2>Caveats</h2>
+<h3>Deploy the STARTER starter project</h3>
+<p>This project includes users and authentication. To run it on Heroku we need to add SecureCookies and to login we need to know the login credentials.</p>
+<h4>User credentials</h4>
+<p>A default administrator is created the first time the app is started, or if the user count is zero. The credentials are printed to the start up log, but only the first time the app is started.</p>
+<p>The Heroku app start log can be reached by pressing [More] and View logs.</p>
+<pre><code>2020-03-25T07:19:04.841481+00:00 app[web.1]: User created:
+2020-03-25T07:19:04.841483+00:00 app[web.1]:   email: admin@example.com
+2020-03-25T07:19:04.841483+00:00 app[web.1]:   password: a04ecbcb963d
+2020-03-25T07:19:04.841483+00:00 app[web.1]: Please change these details after initial login.
+</code></pre>
+<h4>Use secure cookies</h4>
+<p>To use secure cookies we need to add below to index.js.</p>
+<pre><code class="language-js">const keystone = new Keystone({
+  ...
+  cookie: {
+    secure: true,
+  },
+  cookieSecret: 'very-secret'
+});
+
+module.exports = {
+  ...
+  configureExpress: app =&gt; {
+    app.set('trust proxy', 1);
+  }
+};
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Heroku\nsubSection: deployment\n[meta]--\u003e\n\n# Deploying Keystone to Heroku\n\nThis quick start guide shows how to deploy your first KeystoneJS app to Heroku and use MongoDB Atlas as our database service.\n\n## Requirements\n\nBefore we start, make sure you have [Git](https://git-scm.com/downloads) installed with `git --version`, and that you have created your first KeystoneJS app.\n\nIf not, see the guide [Your first KeystoneJS app in 5 minutes](https://www.keystonejs.com/quick-start/).\n\n\u003e **Note:** Deploying [the STARTER starter project](#deploy-the-starter-starter-project) requires a few tweaks.\n\n## MongoDB Atlas\n\nMongoDB Atlas has a free tier that we can use as our database service. You need to create an account, but you can use the free tier.\n\n- Create [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/signup) account and add a free tier Cluster.\n\n### Allow Heroku to access our database\n\n- Make sure to enable access from any network by going to SECURITY/Network Access, press [+Add ip address], [Allow access from anywhere] and confirm. This should add a rule that allow traffic from 0.0.0.0/0 (all networks).\n\n### Create a new user and get the database connection string\n\n- Go to SECURITY/Database access, press [+Add new database user] and create a new user with read and write privileges.\n\n- Take a note of the database connection string by selecting Clusters, press [Connect], [Connect your application], select Node.js and copy the connection string. It should look something like this `mongodb+srv://\u003cusername\u003e:\u003cpassword\u003e@cluster0-szafh.azure.mongodb.net/test?retryWrites=true\u0026w=majority`.\n\n## Heroku\n\nAlso Heroku has a free option. To use that we need to start to create a new account and install Heroku CLI.\n\n### Install Heroku CLI\n\nHeroku CLI is used to push the app to Heroku.\n\n- Download and install [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).\n\n### Create a new Heroku app\n\n- Create an account on [Heroku](https://heroku.com).\n- A new app can then be [created from the dashboard](https://dashboard.heroku.com/new-app).\n\n### Setup your database connection\n\nKeystoneJS automatically fetches the database connection string from an environment variable. And as Heroku apps also can handle environment variables we use that to provide our database connection string to the KeystonJS app.\n\n- Go to your Heroku app in the dashboard, select Settings and press [Reveal config vars].\n\n- Create a new environment variable called `MONGO_URI` set it to the database connection string we got from MongoDB Atlas, e.g. `mongodb+srv://\u003cusername\u003e:\u003cpassword\u003e@cluster0-szafh.azure.mongodb.net/test?retryWrites=true\u0026w=majority`.\n\n### Push the KeystoneJS app to Heroku\n\nMake sure you are in the root folder of your newly created KeystoneJS app and run below commands.\n\nLogin to Heroku CLI\n\n```sh\nheroku login\n```\n\nInitialize a new git repo and add it to Heroku Git\n\n```sh\ngit init\nheroku git:remote -a \u003cheroku-app-name\u003e\n```\n\nCommit you app and push it to Heroku\n\n```sh\ngit add .\ngit commit -am \"initial commit\"\ngit push heroku master\n```\n\nYour KeystoneJS project is now pushed to Heroku and the build process is started. The Overview page for your Heroku app shows real-time status of the current build.\n\n## Congratulations! 🎉\n\nYou should now be able to open your new app by pressing [Open App].\n\n## Caveats\n\n### Deploy the STARTER starter project\n\nThis project includes users and authentication. To run it on Heroku we need to add SecureCookies and to login we need to know the login credentials.\n\n#### User credentials\n\nA default administrator is created the first time the app is started, or if the user count is zero. The credentials are printed to the start up log, but only the first time the app is started.\n\nThe Heroku app start log can be reached by pressing [More] and View logs.\n\n```\n2020-03-25T07:19:04.841481+00:00 app[web.1]: User created:\n2020-03-25T07:19:04.841483+00:00 app[web.1]:   email: admin@example.com\n2020-03-25T07:19:04.841483+00:00 app[web.1]:   password: a04ecbcb963d\n2020-03-25T07:19:04.841483+00:00 app[web.1]: Please change these details after initial login.\n```\n\n#### Use secure cookies\n\nTo use secure cookies we need to add below to index.js.\n\n```js\nconst keystone = new Keystone({\n  ...\n  cookie: {\n    secure: true,\n  },\n  cookieSecret: 'very-secret'\n});\n\nmodule.exports = {\n  ...\n  configureExpress: app =\u003e {\n    app.set('trust proxy', 1);\n  }\n};\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_heroku.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

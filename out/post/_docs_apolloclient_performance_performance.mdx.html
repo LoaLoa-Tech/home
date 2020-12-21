@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<h2>title: Improving performance</h2>
+<h2>Redirecting to cached data</h2>
+<p>In some cases, a query requests data that already exists in the client cache under a different reference. A very common example of this is when your UI has a list view and a detail view that both use the same data. To avoid re-requesting data that already exists in the cache, see <a href="../caching/advanced-topics#cache-redirects-using-field-policy-read-functions">Cache redirects using field policy <code>read</code> functions</a>.</p>
+<h2>Prefetching data</h2>
+<p>Prefetching is one of the easiest ways to make your application's UI feel a lot faster with Apollo Client. Prefetching simply means loading data into the cache before it needs to be rendered on the screen. Essentially, we want to load all data required for a view as soon as we can guess that a user will navigate to it.</p>
+<p>We can accomplish this in only a few lines of code by calling <code>client.query</code> whenever the user hovers over a link.</p>
+<pre><code class="language-jsx">function Feed() {
+  const { loading, error, data, client } = useQuery(GET_DOGS);
+
+  let content;
+  if (loading) {
+    content = &lt;Fetching /&gt;;
+  } else if (error) {
+    content = &lt;Error /&gt;;
+  } else {
+    content = (
+      &lt;DogList
+        data={data.dogs}
+        renderRow={(type, data) =&gt; (
+          &lt;Link
+            to={{
+              pathname: `/${data.breed}/${data.id}`,
+              state: { id: data.id }
+            }}
+            onMouseOver={() =&gt;
+              client.query({
+                query: GET_DOG,
+                variables: { breed: data.breed }
+              })
+            }
+            style={{ textDecoration: &quot;none&quot; }}
+          &gt;
+            &lt;Dog {...data} url={data.displayImage} /&gt;
+          &lt;/Link&gt;
+        )}
+      /&gt;
+    );
+  }
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Header /&gt;
+      {content}
+    &lt;/View&gt;
+  );
+}
+</code></pre>
+<p>All we have to do is access the client in the render prop function and call <code>client.query</code> when the user hovers over the link. Once the user clicks on the link, the data will already be available in the Apollo cache, so the user won't see a loading state.</p>
+<p>There are a lot of different ways to anticipate that the user will end up needing some data in the UI. In addition to using the hover state, here are some other places you can preload data:</p>
+<ol>
+<li>The next step of a multi-step wizard immediately</li>
+<li>The route of a call-to-action button</li>
+<li>All of the data for a sub-area of the application, to make navigating within that area instant</li>
+</ol>
+<p>If you have some other ideas, please send a PR to this article, and maybe add some more code snippets. A special form of prefetching is <a href="server-side-rendering/#rehydrating-the-client-side-cache">store hydration from the server</a>, so you might also consider hydrating more data than is actually needed for the first page load to make other interactions faster.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Improving performance\n---\n\n## Redirecting to cached data\n\nIn some cases, a query requests data that already exists in the client cache under a different reference. A very common example of this is when your UI has a list view and a detail view that both use the same data. To avoid re-requesting data that already exists in the cache, see [Cache redirects using field policy `read` functions](../caching/advanced-topics#cache-redirects-using-field-policy-read-functions).\n\n## Prefetching data\n\nPrefetching is one of the easiest ways to make your application's UI feel a lot faster with Apollo Client. Prefetching simply means loading data into the cache before it needs to be rendered on the screen. Essentially, we want to load all data required for a view as soon as we can guess that a user will navigate to it.\n\nWe can accomplish this in only a few lines of code by calling `client.query` whenever the user hovers over a link.\n\n```jsx\nfunction Feed() {\n  const { loading, error, data, client } = useQuery(GET_DOGS);\n\n  let content;\n  if (loading) {\n    content = \u003cFetching /\u003e;\n  } else if (error) {\n    content = \u003cError /\u003e;\n  } else {\n    content = (\n      \u003cDogList\n        data={data.dogs}\n        renderRow={(type, data) =\u003e (\n          \u003cLink\n            to={{\n              pathname: `/${data.breed}/${data.id}`,\n              state: { id: data.id }\n            }}\n            onMouseOver={() =\u003e\n              client.query({\n                query: GET_DOG,\n                variables: { breed: data.breed }\n              })\n            }\n            style={{ textDecoration: \"none\" }}\n          \u003e\n            \u003cDog {...data} url={data.displayImage} /\u003e\n          \u003c/Link\u003e\n        )}\n      /\u003e\n    );\n  }\n\n  return (\n    \u003cView style={styles.container}\u003e\n      \u003cHeader /\u003e\n      {content}\n    \u003c/View\u003e\n  );\n}\n```\n\nAll we have to do is access the client in the render prop function and call `client.query` when the user hovers over the link. Once the user clicks on the link, the data will already be available in the Apollo cache, so the user won't see a loading state.\n\nThere are a lot of different ways to anticipate that the user will end up needing some data in the UI. In addition to using the hover state, here are some other places you can preload data:\n\n1. The next step of a multi-step wizard immediately\n2. The route of a call-to-action button\n3. All of the data for a sub-area of the application, to make navigating within that area instant\n\nIf you have some other ideas, please send a PR to this article, and maybe add some more code snippets. A special form of prefetching is [store hydration from the server](server-side-rendering/#rehydrating-the-client-side-cache), so you might also consider hydrating more data than is actually needed for the first page load to make other interactions faster.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_performance_performance.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

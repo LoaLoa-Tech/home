@@ -1,0 +1,154 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Relationship migration
+[meta]-->
+<h1>Relationship migration guide</h1>
+<p>In the <a href="/docs/discussions/new-data-schema.md"><code>Arcade</code></a> release of Keystone we <a href="/docs/discussions/new-data-schema.md">changed the database schema</a> which Keystone uses to store its data.
+This means that if you are upgrading to these new packages you will need to perform a migration on your database in order for it to continue working.</p>
+<p>This document will help you understand the changes to the database schema, which will help you understand the migrations you need to perform.</p>
+<p>We recommend familiarising yourself with the <a href="/docs/discussions/relationships.md">relationships</a> documentation to make sure you understand the terminology used in this document.</p>
+<blockquote>
+<p><strong>Note:</strong> If you're starting a new project today which includes the <a href="/docs/discussions/new-data-schema.md"><code>Arcade</code></a> release of Keystone (check your <code>package.json</code>), there is no action required; you already have the latest and greatest database schema.
+If you have an existing project which you have upgraded to the <a href="/docs/discussions/new-data-schema.md"><code>Arcade</code></a> release of Keystone; read on.</p>
+</blockquote>
+<h2>Overview</h2>
+<p>There are four steps to updating your database:</p>
+<ol>
+<li>Take a backup of your production database.</li>
+<li>Identify the changes required for your system.</li>
+<li>Apply the changes to your database.</li>
+<li>Deploy and test your application.</li>
+</ol>
+<p>The specifics of how to do each of these steps will depend on the particulars of your deployment.</p>
+<h2>Database backup</h2>
+<p>It is vitally important that you take a backup of your database before performing any changes.
+It is also crucial that you are able to restore your database if need be.</p>
+<p>If you are managing your own database, please consult the documentation for your database.
+If you are using a managed database, you should consult the documentation for your service, as they likely already provide systems for backing up and restoring your database.</p>
+<blockquote>
+<p><strong>Important:</strong> Making changes to your database schema includes a risk of <strong>complete data loss</strong> if you make a mistake. Do not attempt updating your database unless you are certain you can safely recover from a data loss event.</p>
+</blockquote>
+<h3>MongoDB</h3>
+<p>The <a href="https://docs.mongodb.com/manual/tutorial/backup-and-restore-tools/">official MongoDB documentation</a> provides details on how to use <code>mongodump</code> and <code>mongorestore</code> to backup and restore your database.</p>
+<h3>PostgreSQL</h3>
+<p>The <a href="https://www.postgresql.org/docs/12/backup.html">official PostgreSQL documentation</a> provides a number of different techniques for backing up and restoring your database.</p>
+<h2>Identify required changes</h2>
+<p>The next step is to identify the changes you need to make to your database.
+To assist with this you can use the command <code>keystone upgrade-relationships</code>.
+This tool will analyse your relationships and generate a summary of the changes you need to make in your database.
+We recommend adding it as a script into your <code>package.json</code> file and running it with <code>yarn</code>.</p>
+<pre><code class="language-bash">keystone upgrade-relationships
+</code></pre>
+<p>By default this command will look for an export called <code>keystone</code> in your <code>index.js</code> file.
+If you have a custom server setup, you can indicate a different entry file with</p>
+<pre><code class="language-bash">keystone upgrade-relationships --entry &lt;filename&gt;
+</code></pre>
+<p>Your entry file must export a <code>Keystone</code> object called <code>keystone</code>, and this needs to have all of your lists configured using <code>createList</code>.
+This command will not connect to your database and will not start any express servers.</p>
+<p>The output you see will give you a summary of all the relationships in your system, and details of what actions you need to take to update your database.</p>
+<h4>MongoDB</h4>
+<pre><code class="language-shell title=&quot;Example Output&quot; showLanguage=false allowCopy=false">ℹ Command: keystone upgrade-relationships
+One-sided: one to many
+  Todo.author -&gt; User
+    * No action required
+One-sided: many to many
+  Todo.reviewers -&gt; User
+    * Create a collection todo_reviewers_manies with fields Todo_left_id and User_right_id
+    * Move the data from todos.reviewers into todo_reviewers_manies
+    * Delete todos.reviewers
+Two-sided: one to one
+  Todo.leadAuthor -&gt; User.leadPost
+    * Delete users.leadPost
+Two-sided: one to many
+  Todo.publisher -&gt; User.published
+    * Delete users.published
+Two-sided: many to many
+  Todo.readers -&gt; User.readPosts
+    * Create a collection todo_readers_user_readposts with fields Todo_left_id and User_right_id
+    * Move the data from todos.readers into todo_readers_user_readposts
+    * Delete todos.readers
+    * Delete users.readPosts
+</code></pre>
+<h4>PostgreSQL</h4>
+<pre><code class="language-shell title=&quot;Example Output&quot; showLanguage=false allowCopy=false">ℹ Command: keystone upgrade-relationships
+One-sided: one to many
+  Todo.author -&gt; User
+    * No action required
+One-sided: many to many
+  Todo.reviewers -&gt; User
+    * Rename table Todo_reviewers to Todo_reviewers_many
+    * Rename column Todo_id to Todo_left_id
+    * Rename column User_id to User_right_id
+Two-sided: one to one
+  Todo.leadAuthor -&gt; User.leadPost
+    * Delete column User.leadPost
+Two-sided: one to many
+  Todo.publisher -&gt; User.published
+    * Drop table User_published
+Two-sided: many to many
+  Todo.readers -&gt; User.readPosts
+    * Drop table User_readPosts
+    * Rename table Todo_readers to Todo_readers_User_readPosts
+    * Rename column Todo_id to Todo_left_id
+    * Rename column User_id to User_right_id
+</code></pre>
+<h3>Generate migrations</h3>
+<p>The <code>upgrade-relationships</code> script can also be used to generate migration code which you can directly run against your database using the <code>--migration</code> flag.</p>
+<pre><code class="language-bash">keystone upgrade-relationships --migration
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> Always be careful when running auto-generated migration code.
+Be sure to manually verify that the changes are doing what you want, as incorrect migrations can lead to data loss.</p>
+</blockquote>
+<h1></h1>
+<blockquote>
+<p><strong>Important:</strong> While we have taken every effort to ensure the auto-generated migration code is correct, we cannot account for every possible scenario.
+Again; please verify the changes work as expected to avoid data loss.</p>
+</blockquote>
+<h4>MongoDB</h4>
+<pre><code class="language-javascript title=&quot;Example migration&quot; allowCopy=false showLanguage=false">db.todos.find({}).forEach(function (doc) {
+  (doc.reviewers || []).forEach(function (itemId) {
+    db.todo_reviewers_manies.insert({ Todo_left_id: doc._id, User_right_id: itemId });
+  });
+});
+db.todos.updateMany({}, { $unset: { reviewers: 1 } });
+db.users.updateMany({}, { $unset: { leadPost: 1 } });
+db.users.updateMany({}, { $unset: { published: 1 } });
+db.todos.find({}).forEach(function (doc) {
+  (doc.readers || []).forEach(function (itemId) {
+    db.todo_readers_user_readposts.insert({ Todo_left_id: doc._id, User_right_id: itemId });
+  });
+});
+db.todos.updateMany({}, { $unset: { readers: 1 } });
+db.users.updateMany({}, { $unset: { readPosts: 1 } });
+</code></pre>
+<h4>PostgreSQL</h4>
+<pre><code class="language-SQL title=&quot;Example migration&quot; allowCopy=false">ALTER TABLE public.&quot;Todo_reviewers&quot; RENAME TO &quot;Todo_reviewers_many&quot;;
+ALTER TABLE public.&quot;Todo_reviewers_many&quot; RENAME COLUMN &quot;Todo_id&quot; TO &quot;Todo_left_id&quot;;
+ALTER TABLE public.&quot;Todo_reviewers_many&quot; RENAME COLUMN &quot;User_id&quot; TO &quot;User_right_id&quot;;
+ALTER TABLE public.&quot;User&quot; DROP COLUMN &quot;leadPost&quot;;
+DROP TABLE public.&quot;User_published&quot;
+DROP TABLE public.&quot;User_readPosts&quot;
+ALTER TABLE public.&quot;Todo_readers&quot; RENAME TO &quot;Todo_readers_User_readPosts&quot;;
+ALTER TABLE public.&quot;Todo_readers_User_readPosts&quot; RENAME COLUMN &quot;Todo_id&quot; TO &quot;Todo_left_id&quot;;
+ALTER TABLE public.&quot;Todo_readers_User_readPosts&quot; RENAME COLUMN &quot;User_id&quot; TO &quot;User_right_id&quot;;
+</code></pre>
+<h3>Cheatsheet</h3>
+<p>If you want a handy reference to consult without needing to execute scripts then please consult the <a href="/docs/guides/new-schema-cheatsheet.md">new schema cheatsheet</a>.</p>
+<h2>Apply changes</h2>
+<p>The next step is to apply the required changes to your database.
+Keystone provides a lot of flexibility in how and where you deploy your database.
+This means that there is no one-size-fits-all solution for the best approach to making changes to your database.</p>
+<p>If you already have an established schema migration process then you can simply continue to follow that process, using the output of the <code>upgrade-relationships</code> script as the content for a new migration.</p>
+<p>If you do not have an existing schema migration process then the best place to start is the <a href="/docs/guides/migrations.md">migrations guide</a>.
+This document outlines a number of different approaches to performing database migrations.</p>
+<h2>Test and deploy</h2>
+<p>The final step is to test and deploy your upgraded Keystone system.
+If you have successfully migrated your database then you should be able to start Keystone and have it connect to your updated database.
+Keystone does not dictate how or where you run your deployments, so you should follow your existing processes for this step.</p>
+<p>It is advisable to do a test deployment in a controlled, non-production environment.
+This will allow you to verify that your application is working correctly with the upgraded database.</p>
+<h2>Summary</h2>
+<p>Congratulations, you have upgraded your Keystone system to the new and improved data schema!
+If you experience any issues with the above process, please <a href="https://github.com/keystonejs/keystone/issues">create an issue</a> on Github and we will endeavour to help you out.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Relationship migration\n[meta]--\u003e\n\n# Relationship migration guide\n\nIn the [`Arcade`](/docs/discussions/new-data-schema.md) release of Keystone we [changed the database schema](/docs/discussions/new-data-schema.md) which Keystone uses to store its data.\nThis means that if you are upgrading to these new packages you will need to perform a migration on your database in order for it to continue working.\n\nThis document will help you understand the changes to the database schema, which will help you understand the migrations you need to perform.\n\nWe recommend familiarising yourself with the [relationships](/docs/discussions/relationships.md) documentation to make sure you understand the terminology used in this document.\n\n\u003e **Note:** If you're starting a new project today which includes the [`Arcade`](/docs/discussions/new-data-schema.md) release of Keystone (check your `package.json`), there is no action required; you already have the latest and greatest database schema.\n\u003e If you have an existing project which you have upgraded to the [`Arcade`](/docs/discussions/new-data-schema.md) release of Keystone; read on.\n\n## Overview\n\nThere are four steps to updating your database:\n\n1. Take a backup of your production database.\n2. Identify the changes required for your system.\n3. Apply the changes to your database.\n4. Deploy and test your application.\n\nThe specifics of how to do each of these steps will depend on the particulars of your deployment.\n\n## Database backup\n\nIt is vitally important that you take a backup of your database before performing any changes.\nIt is also crucial that you are able to restore your database if need be.\n\nIf you are managing your own database, please consult the documentation for your database.\nIf you are using a managed database, you should consult the documentation for your service, as they likely already provide systems for backing up and restoring your database.\n\n\u003e **Important:** Making changes to your database schema includes a risk of **complete data loss** if you make a mistake. Do not attempt updating your database unless you are certain you can safely recover from a data loss event.\n\n### MongoDB\n\nThe [official MongoDB documentation](https://docs.mongodb.com/manual/tutorial/backup-and-restore-tools/) provides details on how to use `mongodump` and `mongorestore` to backup and restore your database.\n\n### PostgreSQL\n\nThe [official PostgreSQL documentation](https://www.postgresql.org/docs/12/backup.html) provides a number of different techniques for backing up and restoring your database.\n\n## Identify required changes\n\nThe next step is to identify the changes you need to make to your database.\nTo assist with this you can use the command `keystone upgrade-relationships`.\nThis tool will analyse your relationships and generate a summary of the changes you need to make in your database.\nWe recommend adding it as a script into your `package.json` file and running it with `yarn`.\n\n```bash\nkeystone upgrade-relationships\n```\n\nBy default this command will look for an export called `keystone` in your `index.js` file.\nIf you have a custom server setup, you can indicate a different entry file with\n\n```bash\nkeystone upgrade-relationships --entry \u003cfilename\u003e\n```\n\nYour entry file must export a `Keystone` object called `keystone`, and this needs to have all of your lists configured using `createList`.\nThis command will not connect to your database and will not start any express servers.\n\nThe output you see will give you a summary of all the relationships in your system, and details of what actions you need to take to update your database.\n\n#### MongoDB\n\n```shell title=\"Example Output\" showLanguage=false allowCopy=false\nℹ Command: keystone upgrade-relationships\nOne-sided: one to many\n  Todo.author -\u003e User\n    * No action required\nOne-sided: many to many\n  Todo.reviewers -\u003e User\n    * Create a collection todo_reviewers_manies with fields Todo_left_id and User_right_id\n    * Move the data from todos.reviewers into todo_reviewers_manies\n    * Delete todos.reviewers\nTwo-sided: one to one\n  Todo.leadAuthor -\u003e User.leadPost\n    * Delete users.leadPost\nTwo-sided: one to many\n  Todo.publisher -\u003e User.published\n    * Delete users.published\nTwo-sided: many to many\n  Todo.readers -\u003e User.readPosts\n    * Create a collection todo_readers_user_readposts with fields Todo_left_id and User_right_id\n    * Move the data from todos.readers into todo_readers_user_readposts\n    * Delete todos.readers\n    * Delete users.readPosts\n```\n\n#### PostgreSQL\n\n```shell title=\"Example Output\" showLanguage=false allowCopy=false\nℹ Command: keystone upgrade-relationships\nOne-sided: one to many\n  Todo.author -\u003e User\n    * No action required\nOne-sided: many to many\n  Todo.reviewers -\u003e User\n    * Rename table Todo_reviewers to Todo_reviewers_many\n    * Rename column Todo_id to Todo_left_id\n    * Rename column User_id to User_right_id\nTwo-sided: one to one\n  Todo.leadAuthor -\u003e User.leadPost\n    * Delete column User.leadPost\nTwo-sided: one to many\n  Todo.publisher -\u003e User.published\n    * Drop table User_published\nTwo-sided: many to many\n  Todo.readers -\u003e User.readPosts\n    * Drop table User_readPosts\n    * Rename table Todo_readers to Todo_readers_User_readPosts\n    * Rename column Todo_id to Todo_left_id\n    * Rename column User_id to User_right_id\n```\n\n### Generate migrations\n\nThe `upgrade-relationships` script can also be used to generate migration code which you can directly run against your database using the `--migration` flag.\n\n```bash\nkeystone upgrade-relationships --migration\n```\n\n\u003e **Note:** Always be careful when running auto-generated migration code.\n\u003e Be sure to manually verify that the changes are doing what you want, as incorrect migrations can lead to data loss.\n\n# \n\n\u003e **Important:** While we have taken every effort to ensure the auto-generated migration code is correct, we cannot account for every possible scenario.\n\u003e Again; please verify the changes work as expected to avoid data loss.\n\n#### MongoDB\n\n```javascript title=\"Example migration\" allowCopy=false showLanguage=false\ndb.todos.find({}).forEach(function (doc) {\n  (doc.reviewers || []).forEach(function (itemId) {\n    db.todo_reviewers_manies.insert({ Todo_left_id: doc._id, User_right_id: itemId });\n  });\n});\ndb.todos.updateMany({}, { $unset: { reviewers: 1 } });\ndb.users.updateMany({}, { $unset: { leadPost: 1 } });\ndb.users.updateMany({}, { $unset: { published: 1 } });\ndb.todos.find({}).forEach(function (doc) {\n  (doc.readers || []).forEach(function (itemId) {\n    db.todo_readers_user_readposts.insert({ Todo_left_id: doc._id, User_right_id: itemId });\n  });\n});\ndb.todos.updateMany({}, { $unset: { readers: 1 } });\ndb.users.updateMany({}, { $unset: { readPosts: 1 } });\n```\n\n#### PostgreSQL\n\n```SQL title=\"Example migration\" allowCopy=false\nALTER TABLE public.\"Todo_reviewers\" RENAME TO \"Todo_reviewers_many\";\nALTER TABLE public.\"Todo_reviewers_many\" RENAME COLUMN \"Todo_id\" TO \"Todo_left_id\";\nALTER TABLE public.\"Todo_reviewers_many\" RENAME COLUMN \"User_id\" TO \"User_right_id\";\nALTER TABLE public.\"User\" DROP COLUMN \"leadPost\";\nDROP TABLE public.\"User_published\"\nDROP TABLE public.\"User_readPosts\"\nALTER TABLE public.\"Todo_readers\" RENAME TO \"Todo_readers_User_readPosts\";\nALTER TABLE public.\"Todo_readers_User_readPosts\" RENAME COLUMN \"Todo_id\" TO \"Todo_left_id\";\nALTER TABLE public.\"Todo_readers_User_readPosts\" RENAME COLUMN \"User_id\" TO \"User_right_id\";\n```\n\n### Cheatsheet\n\nIf you want a handy reference to consult without needing to execute scripts then please consult the [new schema cheatsheet](/docs/guides/new-schema-cheatsheet.md).\n\n## Apply changes\n\nThe next step is to apply the required changes to your database.\nKeystone provides a lot of flexibility in how and where you deploy your database.\nThis means that there is no one-size-fits-all solution for the best approach to making changes to your database.\n\nIf you already have an established schema migration process then you can simply continue to follow that process, using the output of the `upgrade-relationships` script as the content for a new migration.\n\nIf you do not have an existing schema migration process then the best place to start is the [migrations guide](/docs/guides/migrations.md).\nThis document outlines a number of different approaches to performing database migrations.\n\n## Test and deploy\n\nThe final step is to test and deploy your upgraded Keystone system.\nIf you have successfully migrated your database then you should be able to start Keystone and have it connect to your updated database.\nKeystone does not dictate how or where you run your deployments, so you should follow your existing processes for this step.\n\nIt is advisable to do a test deployment in a controlled, non-production environment.\nThis will allow you to verify that your application is working correctly with the upgraded database.\n\n## Summary\n\nCongratulations, you have upgraded your Keystone system to the new and improved data schema!\nIf you experience any issues with the above process, please [create an issue](https://github.com/keystonejs/keystone/issues) on Github and we will endeavour to help you out.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_relationship-migration.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

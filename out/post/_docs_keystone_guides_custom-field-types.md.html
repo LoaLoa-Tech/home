@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Custom field types
+subSection: advanced
+[meta]-->
+<h1>Custom field types</h1>
+<p>What makes up a field type?</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">Type/index.js           # The field definition, points to other files and defines the type
+Type/Implementation.js  # Back-end implementation of the field type
+Type/README.md          # Type specific documentation and usage examples
+Type/views/
+├── Field.js            # Main React component rendered by the Item Details view
+└── Cell.js             # Main React component rendered by the List view
+└── Controller.js       # Client-side controller for the field type
+</code></pre>
+<h2>Example</h2>
+<p>For an example of a custom field, please see the <a href="https://github.com/keystonejs/keystone/tree/master/examples/custom-fields/">Stars field</a> in the basic test project.</p>
+<h2>Implementation</h2>
+<p>This is the back-end class that implements the field type and its schema in
+Keystone. It implements the GraphQL schema types, custom argument definitions
+and resolvers, as well as Field Config and Admin Meta management.</p>
+<p>Back-end logic for value validation, processing and hooks should be implemented
+here.</p>
+<h2>Controller</h2>
+<p>This is the client-side class that implements helpers for the Admin UI React app
+and views.</p>
+<p>It should extend the <code>./Controller.js</code> in the package root.</p>
+<p>It is generally responsible for getting the default data for new items,
+processing raw data returned by the API, implementing client-side validation
+methods, and other helper utilities.</p>
+<h2>Views</h2>
+<p>These are the client-side React Components that render various pieces of UI for
+the field type.</p>
+<p>There are currently three views that can be provided:</p>
+<ul>
+<li><code>Field</code> - the form control rendered in the <strong>Item Details</strong> view</li>
+<li><code>Cell</code> - the content rendered in the List view</li>
+<li><code>Filter</code> - the filter control rendered in the filters dropdown in the List view</li>
+</ul>
+<pre><code class="language-typescript">type FilterProps&lt;Value&gt; = {
+  innerRef: React.Ref&lt;HTMLElement&gt;;
+  value: Value;
+  onChange: Value =&gt; mixed;
+  field: Field;
+  filter: string;
+};
+
+type CellProps&lt;Value&gt; = {
+  list: List;
+  field: Field;
+  data: Value;
+  Link: React.ComponentType&lt;{ children: React.Node, id: string, path: string }&gt;;
+};
+
+type FieldProps&lt;Value&gt; = {
+  autoFocus: boolean;
+  field: Field;
+  value: Value;
+  error: Error;
+  onChange: Value =&gt; mixed;
+  renderContext: 'dialog' | 'page';
+};
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Custom field types\nsubSection: advanced\n[meta]--\u003e\n\n# Custom field types\n\nWhat makes up a field type?\n\n```shell allowCopy=false showLanguage=false\nType/index.js           # The field definition, points to other files and defines the type\nType/Implementation.js  # Back-end implementation of the field type\nType/README.md          # Type specific documentation and usage examples\nType/views/\n├── Field.js            # Main React component rendered by the Item Details view\n└── Cell.js             # Main React component rendered by the List view\n└── Controller.js       # Client-side controller for the field type\n```\n\n## Example\n\nFor an example of a custom field, please see the [Stars field](https://github.com/keystonejs/keystone/tree/master/examples/custom-fields/) in the basic test project.\n\n## Implementation\n\nThis is the back-end class that implements the field type and its schema in\nKeystone. It implements the GraphQL schema types, custom argument definitions\nand resolvers, as well as Field Config and Admin Meta management.\n\nBack-end logic for value validation, processing and hooks should be implemented\nhere.\n\n## Controller\n\nThis is the client-side class that implements helpers for the Admin UI React app\nand views.\n\nIt should extend the `./Controller.js` in the package root.\n\nIt is generally responsible for getting the default data for new items,\nprocessing raw data returned by the API, implementing client-side validation\nmethods, and other helper utilities.\n\n## Views\n\nThese are the client-side React Components that render various pieces of UI for\nthe field type.\n\nThere are currently three views that can be provided:\n\n- `Field` - the form control rendered in the **Item Details** view\n- `Cell` - the content rendered in the List view\n- `Filter` - the filter control rendered in the filters dropdown in the List view\n\n```typescript\ntype FilterProps\u003cValue\u003e = {\n  innerRef: React.Ref\u003cHTMLElement\u003e;\n  value: Value;\n  onChange: Value =\u003e mixed;\n  field: Field;\n  filter: string;\n};\n\ntype CellProps\u003cValue\u003e = {\n  list: List;\n  field: Field;\n  data: Value;\n  Link: React.ComponentType\u003c{ children: React.Node, id: string, path: string }\u003e;\n};\n\ntype FieldProps\u003cValue\u003e = {\n  autoFocus: boolean;\n  field: Field;\n  value: Value;\n  error: Error;\n  onChange: Value =\u003e mixed;\n  renderContext: 'dialog' | 'page';\n};\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_custom-field-types.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

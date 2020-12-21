@@ -1,0 +1,238 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: api
+title: Creating lists
+order: 2
+[meta]-->
+<h1>Creating lists</h1>
+<p>Keystone lists define your application's models. These models represent the
+entities of your application domain and map to the tables in your database.</p>
+<pre><code class="language-javascript allowCopy=false showLanguage=false">keystone.createList('ListKey', {...});
+</code></pre>
+<h2>Config</h2>
+<table>
+<thead>
+<tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>access</code></td><td><code>Function</code> \</td><td><code>Object</code> \</td><td><code>Boolean</code></td><td><code>true</code></td><td><a href="/docs/guides/access-control.md">Access control</a> options for the list.</td></tr>
+<tr><td><code>adapterConfig</code></td><td><code>Object</code></td><td></td><td>Override the adapter config options for a specific list.</td></tr>
+<tr><td><code>adminConfig</code></td><td><code>Object</code></td><td><code>{}</code></td><td>Options for the AdminUI.</td></tr>
+<tr><td><code>adminDoc</code></td><td><code>String</code></td><td></td><td>A description for the list used in the Admin UI.</td></tr>
+<tr><td><code>cacheHint</code></td><td><code>Object</code></td><td><code>{}</code></td><td>Configures a default caching hint for list.</td></tr>
+<tr><td><code>fields</code></td><td><code>Object</code></td><td></td><td>Defines the fields in a list.</td></tr>
+<tr><td><code>hooks</code></td><td><code>Object</code></td><td><code>{}</code></td><td>Functions to be called during list operations.</td></tr>
+<tr><td><code>itemQueryName</code></td><td><code>String</code></td><td></td><td>Changes the <em>item</em> name in GraphQL queries and mutations.</td></tr>
+<tr><td><code>label</code></td><td><code>String</code></td><td><code>listName</code></td><td>Overrides label for the list in the AdminUI.</td></tr>
+<tr><td><code>labelField</code></td><td><code>String</code></td><td><code>name</code></td><td>Specify a field to use as a label for individual list items.</td></tr>
+<tr><td><code>labelResolver</code></td><td><code>Function</code></td><td>Resolves <code>labelField</code> or <code>id</code></td><td>Function to resolve labels for individual list items.</td></tr>
+<tr><td><code>listQueryName</code></td><td><code>String</code></td><td></td><td>Changes the <em>list</em> name in GraphQL queries and mutations.</td></tr>
+<tr><td><code>path</code></td><td><code>String</code></td><td></td><td>Changes the path in the Admin UI.</td></tr>
+<tr><td><code>plugins</code></td><td><code>Array</code></td><td><code>[]</code></td><td>An array of <code>plugins</code> that can modify the list config.</td></tr>
+<tr><td><code>plural</code></td><td><code>String</code></td><td></td><td>Specify a plural for <code>Keystone</code> to use for the list.</td></tr>
+<tr><td><code>queryLimits</code></td><td><code>Object</code></td><td><code>{}</code></td><td>Configures list-level query limits.</td></tr>
+<tr><td><code>schemaDoc</code></td><td><code>String</code></td><td></td><td>A description for the list used in the GraphQL schema.</td></tr>
+<tr><td><code>singular</code></td><td><code>String</code></td><td></td><td>Specify a singular noun for <code>Keystone</code> to use for the list.</td></tr>
+</tbody>
+</table>
+<h2>Definitions</h2>
+<h3><code>access</code></h3>
+<p><a href="/docs/guides/access-control.md">Access control</a> options for the list.</p>
+<p>Options for <code>create</code>, <code>read</code>, <code>update</code> and <code>delete</code> - can be a function, GraphQL where clause or Boolean. See the <a href="/docs/api/access-control.md">access control API documentation</a> for more details.</p>
+<h3><code>adapterConfig</code></h3>
+<p>Override the adapter config options for a specific list. Normally <code>adapterConfig</code> is provided when initialising Keystone:</p>
+<pre><code class="language-javascript">const keystone = new Keystone({
+  adapter: new Adapter({...}),
+});
+</code></pre>
+<p>Specifying an adapter config on a list item will extend the default config for this list.</p>
+<h3><code>adminConfig</code></h3>
+<p>Options for the AdminUI including:</p>
+<ul>
+<li><code>defaultPageSize</code></li>
+<li><code>defaultColumns</code></li>
+<li><code>defaultSort</code></li>
+<li><code>maximumPageSize</code></li>
+</ul>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+  },
+  adminConfig: {
+    defaultColumns: 'name,email',
+    defaultPageSize: 50,
+    defaultSort: 'email',
+    maximumPageSize: 100,
+  },
+});
+</code></pre>
+<h3><code>adminDoc</code></h3>
+<p>A description for the list used in the Admin UI. To document the list in the GraphQL schema, see <a href="#schemadoc"><code>schemaDoc</code></a>;</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  adminDoc: 'A list of things which need to be done.',
+});
+</code></pre>
+<h3><code>fields</code></h3>
+<p>Defines the fields to use in a list.</p>
+<pre><code class="language-javascript">keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+  },
+});
+</code></pre>
+<p>See: <a href="/packages/fields/README.md">Fields</a> for more information on configuring field options.</p>
+<h3><code>hooks</code></h3>
+<p>Specify functions to be executed during list operations.
+Supported hooks include:</p>
+<ul>
+<li>Create and update operations
+<ul>
+<li><code>resolveInput</code></li>
+<li><code>validateInput</code></li>
+<li><code>beforeChange</code></li>
+<li><code>afterChange</code></li>
+</ul></li>
+<li>Delete operations
+<ul>
+<li><code>validateDelete</code></li>
+<li><code>beforeDelete</code></li>
+<li><code>afterDelete</code></li>
+</ul></li>
+</ul>
+<p>See <a href="/docs/api/hooks.md#list-hooks">List Hooks in the API docs</a> and the <a href="/docs/guides/hooks.md">Hooks Guide</a> for details.</p>
+<h4>Usage</h4>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+  },
+  hooks: {
+    resolveInput: ({ resolvedData }) =&gt; {
+      return {
+        name: `${resolvedData.name} the Great!`,
+      };
+    },
+  },
+});
+</code></pre>
+<h3><code>itemQueryName</code></h3>
+<p>Changes the item name in GraphQL queries and mutations.</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+  },
+  itemQueryName: 'Person',
+});
+</code></pre>
+<p>With the above example a GraphQL query might look like this:</p>
+<pre><code class="language-graphql">query {
+  Person(where: { id: &quot;1&quot; }) {
+    name
+  }
+}
+</code></pre>
+<h3><code>label</code></h3>
+<p>Overrides label for the list in the AdminUI. Default is <code>listName</code>.</p>
+<h3><code>labelField</code></h3>
+<p>Specify a field to use as a label for individual list items.</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+  },
+  labelField: 'name',
+});
+</code></pre>
+<h3><code>labelResolver</code></h3>
+<p>Function to resolve labels for individual list item. Default resolves the <code>labelField</code>.</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+  },
+  labelResolver: item =&gt; `${item.name} - ${item.email}`,
+});
+</code></pre>
+<h3><code>listQueryName</code></h3>
+<p>Changes the list name in GraphQL queries and mutations.</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+  },
+  listQueryName: 'People',
+});
+</code></pre>
+<p>With the above example a GraphQL query might look like this:</p>
+<pre><code class="language-graphql">query {
+  allPeople {
+    name
+  }
+}
+</code></pre>
+<h3><code>path</code></h3>
+<p>Changes the path in the Admin UI. Updating <code>plural</code> and <code>singular</code> values will not change the route in the admin UI. You can specify this using <code>path</code>.</p>
+<h3><code>plugins</code></h3>
+<p>An array of functions that modify config values. Plugin functions receive <code>(config, { listKey, keystone })</code>, where <code>config</code> is the a list config object, <code>listKey</code> is the name of the list, and <code>keystone</code> is the keystone object. They should return a valid list config. Plugin functions are executed in the order provided in the list, with the output config of one being passed as input to the next. The output of the final plugin is used to construct the <code>List</code> instance.</p>
+<pre><code class="language-javascript">const setupUserList = ({ fields, ...config }) =&gt; {
+  return {
+    ...config,
+    fields: {
+      ...fields,
+      name: { type: Text },
+      password: { type: Password },
+    },
+  };
+};
+
+keystone.createList('User', {
+  plugin: [setupUserList],
+});
+</code></pre>
+<p>This provides a method for packaging features that can be applied to multiple lists.</p>
+<h3><code>plural</code></h3>
+<p>Keystone will attempt to determine a plural for list items. Sometimes Keystone will not be able to determine the plural forcing you to change the list name. Or sometimes Keystone may get it wrong, especially for non-English words.</p>
+<p>E.g. Keystone thinks the correct plural for Octopus is &quot;Octopi&quot;. Everyone knows the scientifically accurate plural is &quot;Octopodes&quot;:</p>
+<pre><code class="language-javascript">keystone.createList('Octopus', {
+  fields: {
+    legs: { type: Integer },
+  },
+  plural: 'Octopodes',
+});
+</code></pre>
+<h3><code>queryLimits</code></h3>
+<p>Configuration for limiting the kinds of queries that can be made against the list, to avoid queries that might overload the server.</p>
+<p>See also <a href="/packages/keystone/README.md#querylimits">global query limits on the Keystone object</a>.</p>
+<ul>
+<li><code>maxResults</code>: maximum number of results that can be returned in a query (or subquery)</li>
+</ul>
+<pre><code class="language-javascript">keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+  },
+  queryLimits: {
+    maxResults: 100,
+  },
+});
+</code></pre>
+<h3><code>schemaDoc</code></h3>
+<p>A description for the list used in the GraphQL schema. To document the list in the Admin UI, see <a href="#admindoc"><code>adminDoc</code></a>;</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  schemaDoc: 'A list of things which need to be done.',
+});
+</code></pre>
+<h3><code>singular</code></h3>
+<p>Keystone list names should be singular and Keystone will attempt to determine a plural.</p>
+<p>Where Keystone can't determine a plural you may be forced to use a different list name.</p>
+<p>The <code>singular</code> option allows you to change the display label for singular items.</p>
+<p>E.g. Keystone can't determine a plural for 'Sheep'. Let's change the <code>singular</code> option:</p>
+<pre><code class="language-javascript">keystone.createList('WoolyBoi', {
+  fields: {
+    sheepName: { type: Text },
+  },
+  singular: 'Sheep',
+  plural: 'Sheep',
+});
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> This will override labels in the AdminUI but will not change graphQL queries. For queries and mutations see: <code>itemQueryName</code> and <code>listQueryName</code>.</p>
+</blockquote>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: api\ntitle: Creating lists\norder: 2\n[meta]--\u003e\n\n# Creating lists\n\nKeystone lists define your application's models. These models represent the\nentities of your application domain and map to the tables in your database.\n\n```javascript allowCopy=false showLanguage=false\nkeystone.createList('ListKey', {...});\n```\n\n## Config\n\n| Option          | Type                                | Default                       | Description                                                            |\n| --------------- | ----------------------------------- | ----------------------------- | ---------------------------------------------------------------------- |\n| `access`        | `Function` \\| `Object` \\| `Boolean` | `true`                        | [Access control](/docs/guides/access-control.md) options for the list. |\n| `adapterConfig` | `Object`                            |                               | Override the adapter config options for a specific list.               |\n| `adminConfig`   | `Object`                            | `{}`                          | Options for the AdminUI.                                               |\n| `adminDoc`      | `String`                            |                               | A description for the list used in the Admin UI.                       |\n| `cacheHint`     | `Object`                            | `{}`                          | Configures a default caching hint for list.                            |\n| `fields`        | `Object`                            |                               | Defines the fields in a list.                                          |\n| `hooks`         | `Object`                            | `{}`                          | Functions to be called during list operations.                         |\n| `itemQueryName` | `String`                            |                               | Changes the _item_ name in GraphQL queries and mutations.              |\n| `label`         | `String`                            | `listName`                    | Overrides label for the list in the AdminUI.                           |\n| `labelField`    | `String`                            | `name`                        | Specify a field to use as a label for individual list items.           |\n| `labelResolver` | `Function`                          | Resolves `labelField` or `id` | Function to resolve labels for individual list items.                  |\n| `listQueryName` | `String`                            |                               | Changes the _list_ name in GraphQL queries and mutations.              |\n| `path`          | `String`                            |                               | Changes the path in the Admin UI.                                      |\n| `plugins`       | `Array`                             | `[]`                          | An array of `plugins` that can modify the list config.                 |\n| `plural`        | `String`                            |                               | Specify a plural for `Keystone` to use for the list.                   |\n| `queryLimits`   | `Object`                            | `{}`                          | Configures list-level query limits.                                    |\n| `schemaDoc`     | `String`                            |                               | A description for the list used in the GraphQL schema.                 |\n| `singular`      | `String`                            |                               | Specify a singular noun for `Keystone` to use for the list.            |\n\n## Definitions\n\n### `access`\n\n[Access control](/docs/guides/access-control.md) options for the list.\n\nOptions for `create`, `read`, `update` and `delete` - can be a function, GraphQL where clause or Boolean. See the [access control API documentation](/docs/api/access-control.md) for more details.\n\n### `adapterConfig`\n\nOverride the adapter config options for a specific list. Normally `adapterConfig` is provided when initialising Keystone:\n\n```javascript\nconst keystone = new Keystone({\n  adapter: new Adapter({...}),\n});\n```\n\nSpecifying an adapter config on a list item will extend the default config for this list.\n\n### `adminConfig`\n\nOptions for the AdminUI including:\n\n- `defaultPageSize`\n- `defaultColumns`\n- `defaultSort`\n- `maximumPageSize`\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n  },\n  adminConfig: {\n    defaultColumns: 'name,email',\n    defaultPageSize: 50,\n    defaultSort: 'email',\n    maximumPageSize: 100,\n  },\n});\n```\n\n### `adminDoc`\n\nA description for the list used in the Admin UI. To document the list in the GraphQL schema, see [`schemaDoc`](#schemadoc);\n\n```javascript\nkeystone.createList('Todo', {\n  adminDoc: 'A list of things which need to be done.',\n});\n```\n\n### `fields`\n\nDefines the fields to use in a list.\n\n```javascript\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n  },\n});\n```\n\nSee: [Fields](/packages/fields/README.md) for more information on configuring field options.\n\n### `hooks`\n\nSpecify functions to be executed during list operations.\nSupported hooks include:\n\n- Create and update operations\n  - `resolveInput`\n  - `validateInput`\n  - `beforeChange`\n  - `afterChange`\n- Delete operations\n  - `validateDelete`\n  - `beforeDelete`\n  - `afterDelete`\n\nSee [List Hooks in the API docs](/docs/api/hooks.md#list-hooks) and the [Hooks Guide](/docs/guides/hooks.md) for details.\n\n#### Usage\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n  },\n  hooks: {\n    resolveInput: ({ resolvedData }) =\u003e {\n      return {\n        name: `${resolvedData.name} the Great!`,\n      };\n    },\n  },\n});\n```\n\n### `itemQueryName`\n\nChanges the item name in GraphQL queries and mutations.\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n  },\n  itemQueryName: 'Person',\n});\n```\n\nWith the above example a GraphQL query might look like this:\n\n```graphql\nquery {\n  Person(where: { id: \"1\" }) {\n    name\n  }\n}\n```\n\n### `label`\n\nOverrides label for the list in the AdminUI. Default is `listName`.\n\n### `labelField`\n\nSpecify a field to use as a label for individual list items.\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n  },\n  labelField: 'name',\n});\n```\n\n### `labelResolver`\n\nFunction to resolve labels for individual list item. Default resolves the `labelField`.\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n  },\n  labelResolver: item =\u003e `${item.name} - ${item.email}`,\n});\n```\n\n### `listQueryName`\n\nChanges the list name in GraphQL queries and mutations.\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n  },\n  listQueryName: 'People',\n});\n```\n\nWith the above example a GraphQL query might look like this:\n\n```graphql\nquery {\n  allPeople {\n    name\n  }\n}\n```\n\n### `path`\n\nChanges the path in the Admin UI. Updating `plural` and `singular` values will not change the route in the admin UI. You can specify this using `path`.\n\n### `plugins`\n\nAn array of functions that modify config values. Plugin functions receive `(config, { listKey, keystone })`, where `config` is the a list config object, `listKey` is the name of the list, and `keystone` is the keystone object. They should return a valid list config. Plugin functions are executed in the order provided in the list, with the output config of one being passed as input to the next. The output of the final plugin is used to construct the `List` instance.\n\n```javascript\nconst setupUserList = ({ fields, ...config }) =\u003e {\n  return {\n    ...config,\n    fields: {\n      ...fields,\n      name: { type: Text },\n      password: { type: Password },\n    },\n  };\n};\n\nkeystone.createList('User', {\n  plugin: [setupUserList],\n});\n```\n\nThis provides a method for packaging features that can be applied to multiple lists.\n\n### `plural`\n\nKeystone will attempt to determine a plural for list items. Sometimes Keystone will not be able to determine the plural forcing you to change the list name. Or sometimes Keystone may get it wrong, especially for non-English words.\n\nE.g. Keystone thinks the correct plural for Octopus is \"Octopi\". Everyone knows the scientifically accurate plural is \"Octopodes\":\n\n```javascript\nkeystone.createList('Octopus', {\n  fields: {\n    legs: { type: Integer },\n  },\n  plural: 'Octopodes',\n});\n```\n\n### `queryLimits`\n\nConfiguration for limiting the kinds of queries that can be made against the list, to avoid queries that might overload the server.\n\nSee also [global query limits on the Keystone object](/packages/keystone/README.md#querylimits).\n\n- `maxResults`: maximum number of results that can be returned in a query (or subquery)\n\n```javascript\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n  },\n  queryLimits: {\n    maxResults: 100,\n  },\n});\n```\n\n### `schemaDoc`\n\nA description for the list used in the GraphQL schema. To document the list in the Admin UI, see [`adminDoc`](#admindoc);\n\n```javascript\nkeystone.createList('Todo', {\n  schemaDoc: 'A list of things which need to be done.',\n});\n```\n\n### `singular`\n\nKeystone list names should be singular and Keystone will attempt to determine a plural.\n\nWhere Keystone can't determine a plural you may be forced to use a different list name.\n\nThe `singular` option allows you to change the display label for singular items.\n\nE.g. Keystone can't determine a plural for 'Sheep'. Let's change the `singular` option:\n\n```javascript\nkeystone.createList('WoolyBoi', {\n  fields: {\n    sheepName: { type: Text },\n  },\n  singular: 'Sheep',\n  plural: 'Sheep',\n});\n```\n\n\u003e **Note:** This will override labels in the AdminUI but will not change graphQL queries. For queries and mutations see: `itemQueryName` and `listQueryName`.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_api_create-list.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

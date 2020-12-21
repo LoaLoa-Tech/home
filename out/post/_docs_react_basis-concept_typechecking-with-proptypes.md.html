@@ -1,0 +1,212 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: typechecking-with-proptypes
+title: Typechecking With PropTypes
+permalink: docs/typechecking-with-proptypes.html
+redirect_from:</p>
+<ul>
+<li>&quot;docs/react-api.html#typechecking-with-proptypes&quot;</li>
+</ul>
+<hr>
+<blockquote>
+<p>Note:</p>
+<p><code>React.PropTypes</code> has moved into a different package since React v15.5. Please use <a href="https://www.npmjs.com/package/prop-types">the <code>prop-types</code> library instead</a>.</p>
+<p>We provide <a href="/blog/2017/04/07/react-v15.5.0.html#migrating-from-reactproptypes">a codemod script</a> to automate the conversion.</p>
+</blockquote>
+<p>As your app grows, you can catch a lot of bugs with typechecking. For some applications, you can use JavaScript extensions like <a href="https://flow.org/">Flow</a> or <a href="https://www.typescriptlang.org/">TypeScript</a> to typecheck your whole application. But even if you don't use those, React has some built-in typechecking abilities. To run typechecking on the props for a component, you can assign the special <code>propTypes</code> property:</p>
+<pre><code class="language-javascript">import PropTypes from 'prop-types';
+
+class Greeting extends React.Component {
+  render() {
+    return (
+      &lt;h1&gt;Hello, {this.props.name}&lt;/h1&gt;
+    );
+  }
+}
+
+Greeting.propTypes = {
+  name: PropTypes.string
+};
+</code></pre>
+<p>In this example, we are using a class component, but the same functionality could also be applied to function components, or components created by <a href="/docs/react-api.html#reactmemo"><code>React.memo</code></a> or <a href="/docs/react-api.html#reactforwardref"><code>React.forwardRef</code></a>.</p>
+<p><code>PropTypes</code> exports a range of validators that can be used to make sure the data you receive is valid. In this example, we're using <code>PropTypes.string</code>. When an invalid value is provided for a prop, a warning will be shown in the JavaScript console. For performance reasons, <code>propTypes</code> is only checked in development mode.</p>
+<h3>PropTypes {#proptypes}</h3>
+<p>Here is an example documenting the different validators provided:</p>
+<pre><code class="language-javascript">import PropTypes from 'prop-types';
+
+MyComponent.propTypes = {
+  // You can declare that a prop is a specific JS type. By default, these
+  // are all optional.
+  optionalArray: PropTypes.array,
+  optionalBool: PropTypes.bool,
+  optionalFunc: PropTypes.func,
+  optionalNumber: PropTypes.number,
+  optionalObject: PropTypes.object,
+  optionalString: PropTypes.string,
+  optionalSymbol: PropTypes.symbol,
+
+  // Anything that can be rendered: numbers, strings, elements or an array
+  // (or fragment) containing these types.
+  optionalNode: PropTypes.node,
+
+  // A React element.
+  optionalElement: PropTypes.element,
+
+  // A React element type (ie. MyComponent).
+  optionalElementType: PropTypes.elementType,
+
+  // You can also declare that a prop is an instance of a class. This uses
+  // JS's instanceof operator.
+  optionalMessage: PropTypes.instanceOf(Message),
+
+  // You can ensure that your prop is limited to specific values by treating
+  // it as an enum.
+  optionalEnum: PropTypes.oneOf(['News', 'Photos']),
+
+  // An object that could be one of many types
+  optionalUnion: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.instanceOf(Message)
+  ]),
+
+  // An array of a certain type
+  optionalArrayOf: PropTypes.arrayOf(PropTypes.number),
+
+  // An object with property values of a certain type
+  optionalObjectOf: PropTypes.objectOf(PropTypes.number),
+
+  // An object taking on a particular shape
+  optionalObjectWithShape: PropTypes.shape({
+    color: PropTypes.string,
+    fontSize: PropTypes.number
+  }),
+
+  // An object with warnings on extra properties
+  optionalObjectWithStrictShape: PropTypes.exact({
+    name: PropTypes.string,
+    quantity: PropTypes.number
+  }),   
+
+  // You can chain any of the above with `isRequired` to make sure a warning
+  // is shown if the prop isn't provided.
+  requiredFunc: PropTypes.func.isRequired,
+
+  // A required value of any data type
+  requiredAny: PropTypes.any.isRequired,
+
+  // You can also specify a custom validator. It should return an Error
+  // object if the validation fails. Don't `console.warn` or throw, as this
+  // won't work inside `oneOfType`.
+  customProp: function(props, propName, componentName) {
+    if (!/matchme/.test(props[propName])) {
+      return new Error(
+        'Invalid prop `' + propName + '` supplied to' +
+        ' `' + componentName + '`. Validation failed.'
+      );
+    }
+  },
+
+  // You can also supply a custom validator to `arrayOf` and `objectOf`.
+  // It should return an Error object if the validation fails. The validator
+  // will be called for each key in the array or object. The first two
+  // arguments of the validator are the array or object itself, and the
+  // current item's key.
+  customArrayProp: PropTypes.arrayOf(function(propValue, key, componentName, location, propFullName) {
+    if (!/matchme/.test(propValue[key])) {
+      return new Error(
+        'Invalid prop `' + propFullName + '` supplied to' +
+        ' `' + componentName + '`. Validation failed.'
+      );
+    }
+  })
+};
+</code></pre>
+<h3>Requiring Single Child {#requiring-single-child}</h3>
+<p>With <code>PropTypes.element</code> you can specify that only a single child can be passed to a component as children.</p>
+<pre><code class="language-javascript">import PropTypes from 'prop-types';
+
+class MyComponent extends React.Component {
+  render() {
+    // This must be exactly one element or it will warn.
+    const children = this.props.children;
+    return (
+      &lt;div&gt;
+        {children}
+      &lt;/div&gt;
+    );
+  }
+}
+
+MyComponent.propTypes = {
+  children: PropTypes.element.isRequired
+};
+</code></pre>
+<h3>Default Prop Values {#default-prop-values}</h3>
+<p>You can define default values for your <code>props</code> by assigning to the special <code>defaultProps</code> property:</p>
+<pre><code class="language-javascript">class Greeting extends React.Component {
+  render() {
+    return (
+      &lt;h1&gt;Hello, {this.props.name}&lt;/h1&gt;
+    );
+  }
+}
+
+// Specifies the default values for props:
+Greeting.defaultProps = {
+  name: 'Stranger'
+};
+
+// Renders &quot;Hello, Stranger&quot;:
+ReactDOM.render(
+  &lt;Greeting /&gt;,
+  document.getElementById('example')
+);
+</code></pre>
+<p>If you are using a Babel transform like <a href="https://babeljs.io/docs/plugins/transform-class-properties/">transform-class-properties</a> , you can also declare <code>defaultProps</code> as static property within a React component class. This syntax has not yet been finalized though and will require a compilation step to work within a browser. For more information, see the <a href="https://github.com/tc39/proposal-class-fields">class fields proposal</a>.</p>
+<pre><code class="language-javascript">class Greeting extends React.Component {
+  static defaultProps = {
+    name: 'stranger'
+  }
+
+  render() {
+    return (
+      &lt;div&gt;Hello, {this.props.name}&lt;/div&gt;
+    )
+  }
+}
+</code></pre>
+<p>The <code>defaultProps</code> will be used to ensure that <code>this.props.name</code> will have a value if it was not specified by the parent component. The <code>propTypes</code> typechecking happens after <code>defaultProps</code> are resolved, so typechecking will also apply to the <code>defaultProps</code>.</p>
+<h3>Function Components</h3>
+<p>If you are using function components in your regular development, you may want to make some small changes to allow PropTypes to be proper applied.</p>
+<p>Let's say you have a component like this:</p>
+<pre><code class="language-javascript">export default function HelloWorldComponent({ name }) {
+  return (
+    &lt;div&gt;Hello, {name}&lt;/div&gt;
+  )
+}
+</code></pre>
+<p>To add PropTypes, you may want to declare the component in a separate function before exporting, like this:</p>
+<pre><code class="language-javascript">function HelloWorldComponent({ name }) {
+  return (
+    &lt;div&gt;Hello, {name}&lt;/div&gt;
+  )
+}
+
+export default HelloWorldComponent
+</code></pre>
+<p>Then, you can add PropTypes directly to the <code>HelloWorldComponent</code>:</p>
+<pre><code class="language-javascript">import PropTypes from 'prop-types'
+
+function HelloWorldComponent({ name }) {
+  return (
+    &lt;div&gt;Hello, {name}&lt;/div&gt;
+  )
+}
+
+HelloWorldComponent.propTypes = {
+  name: PropTypes.string
+}
+
+export default HelloWorldComponent
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: typechecking-with-proptypes\ntitle: Typechecking With PropTypes\npermalink: docs/typechecking-with-proptypes.html\nredirect_from:\n  - \"docs/react-api.html#typechecking-with-proptypes\"\n---\n\n\u003e Note:\n\u003e\n\u003e `React.PropTypes` has moved into a different package since React v15.5. Please use [the `prop-types` library instead](https://www.npmjs.com/package/prop-types).\n\u003e\n\u003eWe provide [a codemod script](/blog/2017/04/07/react-v15.5.0.html#migrating-from-reactproptypes) to automate the conversion.\n\nAs your app grows, you can catch a lot of bugs with typechecking. For some applications, you can use JavaScript extensions like [Flow](https://flow.org/) or [TypeScript](https://www.typescriptlang.org/) to typecheck your whole application. But even if you don't use those, React has some built-in typechecking abilities. To run typechecking on the props for a component, you can assign the special `propTypes` property:\n\n```javascript\nimport PropTypes from 'prop-types';\n\nclass Greeting extends React.Component {\n  render() {\n    return (\n      \u003ch1\u003eHello, {this.props.name}\u003c/h1\u003e\n    );\n  }\n}\n\nGreeting.propTypes = {\n  name: PropTypes.string\n};\n```\n\nIn this example, we are using a class component, but the same functionality could also be applied to function components, or components created by [`React.memo`](/docs/react-api.html#reactmemo) or [`React.forwardRef`](/docs/react-api.html#reactforwardref).\n\n`PropTypes` exports a range of validators that can be used to make sure the data you receive is valid. In this example, we're using `PropTypes.string`. When an invalid value is provided for a prop, a warning will be shown in the JavaScript console. For performance reasons, `propTypes` is only checked in development mode.\n\n### PropTypes {#proptypes}\n\nHere is an example documenting the different validators provided:\n\n```javascript\nimport PropTypes from 'prop-types';\n\nMyComponent.propTypes = {\n  // You can declare that a prop is a specific JS type. By default, these\n  // are all optional.\n  optionalArray: PropTypes.array,\n  optionalBool: PropTypes.bool,\n  optionalFunc: PropTypes.func,\n  optionalNumber: PropTypes.number,\n  optionalObject: PropTypes.object,\n  optionalString: PropTypes.string,\n  optionalSymbol: PropTypes.symbol,\n\n  // Anything that can be rendered: numbers, strings, elements or an array\n  // (or fragment) containing these types.\n  optionalNode: PropTypes.node,\n\n  // A React element.\n  optionalElement: PropTypes.element,\n\n  // A React element type (ie. MyComponent).\n  optionalElementType: PropTypes.elementType,\n\n  // You can also declare that a prop is an instance of a class. This uses\n  // JS's instanceof operator.\n  optionalMessage: PropTypes.instanceOf(Message),\n\n  // You can ensure that your prop is limited to specific values by treating\n  // it as an enum.\n  optionalEnum: PropTypes.oneOf(['News', 'Photos']),\n\n  // An object that could be one of many types\n  optionalUnion: PropTypes.oneOfType([\n    PropTypes.string,\n    PropTypes.number,\n    PropTypes.instanceOf(Message)\n  ]),\n\n  // An array of a certain type\n  optionalArrayOf: PropTypes.arrayOf(PropTypes.number),\n\n  // An object with property values of a certain type\n  optionalObjectOf: PropTypes.objectOf(PropTypes.number),\n\n  // An object taking on a particular shape\n  optionalObjectWithShape: PropTypes.shape({\n    color: PropTypes.string,\n    fontSize: PropTypes.number\n  }),\n\n  // An object with warnings on extra properties\n  optionalObjectWithStrictShape: PropTypes.exact({\n    name: PropTypes.string,\n    quantity: PropTypes.number\n  }),   \n\n  // You can chain any of the above with `isRequired` to make sure a warning\n  // is shown if the prop isn't provided.\n  requiredFunc: PropTypes.func.isRequired,\n\n  // A required value of any data type\n  requiredAny: PropTypes.any.isRequired,\n\n  // You can also specify a custom validator. It should return an Error\n  // object if the validation fails. Don't `console.warn` or throw, as this\n  // won't work inside `oneOfType`.\n  customProp: function(props, propName, componentName) {\n    if (!/matchme/.test(props[propName])) {\n      return new Error(\n        'Invalid prop `' + propName + '` supplied to' +\n        ' `' + componentName + '`. Validation failed.'\n      );\n    }\n  },\n\n  // You can also supply a custom validator to `arrayOf` and `objectOf`.\n  // It should return an Error object if the validation fails. The validator\n  // will be called for each key in the array or object. The first two\n  // arguments of the validator are the array or object itself, and the\n  // current item's key.\n  customArrayProp: PropTypes.arrayOf(function(propValue, key, componentName, location, propFullName) {\n    if (!/matchme/.test(propValue[key])) {\n      return new Error(\n        'Invalid prop `' + propFullName + '` supplied to' +\n        ' `' + componentName + '`. Validation failed.'\n      );\n    }\n  })\n};\n```\n\n### Requiring Single Child {#requiring-single-child}\n\nWith `PropTypes.element` you can specify that only a single child can be passed to a component as children.\n\n```javascript\nimport PropTypes from 'prop-types';\n\nclass MyComponent extends React.Component {\n  render() {\n    // This must be exactly one element or it will warn.\n    const children = this.props.children;\n    return (\n      \u003cdiv\u003e\n        {children}\n      \u003c/div\u003e\n    );\n  }\n}\n\nMyComponent.propTypes = {\n  children: PropTypes.element.isRequired\n};\n```\n\n### Default Prop Values {#default-prop-values}\n\nYou can define default values for your `props` by assigning to the special `defaultProps` property:\n\n```javascript\nclass Greeting extends React.Component {\n  render() {\n    return (\n      \u003ch1\u003eHello, {this.props.name}\u003c/h1\u003e\n    );\n  }\n}\n\n// Specifies the default values for props:\nGreeting.defaultProps = {\n  name: 'Stranger'\n};\n\n// Renders \"Hello, Stranger\":\nReactDOM.render(\n  \u003cGreeting /\u003e,\n  document.getElementById('example')\n);\n```\n\nIf you are using a Babel transform like [transform-class-properties](https://babeljs.io/docs/plugins/transform-class-properties/) , you can also declare `defaultProps` as static property within a React component class. This syntax has not yet been finalized though and will require a compilation step to work within a browser. For more information, see the [class fields proposal](https://github.com/tc39/proposal-class-fields).\n\n```javascript\nclass Greeting extends React.Component {\n  static defaultProps = {\n    name: 'stranger'\n  }\n\n  render() {\n    return (\n      \u003cdiv\u003eHello, {this.props.name}\u003c/div\u003e\n    )\n  }\n}\n```\n\nThe `defaultProps` will be used to ensure that `this.props.name` will have a value if it was not specified by the parent component. The `propTypes` typechecking happens after `defaultProps` are resolved, so typechecking will also apply to the `defaultProps`.\n\n### Function Components\n\nIf you are using function components in your regular development, you may want to make some small changes to allow PropTypes to be proper applied.\n\nLet's say you have a component like this:\n\n```javascript\nexport default function HelloWorldComponent({ name }) {\n  return (\n    \u003cdiv\u003eHello, {name}\u003c/div\u003e\n  )\n}\n```\n\nTo add PropTypes, you may want to declare the component in a separate function before exporting, like this:\n\n```javascript\nfunction HelloWorldComponent({ name }) {\n  return (\n    \u003cdiv\u003eHello, {name}\u003c/div\u003e\n  )\n}\n\nexport default HelloWorldComponent\n```\n\nThen, you can add PropTypes directly to the `HelloWorldComponent`:\n\n```javascript\nimport PropTypes from 'prop-types'\n\nfunction HelloWorldComponent({ name }) {\n  return (\n    \u003cdiv\u003eHello, {name}\u003c/div\u003e\n  )\n}\n\nHelloWorldComponent.propTypes = {\n  name: PropTypes.string\n}\n\nexport default HelloWorldComponent\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_typechecking-with-proptypes.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

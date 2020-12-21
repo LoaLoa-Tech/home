@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Error handling
+description: Handling errors with Apollo</p>
+<hr>
+<p>Any application, from simple to complex, can have its fair share of errors. It is important to handle these errors and when possible, report these errors back to your users for information. Using GraphQL brings a new set of possible errors from the actual GraphQL response itself. With that in mind, here are a few different types of errors:</p>
+<ul>
+<li>GraphQL Errors: errors in the GraphQL results that can appear alongside successful data</li>
+<li>Server Errors: server internal errors that prevent a successful response from being formed</li>
+<li>Transaction Errors: errors inside transaction actions like <code>update</code> on mutations</li>
+<li>UI Errors: errors that occur in your component code</li>
+<li>Apollo Client Errors: internal errors within the core or corresponding libraries</li>
+</ul>
+<h2>Error policies</h2>
+<p>Much like <code>fetchPolicy</code>, <code>errorPolicy</code> allows you to control how GraphQL Errors from the server are sent to your UI code. By default, the error policy treats any GraphQL Errors as network errors and ends the request chain. It doesn't save any data in the cache, and renders your UI with the <code>error</code> prop to be an ApolloError. By changing this policy per request, you can adjust how GraphQL Errors are managed by your UI. The possible options for <code>errorPolicy</code> are:</p>
+<ul>
+<li><code>none</code>: This is the default policy to match how Apollo Client 1.0 worked. Any GraphQL Errors are treated the same as network errors and any data is ignored from the response.</li>
+<li><code>ignore</code>: Ignore allows you to read any data that is returned alongside GraphQL Errors, but doesn't save the errors or report them to your UI.</li>
+<li><code>all</code>: Using the <code>all</code> policy is the best way to notify your users of potential issues while still showing as much data as possible from your server. It saves both data and errors so your UI can use them.</li>
+</ul>
+<p>You can set <code>errorPolicy</code> on each request like so:</p>
+<pre><code class="language-tsx">const MY_QUERY = gql`
+  query WillFail {
+    badField
+    goodField
+  }
+`;
+
+function ShowingSomeErrors() {
+  const { loading, error, data } = useQuery(MY_QUERY, { errorPolicy: 'all' });
+
+  if (loading) return &lt;span&gt;loading...&lt;/span&gt;
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Good: {data.goodField}&lt;/h2&gt;
+      &lt;pre&gt;Bad: {error.graphQLErrors.map(({ message }, i) =&gt; (
+        &lt;span key={i}&gt;{message}&lt;/span&gt;
+      ))}
+      &lt;/pre&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>Any errors reported will come under an <code>error</code> prop along side the data returned from the cache or server.</p>
+<h2>Network Errors</h2>
+<p>When using Apollo Link, the ability to handle network errors is way more powerful. The best way to do this is to use the <code>@apollo/client/link/error</code> to catch and handle server errors, network errors, and GraphQL errors. If you would like to combine with other links, see <a href="../api/link/introduction/#composing-a-link-chain">Composing a link chain</a>.</p>
+<h4>Usage</h4>
+<pre><code class="language-js">import { onError } from &quot;@apollo/client/link/error&quot;;
+
+const link = onError(({ graphQLErrors, networkError }) =&gt; {
+  if (graphQLErrors)
+    graphQLErrors.map(({ message, locations, path }) =&gt;
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+      ),
+    );
+
+  if (networkError) console.log(`[Network error]: ${networkError}`);
+});
+</code></pre>
+<h4>Options</h4>
+<p>Error Link takes a function that is called in the event of an error. This function is called with an object containing the following keys:</p>
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>operation</code></td><td>The Operation that errored</td></tr>
+<tr><td><code>response</code></td><td>The result returned from lower down in the link chain</td></tr>
+<tr><td><code>graphQLErrors</code></td><td>An array of errors from the GraphQL endpoint</td></tr>
+<tr><td><code>networkError</code></td><td>Any error during the link execution or server response, that wasn't delivered as part of the <code>errors</code> field in the GraphQL result</td></tr>
+<tr><td><code>forward</code></td><td>A reference to the next link in the chain. Calling <code>return forward(operation)</code> in the callback will retry the request, returning a new observable for the upstream link to subscribe to.</td></tr>
+</tbody>
+</table>
+<h4>Ignoring errors</h4>
+<p>If you want to conditionally ignore errors, you can set <code>response.errors = null;</code> within the error handler:</p>
+<pre><code class="language-js">onError(({ response, operation }) =&gt; {
+  if (operation.operationName === &quot;IgnoreErrorsQuery&quot;) {
+    response.errors = null;
+  }
+})
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Error handling\ndescription: Handling errors with Apollo\n---\n\nAny application, from simple to complex, can have its fair share of errors. It is important to handle these errors and when possible, report these errors back to your users for information. Using GraphQL brings a new set of possible errors from the actual GraphQL response itself. With that in mind, here are a few different types of errors:\n\n- GraphQL Errors: errors in the GraphQL results that can appear alongside successful data\n- Server Errors: server internal errors that prevent a successful response from being formed\n- Transaction Errors: errors inside transaction actions like `update` on mutations\n- UI Errors: errors that occur in your component code\n- Apollo Client Errors: internal errors within the core or corresponding libraries\n\n## Error policies\n\nMuch like `fetchPolicy`, `errorPolicy` allows you to control how GraphQL Errors from the server are sent to your UI code. By default, the error policy treats any GraphQL Errors as network errors and ends the request chain. It doesn't save any data in the cache, and renders your UI with the `error` prop to be an ApolloError. By changing this policy per request, you can adjust how GraphQL Errors are managed by your UI. The possible options for `errorPolicy` are:\n\n- `none`: This is the default policy to match how Apollo Client 1.0 worked. Any GraphQL Errors are treated the same as network errors and any data is ignored from the response.\n- `ignore`: Ignore allows you to read any data that is returned alongside GraphQL Errors, but doesn't save the errors or report them to your UI.\n- `all`: Using the `all` policy is the best way to notify your users of potential issues while still showing as much data as possible from your server. It saves both data and errors so your UI can use them.\n\nYou can set `errorPolicy` on each request like so:\n\n```tsx\nconst MY_QUERY = gql`\n  query WillFail {\n    badField\n    goodField\n  }\n`;\n\nfunction ShowingSomeErrors() {\n  const { loading, error, data } = useQuery(MY_QUERY, { errorPolicy: 'all' });\n\n  if (loading) return \u003cspan\u003eloading...\u003c/span\u003e\n  return (\n    \u003cdiv\u003e\n      \u003ch2\u003eGood: {data.goodField}\u003c/h2\u003e\n      \u003cpre\u003eBad: {error.graphQLErrors.map(({ message }, i) =\u003e (\n        \u003cspan key={i}\u003e{message}\u003c/span\u003e\n      ))}\n      \u003c/pre\u003e\n    \u003c/div\u003e\n  );\n}\n```\n\nAny errors reported will come under an `error` prop along side the data returned from the cache or server.\n\n## Network Errors\n\nWhen using Apollo Link, the ability to handle network errors is way more powerful. The best way to do this is to use the `@apollo/client/link/error` to catch and handle server errors, network errors, and GraphQL errors. If you would like to combine with other links, see [Composing a link chain](../api/link/introduction/#composing-a-link-chain).\n\n#### Usage\n\n```js\nimport { onError } from \"@apollo/client/link/error\";\n\nconst link = onError(({ graphQLErrors, networkError }) =\u003e {\n  if (graphQLErrors)\n    graphQLErrors.map(({ message, locations, path }) =\u003e\n      console.log(\n        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,\n      ),\n    );\n\n  if (networkError) console.log(`[Network error]: ${networkError}`);\n});\n```\n\n#### Options\n\nError Link takes a function that is called in the event of an error. This function is called with an object containing the following keys:\n\n| Option | Description |\n| - | - |\n| `operation` | The Operation that errored |\n| `response` | The result returned from lower down in the link chain |\n| `graphQLErrors` | An array of errors from the GraphQL endpoint |\n| `networkError` | Any error during the link execution or server response, that wasn't delivered as part of the `errors` field in the GraphQL result |\n| `forward` | A reference to the next link in the chain. Calling `return forward(operation)` in the callback will retry the request, returning a new observable for the upstream link to subscribe to. |\n\n#### Ignoring errors\n\nIf you want to conditionally ignore errors, you can set `response.errors = null;` within the error handler:\n\n```js\nonError(({ response, operation }) =\u003e {\n  if (operation.operationName === \"IgnoreErrorsQuery\") {\n    response.errors = null;\n  }\n})\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_data_error-handling.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<h2>description: Use codemods to update your codebase when upgrading Next.js to the latest version</h2>
+<h1>Next.js Codemods</h1>
+<p>Next.js provides Codemod transformations to help upgrade your Next.js codebase when a feature is deprecated.</p>
+<p>Codemods are transformations that run on your codebase programmatically. This allows for a large amount of changes to be applied without having to manually go through every file.</p>
+<h2>Usage</h2>
+<p><code>npx @next/codemod &lt;transform&gt; &lt;path&gt;</code></p>
+<ul>
+<li><code>transform</code> - name of transform, see available transforms below.</li>
+<li><code>path</code> - files or directory to transform</li>
+<li><code>--dry</code> Do a dry-run, no code will be edited</li>
+<li><code>--print</code> Prints the changed output for comparison</li>
+</ul>
+<h2>Next.js 9</h2>
+<h3><code>name-default-component</code></h3>
+<p>Transforms anonymous components into named components to make sure they work with <a href="https://nextjs.org/blog/next-9-4#fast-refresh">Fast Refresh</a>.</p>
+<p>For example</p>
+<pre><code class="language-jsx">// my-component.js
+export default function () {
+  return &lt;div&gt;Hello World&lt;/div&gt;
+}
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-jsx">// my-component.js
+export default function MyComponent() {
+  return &lt;div&gt;Hello World&lt;/div&gt;
+}
+</code></pre>
+<p>The component will have a camel cased name based on the name of the file, and it also works with arrow functions.</p>
+<h4>Usage</h4>
+<p>Go to your project</p>
+<pre><code>cd path-to-your-project/
+</code></pre>
+<p>Run the codemod:</p>
+<pre><code>npx @next/codemod name-default-component
+</code></pre>
+<h3><code>withamp-to-config</code></h3>
+<p>Transforms the <code>withAmp</code> HOC into Next.js 9 page configuration.</p>
+<p>For example:</p>
+<pre><code class="language-js">// Before
+import { withAmp } from 'next/amp'
+
+function Home() {
+  return &lt;h1&gt;My AMP Page&lt;/h1&gt;
+}
+
+export default withAmp(Home)
+</code></pre>
+<pre><code class="language-js">// After
+export default function Home() {
+  return &lt;h1&gt;My AMP Page&lt;/h1&gt;
+}
+
+export const config = {
+  amp: true,
+}
+</code></pre>
+<h4>Usage</h4>
+<p>Go to your project</p>
+<pre><code>cd path-to-your-project/
+</code></pre>
+<p>Run the codemod:</p>
+<pre><code>npx @next/codemod withamp-to-config
+</code></pre>
+<h2>Next.js 6</h2>
+<h3><code>url-to-withrouter</code></h3>
+<p>Transforms the deprecated automatically injected <code>url</code> property on top level pages to using <code>withRouter</code> and the <code>router</code> property it injects. Read more here: <a href="https://err.sh/next.js/url-deprecated">err.sh/next.js/url-deprecated</a></p>
+<p>For example:</p>
+<pre><code class="language-js">// From
+import React from 'react'
+export default class extends React.Component {
+  render() {
+    const { pathname } = this.props.url
+    return &lt;div&gt;Current pathname: {pathname}&lt;/div&gt;
+  }
+}
+</code></pre>
+<pre><code class="language-js">// To
+import React from 'react'
+import { withRouter } from 'next/router'
+export default withRouter(
+  class extends React.Component {
+    render() {
+      const { pathname } = this.props.router
+      return &lt;div&gt;Current pathname: {pathname}&lt;/div&gt;
+    }
+  }
+)
+</code></pre>
+<p>This is just one case. All the cases that are transformed (and tested) can be found in the <a href="https://github.com/vercel/next.js/tree/canary/packages/next-codemod/transforms/__testfixtures__/url-to-withrouter"><code>__testfixtures__</code> directory</a>.</p>
+<h4>Usage</h4>
+<p>Go to your project</p>
+<pre><code>cd path-to-your-project/
+</code></pre>
+<p>Run the codemod:</p>
+<pre><code>npx @next/codemod url-to-withrouter
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ndescription: Use codemods to update your codebase when upgrading Next.js to the latest version\n---\n\n# Next.js Codemods\n\nNext.js provides Codemod transformations to help upgrade your Next.js codebase when a feature is deprecated.\n\nCodemods are transformations that run on your codebase programmatically. This allows for a large amount of changes to be applied without having to manually go through every file.\n\n## Usage\n\n`npx @next/codemod \u003ctransform\u003e \u003cpath\u003e`\n\n- `transform` - name of transform, see available transforms below.\n- `path` - files or directory to transform\n- `--dry` Do a dry-run, no code will be edited\n- `--print` Prints the changed output for comparison\n\n## Next.js 9\n\n### `name-default-component`\n\nTransforms anonymous components into named components to make sure they work with [Fast Refresh](https://nextjs.org/blog/next-9-4#fast-refresh).\n\nFor example\n\n```jsx\n// my-component.js\nexport default function () {\n  return \u003cdiv\u003eHello World\u003c/div\u003e\n}\n```\n\nTransforms into:\n\n```jsx\n// my-component.js\nexport default function MyComponent() {\n  return \u003cdiv\u003eHello World\u003c/div\u003e\n}\n```\n\nThe component will have a camel cased name based on the name of the file, and it also works with arrow functions.\n\n#### Usage\n\nGo to your project\n\n```\ncd path-to-your-project/\n```\n\nRun the codemod:\n\n```\nnpx @next/codemod name-default-component\n```\n\n### `withamp-to-config`\n\nTransforms the `withAmp` HOC into Next.js 9 page configuration.\n\nFor example:\n\n```js\n// Before\nimport { withAmp } from 'next/amp'\n\nfunction Home() {\n  return \u003ch1\u003eMy AMP Page\u003c/h1\u003e\n}\n\nexport default withAmp(Home)\n```\n\n```js\n// After\nexport default function Home() {\n  return \u003ch1\u003eMy AMP Page\u003c/h1\u003e\n}\n\nexport const config = {\n  amp: true,\n}\n```\n\n#### Usage\n\nGo to your project\n\n```\ncd path-to-your-project/\n```\n\nRun the codemod:\n\n```\nnpx @next/codemod withamp-to-config\n```\n\n## Next.js 6\n\n### `url-to-withrouter`\n\nTransforms the deprecated automatically injected `url` property on top level pages to using `withRouter` and the `router` property it injects. Read more here: [err.sh/next.js/url-deprecated](https://err.sh/next.js/url-deprecated)\n\nFor example:\n\n```js\n// From\nimport React from 'react'\nexport default class extends React.Component {\n  render() {\n    const { pathname } = this.props.url\n    return \u003cdiv\u003eCurrent pathname: {pathname}\u003c/div\u003e\n  }\n}\n```\n\n```js\n// To\nimport React from 'react'\nimport { withRouter } from 'next/router'\nexport default withRouter(\n  class extends React.Component {\n    render() {\n      const { pathname } = this.props.router\n      return \u003cdiv\u003eCurrent pathname: {pathname}\u003c/div\u003e\n    }\n  }\n)\n```\n\nThis is just one case. All the cases that are transformed (and tested) can be found in the [`__testfixtures__` directory](https://github.com/vercel/next.js/tree/canary/packages/next-codemod/transforms/__testfixtures__/url-to-withrouter).\n\n#### Usage\n\nGo to your project\n\n```\ncd path-to-your-project/\n```\n\nRun the codemod:\n\n```\nnpx @next/codemod url-to-withrouter\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_next_advanced-features_codemods.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

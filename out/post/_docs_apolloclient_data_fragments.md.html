@@ -1,0 +1,210 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Fragments
+description: Learn how to use fragments to share fields across queries</p>
+<hr>
+<p>A <a href="http://graphql.org/learn/queries/#fragments">GraphQL fragment</a> is a piece of logic that a client can share between multiple queries and mutations.</p>
+<p>Here, we declare a <code>NameParts</code> fragment that can be used with any <code>Person</code> object:</p>
+<pre><code class="language-graphql">fragment NameParts on Person {
+  firstName
+  lastName
+}
+</code></pre>
+<p>A fragment includes a subset of the fields that are declared for its associated type. In the above example, the <code>Person</code> type must declare <code>firstName</code> and <code>lastName</code> fields for the <code>NameParts</code> fragment to be valid.</p>
+<p>We can now include the <code>NameParts</code> fragment in any number of queries and mutations that refer to <code>Person</code> objects, like so:</p>
+<pre><code class="language-graphql">query GetPerson {
+  people(id: &quot;7&quot;) {
+    ...NameParts
+    avatar(size: LARGE)
+  }
+}
+</code></pre>
+<p>Based on our <code>NameParts</code> definition, the above query is equivalent to:</p>
+<pre><code class="language-graphql">query GetPerson {
+  people(id: &quot;7&quot;) {
+    firstName
+    lastName
+    avatar(size: LARGE)
+  }
+}
+</code></pre>
+<p>However, if we later change which fields are included in the <code>NameParts</code> fragment, we automatically change which fields are included in every operation that <em>uses</em> the <code>NameParts</code> fragment. This reduces the effort required to keep fields consistent across a set of operations.</p>
+<h2>Reusing fragments</h2>
+<p>Fragments are useful for including an identical set of fields across multiple GraphQL operations. For example, a blog might define several operations related to comments, and each of those operations might need to include the same baseline set of fields from a <code>Comment</code> type.</p>
+<p>To specify this baseline set of fields, we define a fragment that lists the <code>Comment</code> fields that every comment-related operation should include:</p>
+<pre><code class="language-js">import { gql } from '@apollo/client';
+
+CommentsPage.fragments = {
+  comment: gql`
+    fragment CommentsPageComment on Comment {
+      id
+      postedBy {
+        login
+        html_url
+      }
+      createdAt
+      content
+    }
+  `,
+};
+</code></pre>
+<p>We assign the fragment to <code>CommentsPage.fragments.comment</code> as a convention.</p>
+<p>To embed a fragment inside a GraphQL operation, prefix its name with three periods (<code>...</code>), like so:</p>
+<pre><code class="language-js">const SUBMIT_COMMENT_MUTATION = gql`
+  mutation SubmitComment($postFullName: String!, $commentContent: String!) {
+    submitComment(postFullName: $postFullName, commentContent: $commentContent) {
+      ...CommentsPageComment // highlight-line
+    }
+  }
+  ${CommentsPage.fragments.comment}
+`;
+
+export const COMMENT_QUERY = gql`
+  query Comment($postName: String!) {
+    entry(postFullName: $postName) {
+      comments {
+        ...CommentsPageComment // highlight-line
+      }
+    }
+  }
+  ${CommentsPage.fragments.comment}
+`;
+</code></pre>
+<h2>Colocating fragments</h2>
+<p>The tree-like structure of a GraphQL response resembles the hierarchy of a frontend's rendered components. Because of this similarity, you can use fragments to split query logic up <em>between</em> components, so that each component requests exactly the fields that it uses. This helps you make your component logic more succinct.</p>
+<p>Consider the following view hierarchy for an app:</p>
+<pre><code>FeedPage
+└── Feed
+    └── FeedEntry
+        ├── EntryInfo
+        └── VoteButtons
+</code></pre>
+<p>In this app, the <code>FeedPage</code> component executes a query to fetch a list of <code>FeedEntry</code> objects. The <code>EntryInfo</code> and <code>VoteButtons</code> subcomponents need specific fields from the enclosing <code>FeedEntry</code> object.</p>
+<h3>Creating colocated fragments</h3>
+<p>A colocated fragment is just like any other fragment, except it is attached to a particular component that uses the fragment's fields. For example, the <code>VoteButtons</code> child component of <code>FeedPage</code> might use the fields <code>score</code> and <code>vote { choice }</code> from the <code>FeedEntry</code> object:</p>
+<pre><code class="language-js">VoteButtons.fragments = {
+  entry: gql`
+    fragment VoteButtonsFragment on FeedEntry {
+      score
+      vote {
+        choice
+      }
+    }
+  `,
+};
+</code></pre>
+<p>After you define a fragment in a child component, the parent component can refer to child component fragments in its own fragment definitions, like so:</p>
+<pre><code class="language-js">FeedEntry.fragments = {
+  entry: gql`
+    fragment FeedEntryFragment on FeedEntry {
+      commentCount
+      repository {
+        full_name
+        html_url
+        owner {
+          avatar_url
+        }
+      }
+      ...VoteButtonsFragment
+      ...RepoInfoFragment
+    }
+    ${VoteButtons.fragments.entry}
+    ${RepoInfo.fragments.entry}
+  `,
+};
+</code></pre>
+<p>There's nothing special about the naming of <code>VoteButtons.fragments.entry</code> or <code>RepoInfo.fragments.entry</code>. Any naming convention will work as long as you can easily and consistently retrieve a component's fragments given the component.</p>
+<h3>Importing fragments when using Webpack</h3>
+<p>When loading <code>.graphql</code> files with <a href="https://github.com/apollographql/graphql-tag/blob/main/loader.js">graphql-tag/loader</a>, we can include fragments using <code>import</code> statements. For example:</p>
+<pre><code class="language-graphql">#import &quot;./someFragment.graphql&quot;
+</code></pre>
+<p>This makes the contents of <code>someFragment.graphql</code> available to the current file. See the <a href="../integrations/webpack/#fragments">Webpack Fragments</a> section for additional details.</p>
+<h2>Using fragments with unions and interfaces</h2>
+<p>You can define fragments on <a href="https://www.apollographql.com/docs/apollo-server/schema/unions-interfaces/">unions and interfaces</a>.</p>
+<p>Here's an example of a query that includes three in-line fragments:</p>
+<pre><code class="language-graphql">query AllCharacters {
+  all_characters {
+
+    ... on Character {
+      name
+    }
+
+    ... on Jedi {
+      side
+    }
+
+    ... on Droid {
+      model
+    }
+  }
+}
+</code></pre>
+<p>The <code>all_characters</code> query above returns a list of <code>Character</code> objects. The <code>Character</code> type is an interface that both the <code>Jedi</code> and <code>Droid</code> types implement. Each item in the list includes a <code>side</code> field if it's an object of type <code>Jedi</code>, and it includes a <code>model</code> field if it's of type <code>Droid</code>.</p>
+<p><strong>However</strong>, for this query to work, your client needs to understand the polymorphic relationship between the <code>Character</code> interface and the types that implement it. To inform the client about these relationships, you can pass a <code>possibleTypes</code> option when creating the <code>InMemoryCache</code>.</p>
+<h3>Defining <code>possibleTypes</code> manually</h3>
+<blockquote>
+<p>The <code>possibleTypes</code> option is available in Apollo Client 3.0 and later.</p>
+</blockquote>
+<p>You can pass a <code>possibleTypes</code> option to the <code>InMemoryCache</code> constructor to specify supertype-subtype relationships in your schema. This object maps the name of an interface or union type (the supertype) to the types that implement or belong to it (the subtypes).</p>
+<p>Here's an example <code>possibleTypes</code> declaration:</p>
+<pre><code class="language-ts">const cache = new InMemoryCache({
+  possibleTypes: {
+    Character: [&quot;Jedi&quot;, &quot;Droid&quot;],
+    Test: [&quot;PassingTest&quot;, &quot;FailingTest&quot;, &quot;SkippedTest&quot;],
+    Snake: [&quot;Viper&quot;, &quot;Python&quot;],
+  },
+});
+</code></pre>
+<p>This example lists three interfaces (<code>Character</code>, <code>Test</code>, and <code>Snake</code>) and the object types that implement them.</p>
+<p>If your schema includes only a few unions and interfaces, you can probably specify your <code>possibleTypes</code> manually without issue. However, as your schema grows in size and complexity, you should consider <a href="#generating-possibletypes-automatically">generating <code>possibleTypes</code> automatically from your schema</a>.</p>
+<h3>Generating <code>possibleTypes</code> automatically</h3>
+<p>The following example script translates a GraphQL introspection query into a <code>possibleTypes</code> configuration object:</p>
+<pre><code class="language-js">const fetch = require('cross-fetch');
+const fs = require('fs');
+
+fetch(`${YOUR_API_HOST}/graphql`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    variables: {},
+    query: `
+      {
+        __schema {
+          types {
+            kind
+            name
+            possibleTypes {
+              name
+            }
+          }
+        }
+      }
+    `,
+  }),
+}).then(result =&gt; result.json())
+  .then(result =&gt; {
+    const possibleTypes = {};
+
+    result.data.__schema.types.forEach(supertype =&gt; {
+      if (supertype.possibleTypes) {
+        possibleTypes[supertype.name] =
+          supertype.possibleTypes.map(subtype =&gt; subtype.name);
+      }
+    });
+
+    fs.writeFile('./possibleTypes.json', JSON.stringify(possibleTypes), err =&gt; {
+      if (err) {
+        console.error('Error writing possibleTypes.json', err);
+      } else {
+        console.log('Fragment types successfully extracted!');
+      }
+    });
+  });
+</code></pre>
+<p>You can then <code>import</code> the generated <code>possibleTypes</code> JSON module into the file where you create your <code>InMemoryCache</code>:</p>
+<pre><code class="language-ts">import possibleTypes from './path/to/possibleTypes.json';
+
+const cache = new InMemoryCache({
+  possibleTypes,
+});
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Fragments\ndescription: Learn how to use fragments to share fields across queries\n---\n\nA [GraphQL fragment](http://graphql.org/learn/queries/#fragments) is a piece of logic that a client can share between multiple queries and mutations.\n\nHere, we declare a `NameParts` fragment that can be used with any `Person` object:\n\n```graphql\nfragment NameParts on Person {\n  firstName\n  lastName\n}\n```\n\nA fragment includes a subset of the fields that are declared for its associated type. In the above example, the `Person` type must declare `firstName` and `lastName` fields for the `NameParts` fragment to be valid.\n\nWe can now include the `NameParts` fragment in any number of queries and mutations that refer to `Person` objects, like so:\n\n```graphql\nquery GetPerson {\n  people(id: \"7\") {\n    ...NameParts\n    avatar(size: LARGE)\n  }\n}\n```\n\nBased on our `NameParts` definition, the above query is equivalent to:\n\n```graphql\nquery GetPerson {\n  people(id: \"7\") {\n    firstName\n    lastName\n    avatar(size: LARGE)\n  }\n}\n```\n\nHowever, if we later change which fields are included in the `NameParts` fragment, we automatically change which fields are included in every operation that _uses_ the `NameParts` fragment. This reduces the effort required to keep fields consistent across a set of operations.\n\n## Reusing fragments\n\nFragments are useful for including an identical set of fields across multiple GraphQL operations. For example, a blog might define several operations related to comments, and each of those operations might need to include the same baseline set of fields from a `Comment` type.\n\nTo specify this baseline set of fields, we define a fragment that lists the `Comment` fields that every comment-related operation should include:\n\n```js\nimport { gql } from '@apollo/client';\n\nCommentsPage.fragments = {\n  comment: gql`\n    fragment CommentsPageComment on Comment {\n      id\n      postedBy {\n        login\n        html_url\n      }\n      createdAt\n      content\n    }\n  `,\n};\n```\n\nWe assign the fragment to `CommentsPage.fragments.comment` as a convention.\n\nTo embed a fragment inside a GraphQL operation, prefix its name with three periods (`...`), like so:\n\n```js\nconst SUBMIT_COMMENT_MUTATION = gql`\n  mutation SubmitComment($postFullName: String!, $commentContent: String!) {\n    submitComment(postFullName: $postFullName, commentContent: $commentContent) {\n      ...CommentsPageComment // highlight-line\n    }\n  }\n  ${CommentsPage.fragments.comment}\n`;\n\nexport const COMMENT_QUERY = gql`\n  query Comment($postName: String!) {\n    entry(postFullName: $postName) {\n      comments {\n        ...CommentsPageComment // highlight-line\n      }\n    }\n  }\n  ${CommentsPage.fragments.comment}\n`;\n```\n\n## Colocating fragments\n\nThe tree-like structure of a GraphQL response resembles the hierarchy of a frontend's rendered components. Because of this similarity, you can use fragments to split query logic up _between_ components, so that each component requests exactly the fields that it uses. This helps you make your component logic more succinct.\n\nConsider the following view hierarchy for an app:\n\n```\nFeedPage\n└── Feed\n    └── FeedEntry\n        ├── EntryInfo\n        └── VoteButtons\n```\n\nIn this app, the `FeedPage` component executes a query to fetch a list of `FeedEntry` objects. The `EntryInfo` and `VoteButtons` subcomponents need specific fields from the enclosing `FeedEntry` object.\n\n### Creating colocated fragments\n\nA colocated fragment is just like any other fragment, except it is attached to a particular component that uses the fragment's fields. For example, the `VoteButtons` child component of `FeedPage` might use the fields `score` and `vote { choice }` from the `FeedEntry` object:\n\n```js\nVoteButtons.fragments = {\n  entry: gql`\n    fragment VoteButtonsFragment on FeedEntry {\n      score\n      vote {\n        choice\n      }\n    }\n  `,\n};\n```\n\nAfter you define a fragment in a child component, the parent component can refer to child component fragments in its own fragment definitions, like so:\n\n```js\nFeedEntry.fragments = {\n  entry: gql`\n    fragment FeedEntryFragment on FeedEntry {\n      commentCount\n      repository {\n        full_name\n        html_url\n        owner {\n          avatar_url\n        }\n      }\n      ...VoteButtonsFragment\n      ...RepoInfoFragment\n    }\n    ${VoteButtons.fragments.entry}\n    ${RepoInfo.fragments.entry}\n  `,\n};\n```\n\nThere's nothing special about the naming of `VoteButtons.fragments.entry` or `RepoInfo.fragments.entry`. Any naming convention will work as long as you can easily and consistently retrieve a component's fragments given the component.\n\n### Importing fragments when using Webpack\n\nWhen loading `.graphql` files with [graphql-tag/loader](https://github.com/apollographql/graphql-tag/blob/main/loader.js), we can include fragments using `import` statements. For example:\n\n```graphql\n#import \"./someFragment.graphql\"\n```\n\nThis makes the contents of `someFragment.graphql` available to the current file. See the [Webpack Fragments](../integrations/webpack/#fragments) section for additional details.\n\n## Using fragments with unions and interfaces\n\nYou can define fragments on [unions and interfaces](https://www.apollographql.com/docs/apollo-server/schema/unions-interfaces/).\n\nHere's an example of a query that includes three in-line fragments:\n\n```graphql\nquery AllCharacters {\n  all_characters {\n\n    ... on Character {\n      name\n    }\n\n    ... on Jedi {\n      side\n    }\n\n    ... on Droid {\n      model\n    }\n  }\n}\n```\n\nThe `all_characters` query above returns a list of `Character` objects. The `Character` type is an interface that both the `Jedi` and `Droid` types implement. Each item in the list includes a `side` field if it's an object of type `Jedi`, and it includes a `model` field if it's of type `Droid`.\n\n**However**, for this query to work, your client needs to understand the polymorphic relationship between the `Character` interface and the types that implement it. To inform the client about these relationships, you can pass a `possibleTypes` option when creating the `InMemoryCache`.\n\n### Defining `possibleTypes` manually\n\n\u003e The `possibleTypes` option is available in Apollo Client 3.0 and later.\n\nYou can pass a `possibleTypes` option to the `InMemoryCache` constructor to specify supertype-subtype relationships in your schema. This object maps the name of an interface or union type (the supertype) to the types that implement or belong to it (the subtypes).\n\nHere's an example `possibleTypes` declaration:\n\n```ts\nconst cache = new InMemoryCache({\n  possibleTypes: {\n    Character: [\"Jedi\", \"Droid\"],\n    Test: [\"PassingTest\", \"FailingTest\", \"SkippedTest\"],\n    Snake: [\"Viper\", \"Python\"],\n  },\n});\n```\n\nThis example lists three interfaces (`Character`, `Test`, and `Snake`) and the object types that implement them.\n\nIf your schema includes only a few unions and interfaces, you can probably specify your `possibleTypes` manually without issue. However, as your schema grows in size and complexity, you should consider [generating `possibleTypes` automatically from your schema](#generating-possibletypes-automatically).\n\n### Generating `possibleTypes` automatically\n\nThe following example script translates a GraphQL introspection query into a `possibleTypes` configuration object:\n\n```js\nconst fetch = require('cross-fetch');\nconst fs = require('fs');\n\nfetch(`${YOUR_API_HOST}/graphql`, {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({\n    variables: {},\n    query: `\n      {\n        __schema {\n          types {\n            kind\n            name\n            possibleTypes {\n              name\n            }\n          }\n        }\n      }\n    `,\n  }),\n}).then(result =\u003e result.json())\n  .then(result =\u003e {\n    const possibleTypes = {};\n\n    result.data.__schema.types.forEach(supertype =\u003e {\n      if (supertype.possibleTypes) {\n        possibleTypes[supertype.name] =\n          supertype.possibleTypes.map(subtype =\u003e subtype.name);\n      }\n    });\n\n    fs.writeFile('./possibleTypes.json', JSON.stringify(possibleTypes), err =\u003e {\n      if (err) {\n        console.error('Error writing possibleTypes.json', err);\n      } else {\n        console.log('Fragment types successfully extracted!');\n      }\n    });\n  });\n```\n\nYou can then `import` the generated `possibleTypes` JSON module into the file where you create your `InMemoryCache`:\n\n```ts\nimport possibleTypes from './path/to/possibleTypes.json';\n\nconst cache = new InMemoryCache({\n  possibleTypes,\n});\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_data_fragments.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

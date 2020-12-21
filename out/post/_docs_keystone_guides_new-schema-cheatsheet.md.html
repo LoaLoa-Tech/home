@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: New schema cheatsheet
+[meta]-->
+<h1>New schema cheatsheet</h1>
+<p>This cheatsheet summarises the changes needed to update your database to use the new Keystone database schema, introduced in the <a href="/docs/discussions/new-data-schema.md"><code>Arcade</code></a> release.
+For full instructions please consult the <a href="/docs/guides/relationship-migration.md">migration guide</a>.</p>
+<h2>One-to-many (one-sided)</h2>
+<pre><code class="language-javascript">keystone.createList('User', { fields: { name: { type: Text } } });
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    author: { type: Relationship, ref: 'User', many: false },
+  },
+});
+</code></pre>
+<h3>Migration strategy</h3>
+<ul>
+<li>No changes are required for these relationships.</li>
+</ul>
+<h2>Many-to-many (one-sided)</h2>
+<pre><code class="language-javascript">keystone.createList('User', { fields: { name: { type: Text } } });
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    authors: { type: Relationship, ref: 'User', many: true },
+  },
+});
+</code></pre>
+<h3>Migration Strategy</h3>
+<h4>PostgreSQL</h4>
+<ul>
+<li>Rename <code>Post_authors</code> to <code>Post_authors_many</code>.</li>
+<li>Rename <code>Post_id</code> to <code>Post_left_id</code> and <code>User_id</code> to <code>User_right_id</code>.</li>
+</ul>
+<h4>MongoDB</h4>
+<ul>
+<li>Create a collection <code>post_authors_manies</code> with fields <code>Post_left_id</code> and <code>User_right_id</code>.</li>
+<li>Move the data from <code>posts.authors</code> into <code>post_authors_manies</code>.</li>
+<li>Delete <code>posts.authors</code>.</li>
+</ul>
+<h2>One-to-many (two-sided)</h2>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    posts: { type: Relationship, ref: 'Post.author', many: true },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    author: { type: Relationship, ref: 'User.posts', many: false },
+  },
+});
+</code></pre>
+<h3>Migration strategy</h3>
+<h4>PostgreSQL</h4>
+<ul>
+<li>Drop the <code>User_posts</code> table.</li>
+</ul>
+<h4>MongoDB</h4>
+<ul>
+<li>Remove <code>users.posts</code>.</li>
+</ul>
+<h2>Many-to-many (two-sided)</h2>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    posts: { type: Relationship, ref: 'Post.authors', many: true },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    authors: { type: Relationship, ref: 'User.posts', many: true },
+  },
+});
+</code></pre>
+<h3>Migration strategy</h3>
+<h4>PostgreSQL</h4>
+<ul>
+<li>Drop the <code>Post_authors</code> table.</li>
+<li>Rename <code>User_posts</code> to <code>User_posts_Post_authors</code>.</li>
+<li>Rename <code>User_id</code> to <code>User_left_id</code> and <code>Post_id</code> to <code>Post_right_id</code>.</li>
+</ul>
+<h4>MongoDB</h4>
+<ul>
+<li>Create a collection <code>user_posts_post_authors</code> with fields <code>User_left_id</code> and <code>Post_right_id</code>.</li>
+<li>Move the data from <code>users.posts</code> into <code>user_posts_post_authors</code>.</li>
+<li>Delete <code>users.posts</code>.</li>
+<li>Delete <code>posts.authors</code>.</li>
+</ul>
+<h2>One-to-one (two-sided)</h2>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    post: { type: Relationship, ref: 'Post.author', many: false },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    author: { type: Relationship, ref: 'User.post', many: false },
+  },
+});
+</code></pre>
+<h3>Migration strategy</h3>
+<h4>PostgreSQL</h4>
+<p>One to one relationships in the <code>before</code> state had a foreign key column on each table.
+In the <code>after</code> state, only one of these is stored.
+Because of the symmetry of the one-to-one relationship, Keystone makes an arbitrary decision about which column to use.</p>
+<ul>
+<li>Identify the foreign key column which is no longer required, and delete it.</li>
+<li>In our example above we would delete the <code>Post.author</code> column.</li>
+</ul>
+<h4>MongoDB</h4>
+<p>One to one relationships in the <code>before</code> state had a field in each collection.
+In the <code>after</code> state, only one of these is stored.
+Because of the symmetry of the one-to-one relationship, Keystone makes an arbitrary decision about which field to use.</p>
+<ul>
+<li>Identify the field which is no longer required, and delete it.</li>
+<li>In our example above we would delete the <code>post.author</code> field.</li>
+</ul>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: New schema cheatsheet\n[meta]--\u003e\n\n# New schema cheatsheet\n\nThis cheatsheet summarises the changes needed to update your database to use the new Keystone database schema, introduced in the [`Arcade`](/docs/discussions/new-data-schema.md) release.\nFor full instructions please consult the [migration guide](/docs/guides/relationship-migration.md).\n\n## One-to-many (one-sided)\n\n```javascript\nkeystone.createList('User', { fields: { name: { type: Text } } });\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    author: { type: Relationship, ref: 'User', many: false },\n  },\n});\n```\n\n### Migration strategy\n\n- No changes are required for these relationships.\n\n## Many-to-many (one-sided)\n\n```javascript\nkeystone.createList('User', { fields: { name: { type: Text } } });\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    authors: { type: Relationship, ref: 'User', many: true },\n  },\n});\n```\n\n### Migration Strategy\n\n#### PostgreSQL\n\n- Rename `Post_authors` to `Post_authors_many`.\n- Rename `Post_id` to `Post_left_id` and `User_id` to `User_right_id`.\n\n#### MongoDB\n\n- Create a collection `post_authors_manies` with fields `Post_left_id` and `User_right_id`.\n- Move the data from `posts.authors` into `post_authors_manies`.\n- Delete `posts.authors`.\n\n## One-to-many (two-sided)\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    posts: { type: Relationship, ref: 'Post.author', many: true },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    author: { type: Relationship, ref: 'User.posts', many: false },\n  },\n});\n```\n\n### Migration strategy\n\n#### PostgreSQL\n\n- Drop the `User_posts` table.\n\n#### MongoDB\n\n- Remove `users.posts`.\n\n## Many-to-many (two-sided)\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    posts: { type: Relationship, ref: 'Post.authors', many: true },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    authors: { type: Relationship, ref: 'User.posts', many: true },\n  },\n});\n```\n\n### Migration strategy\n\n#### PostgreSQL\n\n- Drop the `Post_authors` table.\n- Rename `User_posts` to `User_posts_Post_authors`.\n- Rename `User_id` to `User_left_id` and `Post_id` to `Post_right_id`.\n\n#### MongoDB\n\n- Create a collection `user_posts_post_authors` with fields `User_left_id` and `Post_right_id`.\n- Move the data from `users.posts` into `user_posts_post_authors`.\n- Delete `users.posts`.\n- Delete `posts.authors`.\n\n## One-to-one (two-sided)\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    post: { type: Relationship, ref: 'Post.author', many: false },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    author: { type: Relationship, ref: 'User.post', many: false },\n  },\n});\n```\n\n### Migration strategy\n\n#### PostgreSQL\n\nOne to one relationships in the `before` state had a foreign key column on each table.\nIn the `after` state, only one of these is stored.\nBecause of the symmetry of the one-to-one relationship, Keystone makes an arbitrary decision about which column to use.\n\n- Identify the foreign key column which is no longer required, and delete it.\n- In our example above we would delete the `Post.author` column.\n\n#### MongoDB\n\nOne to one relationships in the `before` state had a field in each collection.\nIn the `after` state, only one of these is stored.\nBecause of the symmetry of the one-to-one relationship, Keystone makes an arbitrary decision about which field to use.\n\n- Identify the field which is no longer required, and delete it.\n- In our example above we would delete the `post.author` field.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_new-schema-cheatsheet.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

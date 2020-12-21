@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: tutorials
+title: Adding lists
+order: 2
+[meta]-->
+<h1>Adding lists</h1>
+<p>We've already created one list during the <a href="/docs/tutorials/new-project.md">previous
+tutorial</a>. Now it's the time to dive deeper.
+Let's make our <code>Todo</code> list a bit more complex.</p>
+<h2>Creating lists by file</h2>
+<p>To improve maintainability of your code it can be convenient to split <code>List</code> schemas
+into separate files. Create a directory named <code>lists</code>, with a file <code>Todo.js</code>
+and put the following code inside.</p>
+<pre><code class="language-javascript title=/lists/Todo.js">const { Text, Checkbox } = require('@keystonejs/fields');
+
+module.exports = {
+  fields: {
+    description: {
+      type: Text,
+      isRequired: true,
+    },
+    isComplete: {
+      type: Checkbox,
+      defaultValue: false,
+    },
+  },
+};
+</code></pre>
+<!-- We should describe the function of, or link to documentation for `isRequired` and `defaultValue` -->
+<p>Here we described a very basic schema for a generic <code>Todo</code>. Let's add it to our
+Keystone application. Inside of <code>index.js</code> import the defined schema and replace
+the existing one with the required version.</p>
+<pre><code class="language-javascript title=index.js">const TodoSchema = require('./lists/Todo.js');
+
+keystone.createList('Todo', TodoSchema);
+</code></pre>
+<p>Make sure to relaunch Keystone and check that everything is working as expected.</p>
+<h2>Adding fields</h2>
+<p><code>Todo</code> tasks usually have a few more fields. Let's add the ability to set
+deadlines and the assignee of a task:</p>
+<pre><code class="language-javascript title=/lists/Todo.js">const { Text, CalendarDay, Checkbox } = require('@keystonejs/fields');
+
+module.exports = {
+  fields: {
+    // existing fields
+    description: {
+      type: Text,
+      isRequired: true,
+    },
+    isComplete: {
+      type: Checkbox,
+      defaultValue: false,
+    },
+    // added fields
+    deadline: {
+      type: CalendarDay,
+      dateFrom: '2019-01-01',
+      dateTo: '2029-01-01',
+      isRequired: false,
+      defaultValue: new Date().toISOString('YYYY-MM-DD').substring(0, 10), // Today's date
+    },
+    assignee: {
+      type: Text,
+      isRequired: true,
+    },
+  },
+};
+</code></pre>
+<p>If you're curious about the usage options you can read <a href="/packages/fields/src/types/CalendarDay/README.md">more about <code>CalendarDay</code></a>.
+Now it's time to explore docs on other field types and get a bit familiar with them. It will help you make your schema cleaner.</p>
+<h2>Defining a <code>User</code> list</h2>
+<p>Take a look at the <code>assignee</code> field. Now we're just typing in a name.
+Why don't we make a separate <code>User</code> list, so we can point assigned tasks to a specific <code>User</code>.
+Create another file <code>User.js</code> in the <code>lists</code> directory. It should look like this:</p>
+<pre><code class="language-javascript title=/lists/User.js">const { Text, Password } = require('@keystonejs/fields');
+
+module.exports = {
+  fields: {
+    username: {
+      type: Text,
+      isRequired: true,
+    },
+    password: {
+      type: Password,
+      isRequired: true,
+    },
+  },
+};
+</code></pre>
+<p>And register it in <code>index.js</code>:</p>
+<pre><code class="language-javascript title=index.js">const TodoSchema = require('./lists/Todo.js');
+const UserSchema = require('./lists/User.js');
+
+keystone.createList('Todo', TodoSchema);
+keystone.createList('User', UserSchema);
+</code></pre>
+<!-- FIXME:TL We haven't shown then how to get an Admin UI yet!!!! -->
+<p>Relaunch your app and see the lists appear in the Admin UI.</p>
+<p>But how can we assign a task to specific user? Let's proceed with <a href="/docs/tutorials/relationships.md">Defining Relationships</a></p>
+<p>See also:</p>
+<ul>
+<li><a href="/docs/guides/schema.md">Schema - Lists &amp; Fields</a></li>
+<li><a href="/docs/api/create-list.md">API - createList</a></li>
+</ul>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: tutorials\ntitle: Adding lists\norder: 2\n[meta]--\u003e\n\n# Adding lists\n\nWe've already created one list during the [previous\ntutorial](/docs/tutorials/new-project.md). Now it's the time to dive deeper.\nLet's make our `Todo` list a bit more complex.\n\n## Creating lists by file\n\nTo improve maintainability of your code it can be convenient to split `List` schemas\ninto separate files. Create a directory named `lists`, with a file `Todo.js`\nand put the following code inside.\n\n```javascript title=/lists/Todo.js\nconst { Text, Checkbox } = require('@keystonejs/fields');\n\nmodule.exports = {\n  fields: {\n    description: {\n      type: Text,\n      isRequired: true,\n    },\n    isComplete: {\n      type: Checkbox,\n      defaultValue: false,\n    },\n  },\n};\n```\n\n\u003c!-- We should describe the function of, or link to documentation for `isRequired` and `defaultValue` --\u003e\n\nHere we described a very basic schema for a generic `Todo`. Let's add it to our\nKeystone application. Inside of `index.js` import the defined schema and replace\nthe existing one with the required version.\n\n```javascript title=index.js\nconst TodoSchema = require('./lists/Todo.js');\n\nkeystone.createList('Todo', TodoSchema);\n```\n\nMake sure to relaunch Keystone and check that everything is working as expected.\n\n## Adding fields\n\n`Todo` tasks usually have a few more fields. Let's add the ability to set\ndeadlines and the assignee of a task:\n\n```javascript title=/lists/Todo.js\nconst { Text, CalendarDay, Checkbox } = require('@keystonejs/fields');\n\nmodule.exports = {\n  fields: {\n    // existing fields\n    description: {\n      type: Text,\n      isRequired: true,\n    },\n    isComplete: {\n      type: Checkbox,\n      defaultValue: false,\n    },\n    // added fields\n    deadline: {\n      type: CalendarDay,\n      dateFrom: '2019-01-01',\n      dateTo: '2029-01-01',\n      isRequired: false,\n      defaultValue: new Date().toISOString('YYYY-MM-DD').substring(0, 10), // Today's date\n    },\n    assignee: {\n      type: Text,\n      isRequired: true,\n    },\n  },\n};\n```\n\nIf you're curious about the usage options you can read [more about `CalendarDay`](/packages/fields/src/types/CalendarDay/README.md).\nNow it's time to explore docs on other field types and get a bit familiar with them. It will help you make your schema cleaner.\n\n## Defining a `User` list\n\nTake a look at the `assignee` field. Now we're just typing in a name.\nWhy don't we make a separate `User` list, so we can point assigned tasks to a specific `User`.\nCreate another file `User.js` in the `lists` directory. It should look like this:\n\n```javascript title=/lists/User.js\nconst { Text, Password } = require('@keystonejs/fields');\n\nmodule.exports = {\n  fields: {\n    username: {\n      type: Text,\n      isRequired: true,\n    },\n    password: {\n      type: Password,\n      isRequired: true,\n    },\n  },\n};\n```\n\nAnd register it in `index.js`:\n\n```javascript title=index.js\nconst TodoSchema = require('./lists/Todo.js');\nconst UserSchema = require('./lists/User.js');\n\nkeystone.createList('Todo', TodoSchema);\nkeystone.createList('User', UserSchema);\n```\n\n\u003c!-- FIXME:TL We haven't shown then how to get an Admin UI yet!!!! --\u003e\n\nRelaunch your app and see the lists appear in the Admin UI.\n\nBut how can we assign a task to specific user? Let's proceed with [Defining Relationships](/docs/tutorials/relationships.md)\n\nSee also:\n\n- [Schema - Lists \u0026 Fields](/docs/guides/schema.md)\n- [API - createList](/docs/api/create-list.md)\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_tutorials_add-lists.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

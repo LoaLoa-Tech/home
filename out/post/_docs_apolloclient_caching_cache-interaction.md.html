@@ -1,0 +1,314 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Reading and writing data to the cache
+sidebar_title: Reading and writing</p>
+<hr>
+<p>Apollo Client provides the following methods for reading and writing data to the cache:</p>
+<ul>
+<li><a href="#readquery"><code>readQuery</code></a> and <a href="#readfragment"><code>readFragment</code></a></li>
+<li><a href="#writequery-and-writefragment"><code>writeQuery</code> and <code>writeFragment</code></a></li>
+<li><a href="#cachemodify"><code>cache.modify</code></a> (a method of <code>InMemoryCache</code>)</li>
+</ul>
+<p>These methods are described in detail below.</p>
+<p>All code samples below assume that you have initialized an instance of  <code>ApolloClient</code> and that you have imported the <code>gql</code> function from <code>@apollo/client</code>.</p>
+<blockquote>
+<p>In a React component, you can access your instance of <code>ApolloClient</code> using <a href="https://www.apollographql.com/docs/react/api/react/hooks/#the-apolloprovider-component"><code>ApolloProvider</code></a> and the <a href="https://www.apollographql.com/docs/react/api/react/hooks/#useapolloclient"><code>useApolloClient</code></a> hook.</p>
+</blockquote>
+<h2><code>readQuery</code></h2>
+<p>The <code>readQuery</code> method enables you to run a GraphQL query directly on your cache.</p>
+<ul>
+<li><p>If your cache contains all of the data necessary to fulfill the specified query, <code>readQuery</code> returns a data object in the shape of that query, just like a GraphQL server does.</p></li>
+<li><p>If your cache does not contain all of the data necessary to fulfill the specified query, <code>readQuery</code> returns <code>null</code>, without attempting to fetch data from a remote server.</p></li>
+</ul>
+<blockquote>
+<p>Prior to Apollo Client 3.3, <code>readQuery</code> would throw <code>MissingFieldError</code> exceptions to report missing fields. Beginning with Apollo Client 3.3, <code>readQuery</code> always returns <code>null</code> to indicate fields were missing.</p>
+</blockquote>
+<p>Pass <code>readQuery</code> a GraphQL query string like so:</p>
+<pre><code class="language-js">const { todo } = client.readQuery({
+  query: gql`
+    query ReadTodo {
+      todo(id: 5) {
+        id
+        text
+        completed
+      }
+    }
+  `,
+});
+</code></pre>
+<p>You can provide GraphQL variables to <code>readQuery</code> like so:</p>
+<pre><code class="language-js">const { todo } = client.readQuery({
+  query: gql`
+    query ReadTodo($id: Int!) {
+      todo(id: $id) {
+        id
+        text
+        completed
+      }
+    }
+  `,
+  variables: {
+    id: 5,
+  },
+});
+</code></pre>
+<blockquote>
+<p><strong>Do not modify the return value of <code>readQuery</code>.</strong> The same object might be returned to multiple components. To update data in the cache, instead create a replacement object and pass it to <a href="#writequery-and-writefragment"><code>writeQuery</code></a>.</p>
+</blockquote>
+<h2><code>readFragment</code></h2>
+<p>The <code>readFragment</code> method enables you to read data from <em>any</em> normalized cache object that was stored as part of <em>any</em> query result. Unlike with <code>readQuery</code>, calls to <code>readFragment</code> do not need to conform to the structure of one of your data graph's supported queries.</p>
+<p>Here's an example that fetches a particular item from a to-do list:</p>
+<pre><code class="language-js">const todo = client.readFragment({
+  id: 'Todo:5', // The value of the to-do item's unique identifier
+  fragment: gql`
+    fragment MyTodo on Todo {
+      id
+      text
+      completed
+    }
+  `,
+});
+</code></pre>
+<p>The first argument, <code>id</code>, is the value of the unique identifier for the object you want to read from the cache. By default, this is the value of the object's <code>id</code> field, but you can <a href="./cache-configuration/#generating-unique-identifiers">customize this behavior</a>.</p>
+<p>In the example above, <code>readFragment</code> returns <code>null</code> if no <code>Todo</code> object with an <code>id</code> of <code>5</code> exists in the cache, or if the object exists but is missing the <code>text</code> or <code>completed</code> fields.</p>
+<blockquote>
+<p>Prior to Apollo Client 3.3, <code>readFragment</code> would throw <code>MissingFieldError</code> exceptions to report missing fields, and return <code>null</code> only when reading a fragment from a nonexistent ID. Beginning with Apollo Client 3.3, <code>readFragment</code> always returns <code>null</code> to indicate insufficient data (missing ID or missing fields), instead of throwing a <code>MissingFieldError</code>.</p>
+</blockquote>
+<h2><code>writeQuery</code> and <code>writeFragment</code></h2>
+<p>In addition to reading arbitrary data from the Apollo Client cache, you can <em>write</em> arbitrary data to the cache with the <code>writeQuery</code> and <code>writeFragment</code> methods.</p>
+<blockquote>
+<p><strong>Any changes you make to cached data with <code>writeQuery</code> and <code>writeFragment</code> are  not pushed to your GraphQL server.</strong> If you reload your environment, these changes will disappear.</p>
+</blockquote>
+<p>These methods have the same signature as their <code>read</code> counterparts, except they require an additional <code>data</code> variable.</p>
+<p>For example, the following call to <code>writeFragment</code> <em>locally</em> updates the <code>completed</code> flag for a <code>Todo</code> object with an <code>id</code> of <code>5</code>:</p>
+<pre><code class="language-js">client.writeFragment({
+  id: 'Todo:5',
+  fragment: gql`
+    fragment MyTodo on Todo {
+      completed
+    }
+  `,
+  data: {
+    completed: true,
+  },
+});
+</code></pre>
+<p>All subscribers to the Apollo Client cache (including all active queries) see this change and update your application's UI accordingly.</p>
+<h2>Combining reads and writes</h2>
+<p>Combine <code>readQuery</code> and <code>writeQuery</code> to fetch currently cached data and make selective modifications to it. The example below creates a new <code>Todo</code> item and adds it to your cached to-do list. Remember, this addition is <em>not</em> sent to your remote server.</p>
+<pre><code class="language-js">// Query that fetches all existing to-do items
+const query = gql`
+  query MyTodoAppQuery {
+    todos {
+      id
+      text
+      completed
+    }
+  }
+`;
+
+// Get the current to-do list
+const data = client.readQuery({ query });
+
+// Create a new to-do item
+const myNewTodo = {
+  id: '6',
+  text: 'Start using Apollo Client.',
+  completed: false,
+  __typename: 'Todo',
+};
+
+// Write back to the to-do list, appending the new item
+client.writeQuery({
+  query,
+  data: {
+    todos: [...data.todos, myNewTodo],
+  },
+});
+</code></pre>
+<h2><code>cache.modify</code></h2>
+<p>The <code>modify</code> method of <code>InMemoryCache</code> enables you to directly modify the values of individual cached fields, or even delete fields entirely.</p>
+<ul>
+<li>Like <code>writeQuery</code> and <code>writeFragment</code>, <code>modify</code> triggers a refresh of all active queries that depend on modified fields (unless you override this behavior).</li>
+<li><em>Unlike</em> <code>writeQuery</code> and <code>writeFragment</code>, <code>modify</code> circumvents any <a href="cache-field-behavior/#the-merge-function"><code>merge</code> functions</a> you've defined, which means that fields are always overwritten with exactly the values you specify.</li>
+<li>Watched queries can control what happens when they are invalidated by updates to the cache, by passing options like <code>fetchPolicy</code> and <code>nextFetchPolicy</code> to <a href="../api/core/ApolloClient/#ApolloClient.watchQuery"><code>client.watchQuery</code></a> or the <a href="../api/react/hooks/#options"><code>useQuery</code></a> hook.</li>
+</ul>
+<h3>Parameters</h3>
+<p>Canonically documented in the <a href="../api/cache/InMemoryCache/#modify">API reference</a>, the <code>modify</code> method takes the following parameters:</p>
+<ul>
+<li>The ID of a cached object to modify (which we recommend obtaining with <a href="#obtaining-an-objects-custom-id"><code>cache.identify</code></a>)</li>
+<li>A map of <strong>modifier functions</strong> to execute (one for each field to modify)</li>
+<li>Optional <code>broadcast</code> and <code>optimistic</code> boolean values to customize behavior</li>
+</ul>
+<p>A modifier function applies to a single field. It takes its associated field's current cached value as a parameter and returns whatever value should replace it.</p>
+<p>Here's an example call to <code>modify</code> that modifies a <code>name</code> field to convert its value to upper case:</p>
+<pre><code class="language-js">cache.modify({
+  id: cache.identify(myObject),
+  fields: {
+    name(cachedName) {
+      return cachedName.toUpperCase();
+    },
+  },
+  /* broadcast: false // Include this to prevent automatic query refresh */
+});
+</code></pre>
+<blockquote>
+<p>If you don't provide a modifier function for a particular field, that field's cached value remains unchanged.</p>
+</blockquote>
+<h4>Values vs. references</h4>
+<p>When you define a modifier function for a field that contains a scalar, an enum, or a list of these base types, the modifier function is passed the exact existing value for the field. For example, if you define a modifier function for an object's <code>quantity</code> field that has current value <code>5</code>, your modifier function is passed the value <code>5</code>.</p>
+<p><strong>However</strong>, when you define a modifier function for a field that contains an object type or a list of objects, those objects are represented as <strong>references</strong>. Each reference points to its corresponding object in the cache by its identifier. If you return a <em>different</em> reference in your modifier function, you change <em>which</em> other cached object is contained in this field. You <em>don't</em> modify the original cached object's data.</p>
+<h3>Modifier function utilities</h3>
+<p>A modifier function can optionally take a second parameter, which is an object that contains several helpful utilities.</p>
+<p>A couple of these utilities (the <code>readField</code> function and the <code>DELETE</code> sentinel object) are used in the examples below. For descriptions of all available utilities, see the <a href="../api/cache/InMemoryCache/#modifier-functions">API reference</a>.</p>
+<h3>Example: Removing an item from a list</h3>
+<p>Let's say we have a blog application where each <code>Post</code> has an array of <code>Comment</code>s. Here's how we might remove a specific <code>Comment</code> from a paginated <code>Post.comments</code> array:</p>
+<pre><code class="language-js">const idToRemove = 'abc123';
+
+cache.modify({
+  id: cache.identify(myPost),
+  fields: {
+    comments(existingCommentRefs, { readField }) {
+      return existingCommentRefs.filter(
+        commentRef =&gt; idToRemove !== readField('id', commentRef)
+      );
+    },
+  },
+});
+</code></pre>
+<p>Let's break this down:</p>
+<ul>
+<li><p>In the <code>id</code> field, we use <a href="#obtaining-an-objects-custom-id"><code>cache.identify</code></a> to obtain the identifier of the cached <code>Post</code> object we want to remove a comment from.</p></li>
+<li><p>In the <code>fields</code> field, we provide an object that lists our modifier functions. In this case, we define a single modifier function (for the <code>comments</code> field).</p></li>
+<li><p>The <code>comments</code> modifier function takes our existing cached array of comments as a parameter (<code>existingCommentRefs</code>). It also uses the <code>readField</code> utility function, which helps you read the value of any cached field.</p></li>
+<li><p>The modifier function returns an array that filters out all comments with an ID that matches <code>idToRemove</code>. The returned array replaces the existing array in the cache.</p></li>
+</ul>
+<h3>Example: Adding an item to a list</h3>
+<p>Now let's look at <em>adding</em> a <code>Comment</code> to a <code>Post</code>:</p>
+<pre><code class="language-js">const newComment = {
+  __typename: 'Comment',
+  id: 'abc123',
+  text: 'Great blog post!',
+};
+
+cache.modify({
+  fields: {
+    comments(existingCommentRefs = [], { readField }) {
+      const newCommentRef = cache.writeFragment({
+        data: newComment,
+        fragment: gql`
+          fragment NewComment on Comment {
+            id
+            text
+          }
+        `
+      });
+
+      // Quick safety check - if the new comment is already
+      // present in the cache, we don't need to add it again.
+      if (existingCommentRefs.some(
+        ref =&gt; readField('id', ref) === newComment.id
+      )) {
+        return existingCommentRefs;
+      }
+
+      return [...existingCommentRefs, newCommentRef];
+    }
+  }
+});
+</code></pre>
+<p>When the <code>comments</code> field modifier function is called, it first calls <code>writeFragment</code> to store our <code>newComment</code> data in the cache. The <code>writeFragment</code> function returns a reference (<code>newCommentRef</code>) that points to the newly cached comment.</p>
+<p>As a safety check, we then scan the array of existing comment references (<code>existingCommentRefs</code>) to make sure that our new isn't already in the list. If it isn't, we add the new comment reference to the list of references, returning the full list to be stored in the cache.</p>
+<h3>Example: Updating the cache after a mutation</h3>
+<p>If you call <code>writeFragment</code> with an <code>options.data</code> object that the cache is able to identify, based on its <code>__typename</code> and primary key fields, you can avoid passing <code>options.id</code> to <code>writeFragment</code>.</p>
+<p>Whether you provide <code>options.id</code> explicitly or let <code>writeFragment</code> figure it out using <code>options.data</code>, <code>writeFragment</code> returns a <code>Reference</code> to the identified object.</p>
+<p>This behavior makes <code>writeFragment</code> a good tool for obtaining a <code>Reference</code> to an existing object in the cache, which can come in handy when writing an <code>update</code> function for <a href="../data/mutations/"><code>useMutation</code></a>:</p>
+<p>For example:</p>
+<pre><code class="language-js">const [addComment] = useMutation(ADD_COMMENT, {
+  update(cache, { data: { addComment } }) {
+    cache.modify({
+      fields: {
+        comments(existingCommentRefs = [], { readField }) {
+          const newCommentRef = cache.writeFragment({
+            data: addComment,
+            fragment: gql`
+              fragment NewComment on Comment {
+                id
+                text
+              }
+            `
+          });
+          return [...existingCommentRefs, newCommentRef];
+        }
+      }
+    });
+  }
+});
+</code></pre>
+<p>In this example, <code>useMutation</code> automatically creates a <code>Comment</code> and adds it to the cache, but it <em>doesn't</em> automatically know how to add that <code>Comment</code> to the corresponding <code>Post</code>'s list of <code>comments</code>. This means that any queries watching the <code>Post</code>'s list of <code>comments</code> <em>won't</em> update.</p>
+<p>To address this, we use the <a href="../data/mutations/#updating-the-cache-after-a-mutation"><code>update</code> callback</a> of <code>useMutation</code> to call <code>cache.modify</code>. Like the <a href="#example-adding-an-item-to-a-list">previous example</a>, we add the new comment to the list. <em>Unlike</em> the previous example, the comment was already added to the cache by <code>useMutation</code>. Consequently, <code>cache.writeFragment</code> returns a reference to the existing object.</p>
+<h3>Example: Deleting a field from a cached object</h3>
+<p>A modifier function's optional second parameter is an object that includes <a href="#modifier-function-utilities">several helpful utilities</a>, such as the <code>canRead</code> and <code>isReference</code> functions. It also includes a sentinel object called <code>DELETE</code>.</p>
+<p>To delete a field from a particular cached object, return the <code>DELETE</code> sentinel object from the field's modifier function, like so:</p>
+<pre><code class="language-js">cache.modify({
+  id: cache.identify(myPost),
+  fields: {
+    comments(existingCommentRefs, { DELETE }) {
+      return DELETE;
+    },
+  },
+});
+</code></pre>
+<h3>Example: Invalidating fields within a cached object</h3>
+<p>Normally, changing or deleting a field's value also <em>invalidates</em> the field, causing watched queries to be reread if they previously consumed the field.</p>
+<p>Using <code>cache.modify</code>, it's also possible to invalidate the field without changing or deleting its value, by returning the <code>INVALIDATE</code> sentinel:</p>
+<pre><code class="language-js">cache.modify({
+  id: cache.identify(myPost),
+  fields: {
+    comments(existingCommentRefs, { INVALIDATE }) {
+      return INVALIDATE;
+    },
+  },
+});
+</code></pre>
+<p>If you need to invalidate all fields within the given object, you can pass a modifier function as the value of the <code>fields</code> option:</p>
+<pre><code class="language-js">cache.modify({
+  id: cache.identify(myPost),
+  fields(fieldValue, details) {
+    return details.INVALIDATE;
+  },
+});
+</code></pre>
+<p>When using this form of <code>cache.modify</code>, you can determine the individual field names using <code>details.fieldName</code>. This technique works for any modifier function, not just those that return <code>INVALIDATE</code>.</p>
+<h2>Obtaining an object's custom ID</h2>
+<p>If a type in your cache uses a <a href="./cache-configuration/#customizing-identifier-generation-by-type">custom identifier</a> (or even if it doesn't), you can use the <code>cache.identify</code> method to obtain the identifier for an object of that type. This method takes an object and computes its ID based on both its <code>__typename</code> and its identifier field(s). This means you don't have to keep track of which fields make up each type's identifier.</p>
+<h3>Example</h3>
+<p>Let's say we have a JavaScript representation of a cached GraphQL object, like this:</p>
+<pre><code class="language-js{3}">const invisibleManBook = {
+  __typename: 'Book',
+  isbn: '9780679601395', // This type's custom identifier
+  title: 'Invisible Man',
+  author: {
+    __typename: 'Author',
+    name: 'Ralph Ellison',
+  },
+};
+</code></pre>
+<p>If we want to interact with this object in our cache with methods like <a href="#writequery-and-writefragment"><code>writeFragment</code></a> or <a href="#cachemodify"><code>cache.modify</code></a>, we need the object's identifier. Our <code>Book</code> type's identifier appears to be custom, because the <code>id</code> field isn't present.</p>
+<p>Instead of needing to look up that our <code>Book</code> type uses the <code>isbn</code> field as its identifier, we can use the <code>cache.identify</code> method, like so:</p>
+<pre><code class="language-js{8}">const bookYearFragment = gql`
+  fragment BookYear on Book {
+    publicationYear
+  }
+`;
+
+const fragmentResult = cache.writeFragment({
+  id: cache.identify(invisibleManBook),
+  fragment: bookYearFragment,
+  data: {
+    publicationYear: '1952'
+  }
+});
+</code></pre>
+<p>The cache knows that the <code>Book</code> type uses the <code>isbn</code> field for its identifier, so <code>cache.identify</code> can correctly populate the <code>id</code> field above.</p>
+<p>This example is straightforward because our custom identifier uses a single field (<code>isbn</code>). But custom identifiers can consist of <em>multiple</em> fields (such as both <code>isbn</code> <em>and</em> <code>title</code>). This makes it much more challenging and repetitive to specify an object's custom ID <em>without</em> using <code>cache.identify</code>.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Reading and writing data to the cache\nsidebar_title: Reading and writing\n---\n\nApollo Client provides the following methods for reading and writing data to the cache:\n\n* [`readQuery`](#readquery) and [`readFragment`](#readfragment)\n* [`writeQuery` and `writeFragment`](#writequery-and-writefragment)\n* [`cache.modify`](#cachemodify) (a method of `InMemoryCache`)\n\nThese methods are described in detail below.\n\nAll code samples below assume that you have initialized an instance of  `ApolloClient` and that you have imported the `gql` function from `@apollo/client`.\n\n\u003e In a React component, you can access your instance of `ApolloClient` using [`ApolloProvider`](https://www.apollographql.com/docs/react/api/react/hooks/#the-apolloprovider-component) and the [`useApolloClient`](https://www.apollographql.com/docs/react/api/react/hooks/#useapolloclient) hook.\n\n## `readQuery`\n\nThe `readQuery` method enables you to run a GraphQL query directly on your cache.\n\n* If your cache contains all of the data necessary to fulfill the specified query, `readQuery` returns a data object in the shape of that query, just like a GraphQL server does.\n\n* If your cache does not contain all of the data necessary to fulfill the specified query, `readQuery` returns `null`, without attempting to fetch data from a remote server.\n\n\u003e Prior to Apollo Client 3.3, `readQuery` would throw `MissingFieldError` exceptions to report missing fields. Beginning with Apollo Client 3.3, `readQuery` always returns `null` to indicate fields were missing.\n\nPass `readQuery` a GraphQL query string like so:\n\n```js\nconst { todo } = client.readQuery({\n  query: gql`\n    query ReadTodo {\n      todo(id: 5) {\n        id\n        text\n        completed\n      }\n    }\n  `,\n});\n```\n\nYou can provide GraphQL variables to `readQuery` like so:\n\n```js\nconst { todo } = client.readQuery({\n  query: gql`\n    query ReadTodo($id: Int!) {\n      todo(id: $id) {\n        id\n        text\n        completed\n      }\n    }\n  `,\n  variables: {\n    id: 5,\n  },\n});\n```\n\n\u003e **Do not modify the return value of `readQuery`.** The same object might be returned to multiple components. To update data in the cache, instead create a replacement object and pass it to [`writeQuery`](#writequery-and-writefragment).\n\n## `readFragment`\n\nThe `readFragment` method enables you to read data from _any_ normalized cache object that was stored as part of _any_ query result. Unlike with `readQuery`, calls to `readFragment` do not need to conform to the structure of one of your data graph's supported queries.\n\nHere's an example that fetches a particular item from a to-do list:\n\n```js\nconst todo = client.readFragment({\n  id: 'Todo:5', // The value of the to-do item's unique identifier\n  fragment: gql`\n    fragment MyTodo on Todo {\n      id\n      text\n      completed\n    }\n  `,\n});\n```\n\nThe first argument, `id`, is the value of the unique identifier for the object you want to read from the cache. By default, this is the value of the object's `id` field, but you can [customize this behavior](./cache-configuration/#generating-unique-identifiers).\n\nIn the example above, `readFragment` returns `null` if no `Todo` object with an `id` of `5` exists in the cache, or if the object exists but is missing the `text` or `completed` fields.\n\n\u003e Prior to Apollo Client 3.3, `readFragment` would throw `MissingFieldError` exceptions to report missing fields, and return `null` only when reading a fragment from a nonexistent ID. Beginning with Apollo Client 3.3, `readFragment` always returns `null` to indicate insufficient data (missing ID or missing fields), instead of throwing a `MissingFieldError`.\n\n## `writeQuery` and `writeFragment`\n\nIn addition to reading arbitrary data from the Apollo Client cache, you can _write_ arbitrary data to the cache with the `writeQuery` and `writeFragment` methods.\n\n\u003e **Any changes you make to cached data with `writeQuery` and `writeFragment` are  not pushed to your GraphQL server.** If you reload your environment, these changes will disappear.\n\nThese methods have the same signature as their `read` counterparts, except they require an additional `data` variable.\n\nFor example, the following call to `writeFragment` _locally_ updates the `completed` flag for a `Todo` object with an `id` of `5`:\n\n```js\nclient.writeFragment({\n  id: 'Todo:5',\n  fragment: gql`\n    fragment MyTodo on Todo {\n      completed\n    }\n  `,\n  data: {\n    completed: true,\n  },\n});\n```\n\nAll subscribers to the Apollo Client cache (including all active queries) see this change and update your application's UI accordingly.\n\n## Combining reads and writes\n\nCombine `readQuery` and `writeQuery` to fetch currently cached data and make selective modifications to it. The example below creates a new `Todo` item and adds it to your cached to-do list. Remember, this addition is _not_ sent to your remote server.\n\n```js\n// Query that fetches all existing to-do items\nconst query = gql`\n  query MyTodoAppQuery {\n    todos {\n      id\n      text\n      completed\n    }\n  }\n`;\n\n// Get the current to-do list\nconst data = client.readQuery({ query });\n\n// Create a new to-do item\nconst myNewTodo = {\n  id: '6',\n  text: 'Start using Apollo Client.',\n  completed: false,\n  __typename: 'Todo',\n};\n\n// Write back to the to-do list, appending the new item\nclient.writeQuery({\n  query,\n  data: {\n    todos: [...data.todos, myNewTodo],\n  },\n});\n```\n\n## `cache.modify`\n\nThe `modify` method of `InMemoryCache` enables you to directly modify the values of individual cached fields, or even delete fields entirely.\n\n* Like `writeQuery` and `writeFragment`, `modify` triggers a refresh of all active queries that depend on modified fields (unless you override this behavior).\n* _Unlike_ `writeQuery` and `writeFragment`, `modify` circumvents any [`merge` functions](cache-field-behavior/#the-merge-function) you've defined, which means that fields are always overwritten with exactly the values you specify.\n* Watched queries can control what happens when they are invalidated by updates to the cache, by passing options like `fetchPolicy` and `nextFetchPolicy` to [`client.watchQuery`](../api/core/ApolloClient/#ApolloClient.watchQuery) or the [`useQuery`](../api/react/hooks/#options) hook.\n\n### Parameters\n\nCanonically documented in the [API reference](../api/cache/InMemoryCache/#modify), the `modify` method takes the following parameters:\n\n* The ID of a cached object to modify (which we recommend obtaining with [`cache.identify`](#obtaining-an-objects-custom-id))\n* A map of **modifier functions** to execute (one for each field to modify)\n* Optional `broadcast` and `optimistic` boolean values to customize behavior\n\nA modifier function applies to a single field. It takes its associated field's current cached value as a parameter and returns whatever value should replace it.\n\nHere's an example call to `modify` that modifies a `name` field to convert its value to upper case:\n\n```js\ncache.modify({\n  id: cache.identify(myObject),\n  fields: {\n    name(cachedName) {\n      return cachedName.toUpperCase();\n    },\n  },\n  /* broadcast: false // Include this to prevent automatic query refresh */\n});\n```\n\n\u003e If you don't provide a modifier function for a particular field, that field's cached value remains unchanged.\n\n#### Values vs. references\n\nWhen you define a modifier function for a field that contains a scalar, an enum, or a list of these base types, the modifier function is passed the exact existing value for the field. For example, if you define a modifier function for an object's `quantity` field that has current value `5`, your modifier function is passed the value `5`.\n\n**However**, when you define a modifier function for a field that contains an object type or a list of objects, those objects are represented as **references**. Each reference points to its corresponding object in the cache by its identifier. If you return a _different_ reference in your modifier function, you change _which_ other cached object is contained in this field. You _don't_ modify the original cached object's data.\n\n### Modifier function utilities\n\nA modifier function can optionally take a second parameter, which is an object that contains several helpful utilities.\n\nA couple of these utilities (the `readField` function and the `DELETE` sentinel object) are used in the examples below. For descriptions of all available utilities, see the [API reference](../api/cache/InMemoryCache/#modifier-functions).\n\n### Example: Removing an item from a list\n\nLet's say we have a blog application where each `Post` has an array of `Comment`s. Here's how we might remove a specific `Comment` from a paginated `Post.comments` array:\n\n```js\nconst idToRemove = 'abc123';\n\ncache.modify({\n  id: cache.identify(myPost),\n  fields: {\n    comments(existingCommentRefs, { readField }) {\n      return existingCommentRefs.filter(\n        commentRef =\u003e idToRemove !== readField('id', commentRef)\n      );\n    },\n  },\n});\n```\n\nLet's break this down:\n\n* In the `id` field, we use [`cache.identify`](#obtaining-an-objects-custom-id) to obtain the identifier of the cached `Post` object we want to remove a comment from.\n\n* In the `fields` field, we provide an object that lists our modifier functions. In this case, we define a single modifier function (for the `comments` field).\n\n* The `comments` modifier function takes our existing cached array of comments as a parameter (`existingCommentRefs`). It also uses the `readField` utility function, which helps you read the value of any cached field.\n\n* The modifier function returns an array that filters out all comments with an ID that matches `idToRemove`. The returned array replaces the existing array in the cache.\n\n### Example: Adding an item to a list\n\nNow let's look at _adding_ a `Comment` to a `Post`:\n\n```js\nconst newComment = {\n  __typename: 'Comment',\n  id: 'abc123',\n  text: 'Great blog post!',\n};\n\ncache.modify({\n  fields: {\n    comments(existingCommentRefs = [], { readField }) {\n      const newCommentRef = cache.writeFragment({\n        data: newComment,\n        fragment: gql`\n          fragment NewComment on Comment {\n            id\n            text\n          }\n        `\n      });\n\n      // Quick safety check - if the new comment is already\n      // present in the cache, we don't need to add it again.\n      if (existingCommentRefs.some(\n        ref =\u003e readField('id', ref) === newComment.id\n      )) {\n        return existingCommentRefs;\n      }\n\n      return [...existingCommentRefs, newCommentRef];\n    }\n  }\n});\n```\n\nWhen the `comments` field modifier function is called, it first calls `writeFragment` to store our `newComment` data in the cache. The `writeFragment` function returns a reference (`newCommentRef`) that points to the newly cached comment.\n\nAs a safety check, we then scan the array of existing comment references (`existingCommentRefs`) to make sure that our new isn't already in the list. If it isn't, we add the new comment reference to the list of references, returning the full list to be stored in the cache.\n\n### Example: Updating the cache after a mutation\n\nIf you call `writeFragment` with an `options.data` object that the cache is able to identify, based on its `__typename` and primary key fields, you can avoid passing `options.id` to `writeFragment`.\n\nWhether you provide `options.id` explicitly or let `writeFragment` figure it out using `options.data`, `writeFragment` returns a `Reference` to the identified object.\n\nThis behavior makes `writeFragment` a good tool for obtaining a `Reference` to an existing object in the cache, which can come in handy when writing an `update` function for [`useMutation`](../data/mutations/):\n\nFor example:\n\n```js\nconst [addComment] = useMutation(ADD_COMMENT, {\n  update(cache, { data: { addComment } }) {\n    cache.modify({\n      fields: {\n        comments(existingCommentRefs = [], { readField }) {\n          const newCommentRef = cache.writeFragment({\n            data: addComment,\n            fragment: gql`\n              fragment NewComment on Comment {\n                id\n                text\n              }\n            `\n          });\n          return [...existingCommentRefs, newCommentRef];\n        }\n      }\n    });\n  }\n});\n```\n\nIn this example, `useMutation` automatically creates a `Comment` and adds it to the cache, but it _doesn't_ automatically know how to add that `Comment` to the corresponding `Post`'s list of `comments`. This means that any queries watching the `Post`'s list of `comments` _won't_ update.\n\nTo address this, we use the [`update` callback](../data/mutations/#updating-the-cache-after-a-mutation) of `useMutation` to call `cache.modify`. Like the [previous example](#example-adding-an-item-to-a-list), we add the new comment to the list. _Unlike_ the previous example, the comment was already added to the cache by `useMutation`. Consequently, `cache.writeFragment` returns a reference to the existing object.\n\n### Example: Deleting a field from a cached object\n\nA modifier function's optional second parameter is an object that includes [several helpful utilities](#modifier-function-utilities), such as the `canRead` and `isReference` functions. It also includes a sentinel object called `DELETE`.\n\nTo delete a field from a particular cached object, return the `DELETE` sentinel object from the field's modifier function, like so:\n\n```js\ncache.modify({\n  id: cache.identify(myPost),\n  fields: {\n    comments(existingCommentRefs, { DELETE }) {\n      return DELETE;\n    },\n  },\n});\n```\n\n### Example: Invalidating fields within a cached object\n\nNormally, changing or deleting a field's value also _invalidates_ the field, causing watched queries to be reread if they previously consumed the field.\n\nUsing `cache.modify`, it's also possible to invalidate the field without changing or deleting its value, by returning the `INVALIDATE` sentinel:\n\n```js\ncache.modify({\n  id: cache.identify(myPost),\n  fields: {\n    comments(existingCommentRefs, { INVALIDATE }) {\n      return INVALIDATE;\n    },\n  },\n});\n```\n\nIf you need to invalidate all fields within the given object, you can pass a modifier function as the value of the `fields` option:\n\n```js\ncache.modify({\n  id: cache.identify(myPost),\n  fields(fieldValue, details) {\n    return details.INVALIDATE;\n  },\n});\n```\n\nWhen using this form of `cache.modify`, you can determine the individual field names using `details.fieldName`. This technique works for any modifier function, not just those that return `INVALIDATE`.\n\n## Obtaining an object's custom ID\n\nIf a type in your cache uses a [custom identifier](./cache-configuration/#customizing-identifier-generation-by-type) (or even if it doesn't), you can use the `cache.identify` method to obtain the identifier for an object of that type. This method takes an object and computes its ID based on both its `__typename` and its identifier field(s). This means you don't have to keep track of which fields make up each type's identifier.\n\n### Example\n\nLet's say we have a JavaScript representation of a cached GraphQL object, like this:\n\n```js{3}\nconst invisibleManBook = {\n  __typename: 'Book',\n  isbn: '9780679601395', // This type's custom identifier\n  title: 'Invisible Man',\n  author: {\n    __typename: 'Author',\n    name: 'Ralph Ellison',\n  },\n};\n```\n\nIf we want to interact with this object in our cache with methods like [`writeFragment`](#writequery-and-writefragment) or [`cache.modify`](#cachemodify), we need the object's identifier. Our `Book` type's identifier appears to be custom, because the `id` field isn't present.\n\nInstead of needing to look up that our `Book` type uses the `isbn` field as its identifier, we can use the `cache.identify` method, like so:\n\n```js{8}\nconst bookYearFragment = gql`\n  fragment BookYear on Book {\n    publicationYear\n  }\n`;\n\nconst fragmentResult = cache.writeFragment({\n  id: cache.identify(invisibleManBook),\n  fragment: bookYearFragment,\n  data: {\n    publicationYear: '1952'\n  }\n});\n```\n\nThe cache knows that the `Book` type uses the `isbn` field for its identifier, so `cache.identify` can correctly populate the `id` field above.\n\nThis example is straightforward because our custom identifier uses a single field (`isbn`). But custom identifiers can consist of _multiple_ fields (such as both `isbn` _and_ `title`). This makes it much more challenging and repetitive to specify an object's custom ID _without_ using `cache.identify`.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_caching_cache-interaction.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

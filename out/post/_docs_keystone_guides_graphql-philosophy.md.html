@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Philosophy
+subSection: graphql
+order: 3
+[meta]-->
+<h1>GraphQL Philosophy</h1>
+<blockquote>
+<p><strong>Note:</strong> This is a conceptual introduction to how the Keystone team think about GraphQL APIs (and hence how Keystone's GraphQL API is generated). For more specific API docs, see the <a href="/docs/guides/intro-to-graphql.md"><strong>GraphQL API Introduction</strong></a>.</p>
+</blockquote>
+<h2>Goals</h2>
+<p>A good GraphQL API is a combination of the following criteria:</p>
+<ul>
+<li><strong>Quick prototyping</strong> no matter the client (mobile, desktop, other APIs, etc)</li>
+<li>Be <strong>obvious</strong>, <strong>consistent</strong>, and <strong>predictable</strong></li>
+<li>Is mostly <strong>CRUD-based</strong> with escape hatches for <strong>Custom Operations</strong></li>
+<li>Match developer's <strong>domain knowledge</strong></li>
+<li>Be <strong>forward compatible</strong> with future unknown use-cases</li>
+<li>Fully <strong>leverage the <em>Graph</em></strong> of GraphQL through Relationships</li>
+</ul>
+<h2>Keystone's schema design</h2>
+<p>Keystone's auto-generated GraphQL Schema meets these goals by following a pattern with two distinct sets of things:</p>
+<h3>Domain objects</h3>
+<p>Modelled with CRUD (<em>Create, Read, Update, Delete</em>) operations, this covers the majority of functionality for most applications.</p>
+<p>For example; the <code>User</code> type would have <code>createUser</code> / <code>getUser</code> / <code>updateUser</code> / <code>deleteUser</code> mutations.</p>
+<h3>Custom operations</h3>
+<p>Become apparent over time while building applications and adding to the schema.</p>
+<p>For example; an <code>authenticateUser</code> / <code>submitTPSReport</code> mutation, or a <code>recentlyActiveUsers</code> query.</p>
+<p align="center">
+  <img src="tweet-graphql-2-things.png" alt="Tweet by Jess Telford: In my experience, the best GraphQL APIs have 2 distinct sets of things: 1. Domain Objects are modelled as type with CRUD mutations (`createUser`/`updateUser`/etc). 2. Common actions involving 0 or more Domain Objects are mutations (`sendEmail`/`finalizeTPSReport`)" width="500" />
+</p>
+<p><sub align="center"></p>
+<p><em><a href="https://twitter.com/JessTelford/status/1179175687560630272">Tweet</a> by <a href="https://twitter.com/JessTelford">Jess Telford</a></em></p>
+<p></sub></p>
+<h2>Domain objects and CRUD</h2>
+<p>Every <em>thing</em> in your application / website / database which can be queried or modified in some way is a Domain Object. Each Domain Object has its own set of CRUD operations.</p>
+<p>By modeling a schema in this way, it enables fast iteration with a consistent and predictable set of mutations and queries for every Domain Object.</p>
+<p>To define a set of Domain Objects, it helps to think about it in terms of what a user will see. A blog site may have a series of Domain Objects, each with their own CRUD operations:</p>
+<table>
+<thead>
+<tr><th>Domain Object</th><th>C</th><th>R</th><th>U</th><th>D</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Users</strong></td><td><code>createUser</code></td><td><code>getUser</code></td><td><code>updateUser</code></td><td><code>deleteUser</code></td></tr>
+<tr><td><strong>Posts</strong></td><td><code>createPost</code></td><td><code>getPost</code></td><td><code>updatePost</code></td><td><code>deletePost</code></td></tr>
+<tr><td><strong>Comments</strong></td><td><code>createComment</code></td><td><code>getComment</code></td><td><code>updateComment</code></td><td><code>deleteComment</code></td></tr>
+<tr><td><strong>Images</strong></td><td><code>createImage</code></td><td><code>getImage</code></td><td><code>updateImage</code></td><td><code>deleteImage</code></td></tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Tip:</strong> Because an <code>Image</code> may be uploaded and interacted with independently of a <code>Post</code>, or used across multiple posts, we're creating an <strong>Images</strong> list. Even if they're only used in a single <code>Post</code>, they still meet the definition as a <em>thing</em> which might be queried or modified in some way (for example, querying for a thumbnail version of the image, or updating alt text).</p>
+</blockquote>
+<p>In general, Domain Objects map to Lists in Keystone:</p>
+<pre><code class="language-javascript allowCopy=false showLanguage=false">keystone.createList('User', {
+  /* ... */
+});
+keystone.createList('Post', {
+  /* ... */
+});
+keystone.createList('Comment', {
+  /* ... */
+});
+keystone.createList('Image', {
+  /* ... */
+});
+</code></pre>
+<h3>Related domain objects</h3>
+<p>To fully leverage the <em>Graph</em> of GraphQL, relationships between Domain Objects must be defined in a way that allows for both <strong>querying</strong> and <strong>mutating</strong> related data.</p>
+<p>GraphQL gives us <em>querying</em> thanks to their type system:</p>
+<pre><code class="language-graphql">type User {
+  name: String
+}
+
+type Post {
+  title: String
+  author: User
+}
+
+type Query {
+  getPost(id: ID): Post
+}
+</code></pre>
+<p>Here you can see the <code>Post.author</code> field is defined as a relationship to a <code>User</code>. When doing a query, it follows a predictable pattern:</p>
+<pre><code class="language-graphql">query {
+  getPost(id: &quot;abc123&quot;) {
+    title
+    author {
+      name
+    }
+  }
+}
+</code></pre>
+<p>Defining <em>mutations</em> requires a bit more setup and consideration to performing <em>nested mutations</em>.</p>
+<blockquote>
+<p><strong>Hint:</strong> Keystone implements this pattern with the <code>Relationship</code> type</p>
+</blockquote>
+<p>Nested Mutations are useful when you need to make changes to more than one Domain Object at a time. Just like you may want to query for <code>Post.author</code> at the same time as getting <code>Post.title</code>, you may want to update <code>User.name</code> at the same time as you create a new <code>Post</code>.</p>
+<p>For example, imagine a UI where an author could update their bio at the same time as creating a post. The mutation would look something like:</p>
+<!-- prettier-ignore-start -->
+<pre><code class="language-graphql">mutation {
+  createPost(data: {
+    title: &quot;Hello World&quot;,
+    author: {
+      update: {
+        bio: &quot;Hi, I'm a writer now!&quot;
+      }
+    }
+  }) {
+    title
+  }
+}
+</code></pre>
+<!-- prettier-ignore-end -->
+<p>Note the <code>data.author.update</code> object, this is the <em>Nested Mutation</em>. Beyond <code>update</code> there are also other operations you may wish to perform:</p>
+<table>
+<thead>
+<tr><th>Operation</th><th></th></tr>
+</thead>
+<tbody>
+<tr><td><code>connect</code></td><td>Connect an existing item to the parent so future queries for related data return the connected item</td></tr>
+<tr><td><code>disconnect</code></td><td>Break the connection with an existing item (but do not delete that item) so future queries for related data return <code>null</code></td></tr>
+<tr><td><code>create</code></td><td>Create a new related item and connect it to the parent so future queries for related data return this item</td></tr>
+<tr><td><code>update</code></td><td>Update an already connected item's data</td></tr>
+<tr><td><code>delete</code></td><td>Delete an already connected item and disconnect it from the parent so future queries for related data return <code>null</code></td></tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> Since <code>get</code> is a query concern, and we're only dealing with nested <em>Mutations</em>, it is not included here.</p>
+</blockquote>
+<p>This might be represented in the GraphQL Schema like so:</p>
+<pre><code class="language-graphql">type User {
+  name: String
+  bio: String
+}
+
+type Post {
+  title: String
+  author: User
+}
+
+input CreateUserInput {
+  name: String
+  bio: String
+}
+
+input UpdateUserInput {
+  id: ID!
+  name: String
+  bio: String
+}
+
+input CreatePostInput {
+  title: String
+  author: UserToOneRelationshipInput
+}
+
+input UpdatePostInput {
+  id: ID!
+  title: String
+  author: UserToOneRelationshipInput
+}
+
+input UpdateUserToOneRelationship {
+  create: CreateUserInput
+  update: UpdateUserInput
+  delete: ID
+  connect: ID
+  disconnect: ID
+}
+
+type Mutation {
+  createPost(data: CreatePostInput): Post
+  updatePost(data: UpdatePostInput): Post
+  createUser(data: CreateUserInput): User
+  updateUser(data: UpdateUserInput): User
+}
+</code></pre>
+<h3>Custom operations</h3>
+<p>Custom operations are an emergent property of the schema design. They are not something which should be defined up front.</p>
+<p>As products are built, it will become obvious which operations are missing and what their inputs/outputs should be.</p>
+<p>For example, while building out the TPS application, it became evident that at some point a TPS Report had to be printed and handed directly to a boss. There is no CRUD operation which can trigger printing a report. There are, however, the <em>Printing</em> and <em>Courier</em> services. A custom mutation can be made which uses both those services to complete the operation: <code>submitTPSReport</code>.</p>
+<pre><code class="language-javascript">const typeDefs = `
+  type Mutation {
+    submitTPSReport(TPSReportId: String, bossId: String): Boolean
+  }
+`;
+
+const resolvers = {
+  Mutation: {
+    submitTPSReport: async (_, { TPSReportId, bossId }) =&gt; {
+      await printService.printTPSReport(TPSReportId);
+      const address = await getAddress(bossId);
+      await courierService.submitJob({ from: 'printer', to: address });
+      return true;
+    },
+  },
+};
+
+const server = new ApolloServer({ typeDefs, resolvers });
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Philosophy\nsubSection: graphql\norder: 3\n[meta]--\u003e\n\n# GraphQL Philosophy\n\n\u003e **Note:** This is a conceptual introduction to how the Keystone team think about GraphQL APIs (and hence how Keystone's GraphQL API is generated). For more specific API docs, see the [**GraphQL API Introduction**](/docs/guides/intro-to-graphql.md).\n\n## Goals\n\nA good GraphQL API is a combination of the following criteria:\n\n- **Quick prototyping** no matter the client (mobile, desktop, other APIs, etc)\n- Be **obvious**, **consistent**, and **predictable**\n- Is mostly **CRUD-based** with escape hatches for **Custom Operations**\n- Match developer's **domain knowledge**\n- Be **forward compatible** with future unknown use-cases\n- Fully **leverage the _Graph_** of GraphQL through Relationships\n\n## Keystone's schema design\n\nKeystone's auto-generated GraphQL Schema meets these goals by following a pattern with two distinct sets of things:\n\n### Domain objects\n\nModelled with CRUD (_Create, Read, Update, Delete_) operations, this covers the majority of functionality for most applications.\n\nFor example; the `User` type would have `createUser` / `getUser` / `updateUser` / `deleteUser` mutations.\n\n### Custom operations\n\nBecome apparent over time while building applications and adding to the schema.\n\nFor example; an `authenticateUser` / `submitTPSReport` mutation, or a `recentlyActiveUsers` query.\n\n\u003cp align=\"center\"\u003e\n  \u003cimg src=\"tweet-graphql-2-things.png\" alt=\"Tweet by Jess Telford: In my experience, the best GraphQL APIs have 2 distinct sets of things: 1. Domain Objects are modelled as type with CRUD mutations (`createUser`/`updateUser`/etc). 2. Common actions involving 0 or more Domain Objects are mutations (`sendEmail`/`finalizeTPSReport`)\" width=\"500\" /\u003e\n\u003c/p\u003e\n\n\u003csub align=\"center\"\u003e\n\n_[Tweet](https://twitter.com/JessTelford/status/1179175687560630272) by [Jess Telford](https://twitter.com/JessTelford)_\n\n\u003c/sub\u003e\n\n## Domain objects and CRUD\n\nEvery _thing_ in your application / website / database which can be queried or modified in some way is a Domain Object. Each Domain Object has its own set of CRUD operations.\n\nBy modeling a schema in this way, it enables fast iteration with a consistent and predictable set of mutations and queries for every Domain Object.\n\nTo define a set of Domain Objects, it helps to think about it in terms of what a user will see. A blog site may have a series of Domain Objects, each with their own CRUD operations:\n\n| Domain Object | C               | R            | U               | D               |\n| ------------- | --------------- | ------------ | --------------- | --------------- |\n| **Users**     | `createUser`    | `getUser`    | `updateUser`    | `deleteUser`    |\n| **Posts**     | `createPost`    | `getPost`    | `updatePost`    | `deletePost`    |\n| **Comments**  | `createComment` | `getComment` | `updateComment` | `deleteComment` |\n| **Images**    | `createImage`   | `getImage`   | `updateImage`   | `deleteImage`   |\n\n\u003e **Tip:** Because an `Image` may be uploaded and interacted with independently of a `Post`, or used across multiple posts, we're creating an **Images** list. Even if they're only used in a single `Post`, they still meet the definition as a _thing_ which might be queried or modified in some way (for example, querying for a thumbnail version of the image, or updating alt text).\n\nIn general, Domain Objects map to Lists in Keystone:\n\n```javascript allowCopy=false showLanguage=false\nkeystone.createList('User', {\n  /* ... */\n});\nkeystone.createList('Post', {\n  /* ... */\n});\nkeystone.createList('Comment', {\n  /* ... */\n});\nkeystone.createList('Image', {\n  /* ... */\n});\n```\n\n### Related domain objects\n\nTo fully leverage the _Graph_ of GraphQL, relationships between Domain Objects must be defined in a way that allows for both **querying** and **mutating** related data.\n\nGraphQL gives us _querying_ thanks to their type system:\n\n```graphql\ntype User {\n  name: String\n}\n\ntype Post {\n  title: String\n  author: User\n}\n\ntype Query {\n  getPost(id: ID): Post\n}\n```\n\nHere you can see the `Post.author` field is defined as a relationship to a `User`. When doing a query, it follows a predictable pattern:\n\n```graphql\nquery {\n  getPost(id: \"abc123\") {\n    title\n    author {\n      name\n    }\n  }\n}\n```\n\nDefining _mutations_ requires a bit more setup and consideration to performing _nested mutations_.\n\n\u003e **Hint:** Keystone implements this pattern with the `Relationship` type\n\nNested Mutations are useful when you need to make changes to more than one Domain Object at a time. Just like you may want to query for `Post.author` at the same time as getting `Post.title`, you may want to update `User.name` at the same time as you create a new `Post`.\n\nFor example, imagine a UI where an author could update their bio at the same time as creating a post. The mutation would look something like:\n\n\u003c!-- prettier-ignore-start --\u003e\n\n```graphql\nmutation {\n  createPost(data: {\n    title: \"Hello World\",\n    author: {\n      update: {\n        bio: \"Hi, I'm a writer now!\"\n      }\n    }\n  }) {\n    title\n  }\n}\n```\n\n\u003c!-- prettier-ignore-end --\u003e\n\nNote the `data.author.update` object, this is the _Nested Mutation_. Beyond `update` there are also other operations you may wish to perform:\n\n| Operation    |                                                                                                                           |\n| ------------ | ------------------------------------------------------------------------------------------------------------------------- |\n| `connect`    | Connect an existing item to the parent so future queries for related data return the connected item                       |\n| `disconnect` | Break the connection with an existing item (but do not delete that item) so future queries for related data return `null` |\n| `create`     | Create a new related item and connect it to the parent so future queries for related data return this item                |\n| `update`     | Update an already connected item's data                                                                                   |\n| `delete`     | Delete an already connected item and disconnect it from the parent so future queries for related data return `null`       |\n\n\u003e **Note:** Since `get` is a query concern, and we're only dealing with nested _Mutations_, it is not included here.\n\nThis might be represented in the GraphQL Schema like so:\n\n```graphql\ntype User {\n  name: String\n  bio: String\n}\n\ntype Post {\n  title: String\n  author: User\n}\n\ninput CreateUserInput {\n  name: String\n  bio: String\n}\n\ninput UpdateUserInput {\n  id: ID!\n  name: String\n  bio: String\n}\n\ninput CreatePostInput {\n  title: String\n  author: UserToOneRelationshipInput\n}\n\ninput UpdatePostInput {\n  id: ID!\n  title: String\n  author: UserToOneRelationshipInput\n}\n\ninput UpdateUserToOneRelationship {\n  create: CreateUserInput\n  update: UpdateUserInput\n  delete: ID\n  connect: ID\n  disconnect: ID\n}\n\ntype Mutation {\n  createPost(data: CreatePostInput): Post\n  updatePost(data: UpdatePostInput): Post\n  createUser(data: CreateUserInput): User\n  updateUser(data: UpdateUserInput): User\n}\n```\n\n### Custom operations\n\nCustom operations are an emergent property of the schema design. They are not something which should be defined up front.\n\nAs products are built, it will become obvious which operations are missing and what their inputs/outputs should be.\n\nFor example, while building out the TPS application, it became evident that at some point a TPS Report had to be printed and handed directly to a boss. There is no CRUD operation which can trigger printing a report. There are, however, the _Printing_ and _Courier_ services. A custom mutation can be made which uses both those services to complete the operation: `submitTPSReport`.\n\n```javascript\nconst typeDefs = `\n  type Mutation {\n    submitTPSReport(TPSReportId: String, bossId: String): Boolean\n  }\n`;\n\nconst resolvers = {\n  Mutation: {\n    submitTPSReport: async (_, { TPSReportId, bossId }) =\u003e {\n      await printService.printTPSReport(TPSReportId);\n      const address = await getAddress(bossId);\n      await courierService.submitJob({ from: 'printer', to: address });\n      return true;\n    },\n  },\n};\n\nconst server = new ApolloServer({ typeDefs, resolvers });\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_graphql-philosophy.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

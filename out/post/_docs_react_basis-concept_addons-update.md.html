@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: update
+title: Immutability Helpers
+permalink: docs/update.html
+layout: docs
+category: Add-Ons</p>
+<hr>
+<blockquote>
+<p>Note:</p>
+<p><code>update</code> is a legacy add-on. Use <a href="https://github.com/kolodny/immutability-helper"><code>immutability-helper</code></a> instead.</p>
+</blockquote>
+<p><strong>Importing</strong></p>
+<pre><code class="language-javascript">import update from 'react-addons-update'; // ES6
+var update = require('react-addons-update'); // ES5 with npm
+</code></pre>
+<h2>Overview {#overview}</h2>
+<p>React lets you use whatever style of data management you want, including mutation. However, if you can use immutable data in performance-critical parts of your application it's easy to implement a fast <a href="/docs/react-component.html#shouldcomponentupdate"><code>shouldComponentUpdate()</code></a> method to significantly speed up your app.</p>
+<p>Dealing with immutable data in JavaScript is more difficult than in languages designed for it, like <a href="https://clojure.org/">Clojure</a>. However, we've provided a simple immutability helper, <code>update()</code>, that makes dealing with this type of data much easier, <em>without</em> fundamentally changing how your data is represented. You can also take a look at Facebook's <a href="https://facebook.github.io/immutable-js/docs/">Immutable-js</a> and the <a href="/docs/advanced-performance.html">Advanced Performance</a> section for more detail on Immutable-js.</p>
+<h3>The Main Idea {#the-main-idea}</h3>
+<p>If you mutate data like this:</p>
+<pre><code class="language-js">myData.x.y.z = 7;
+// or...
+myData.a.b.push(9);
+</code></pre>
+<p>You have no way of determining which data has changed since the previous copy has been overwritten. Instead, you need to create a new copy of <code>myData</code> and change only the parts of it that need to be changed. Then you can compare the old copy of <code>myData</code> with the new one in <code>shouldComponentUpdate()</code> using triple-equals:</p>
+<pre><code class="language-js">const newData = deepCopy(myData);
+newData.x.y.z = 7;
+newData.a.b.push(9);
+</code></pre>
+<p>Unfortunately, deep copies are expensive, and sometimes impossible. You can alleviate this by only copying objects that need to be changed and by reusing the objects that haven't changed. Unfortunately, in today's JavaScript this can be cumbersome:</p>
+<pre><code class="language-js">const newData = extend(myData, {
+  x: extend(myData.x, {
+    y: extend(myData.x.y, {z: 7}),
+  }),
+  a: extend(myData.a, {b: myData.a.b.concat(9)})
+});
+</code></pre>
+<p>While this is fairly performant (since it only makes a shallow copy of <code>log n</code> objects and reuses the rest), it's a big pain to write. Look at all the repetition! This is not only annoying, but also provides a large surface area for bugs.</p>
+<h2><code>update()</code> {#update}</h2>
+<p><code>update()</code> provides simple syntactic sugar around this pattern to make writing this code easier. This code becomes:</p>
+<pre><code class="language-js">import update from 'react-addons-update';
+
+const newData = update(myData, {
+  x: {y: {z: {$set: 7}}},
+  a: {b: {$push: [9]}}
+});
+</code></pre>
+<p>While the syntax takes a little getting used to (though it's inspired by <a href="https://docs.mongodb.com/manual/crud/#query">MongoDB's query language</a>) there's no redundancy, it's statically analyzable and it's not much more typing than the mutative version.</p>
+<p>The <code>$</code>-prefixed keys are called <em>commands</em>. The data structure they are &quot;mutating&quot; is called the <em>target</em>.</p>
+<h2>Available Commands {#available-commands}</h2>
+<ul>
+<li><code>{$push: array}</code> <code>push()</code> all the items in <code>array</code> on the target.</li>
+<li><code>{$unshift: array}</code> <code>unshift()</code> all the items in <code>array</code> on the target.</li>
+<li><code>{$splice: array of arrays}</code> for each item in <code>arrays</code> call <code>splice()</code> on the target with the parameters provided by the item.</li>
+<li><code>{$set: any}</code> replace the target entirely.</li>
+<li><code>{$merge: object}</code> merge the keys of <code>object</code> with the target.</li>
+<li><code>{$apply: function}</code> passes in the current value to the function and updates it with the new returned value.</li>
+</ul>
+<h2>Examples {#examples}</h2>
+<h3>Simple push {#simple-push}</h3>
+<pre><code class="language-js">const initialArray = [1, 2, 3];
+const newArray = update(initialArray, {$push: [4]}); // =&gt; [1, 2, 3, 4]
+</code></pre>
+<p><code>initialArray</code> is still <code>[1, 2, 3]</code>.</p>
+<h3>Nested collections {#nested-collections}</h3>
+<pre><code class="language-js">const collection = [1, 2, {a: [12, 17, 15]}];
+const newCollection = update(collection, {2: {a: {$splice: [[1, 1, 13, 14]]}}});
+// =&gt; [1, 2, {a: [12, 13, 14, 15]}]
+</code></pre>
+<p>This accesses <code>collection</code>'s index <code>2</code>, key <code>a</code>, and does a splice of one item starting from index <code>1</code> (to remove <code>17</code>) while inserting <code>13</code> and <code>14</code>.</p>
+<h3>Updating a value based on its current one {#updating-a-value-based-on-its-current-one}</h3>
+<pre><code class="language-js">const obj = {a: 5, b: 3};
+const newObj = update(obj, {b: {$apply: function(x) {return x * 2;}}});
+// =&gt; {a: 5, b: 6}
+// This is equivalent, but gets verbose for deeply nested collections:
+const newObj2 = update(obj, {b: {$set: obj.b * 2}});
+</code></pre>
+<h3>(Shallow) Merge {#shallow-merge}</h3>
+<pre><code class="language-js">const obj = {a: 5, b: 3};
+const newObj = update(obj, {$merge: {b: 6, c: 7}}); // =&gt; {a: 5, b: 6, c: 7}
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: update\ntitle: Immutability Helpers\npermalink: docs/update.html\nlayout: docs\ncategory: Add-Ons\n---\n\n\u003e Note:\n\u003e\n\u003e `update` is a legacy add-on. Use [`immutability-helper`](https://github.com/kolodny/immutability-helper) instead.\n\n**Importing**\n\n```javascript\nimport update from 'react-addons-update'; // ES6\nvar update = require('react-addons-update'); // ES5 with npm\n```\n\n## Overview {#overview}\n\nReact lets you use whatever style of data management you want, including mutation. However, if you can use immutable data in performance-critical parts of your application it's easy to implement a fast [`shouldComponentUpdate()`](/docs/react-component.html#shouldcomponentupdate) method to significantly speed up your app.\n\nDealing with immutable data in JavaScript is more difficult than in languages designed for it, like [Clojure](https://clojure.org/). However, we've provided a simple immutability helper, `update()`, that makes dealing with this type of data much easier, *without* fundamentally changing how your data is represented. You can also take a look at Facebook's [Immutable-js](https://facebook.github.io/immutable-js/docs/) and the [Advanced Performance](/docs/advanced-performance.html) section for more detail on Immutable-js.\n\n### The Main Idea {#the-main-idea}\n\nIf you mutate data like this:\n\n```js\nmyData.x.y.z = 7;\n// or...\nmyData.a.b.push(9);\n```\n\nYou have no way of determining which data has changed since the previous copy has been overwritten. Instead, you need to create a new copy of `myData` and change only the parts of it that need to be changed. Then you can compare the old copy of `myData` with the new one in `shouldComponentUpdate()` using triple-equals:\n\n```js\nconst newData = deepCopy(myData);\nnewData.x.y.z = 7;\nnewData.a.b.push(9);\n```\n\nUnfortunately, deep copies are expensive, and sometimes impossible. You can alleviate this by only copying objects that need to be changed and by reusing the objects that haven't changed. Unfortunately, in today's JavaScript this can be cumbersome:\n\n```js\nconst newData = extend(myData, {\n  x: extend(myData.x, {\n    y: extend(myData.x.y, {z: 7}),\n  }),\n  a: extend(myData.a, {b: myData.a.b.concat(9)})\n});\n```\n\nWhile this is fairly performant (since it only makes a shallow copy of `log n` objects and reuses the rest), it's a big pain to write. Look at all the repetition! This is not only annoying, but also provides a large surface area for bugs.\n\n## `update()` {#update}\n\n`update()` provides simple syntactic sugar around this pattern to make writing this code easier. This code becomes:\n\n```js\nimport update from 'react-addons-update';\n\nconst newData = update(myData, {\n  x: {y: {z: {$set: 7}}},\n  a: {b: {$push: [9]}}\n});\n```\n\nWhile the syntax takes a little getting used to (though it's inspired by [MongoDB's query language](https://docs.mongodb.com/manual/crud/#query)) there's no redundancy, it's statically analyzable and it's not much more typing than the mutative version.\n\nThe `$`-prefixed keys are called *commands*. The data structure they are \"mutating\" is called the *target*.\n\n## Available Commands {#available-commands}\n\n  * `{$push: array}` `push()` all the items in `array` on the target.\n  * `{$unshift: array}` `unshift()` all the items in `array` on the target.\n  * `{$splice: array of arrays}` for each item in `arrays` call `splice()` on the target with the parameters provided by the item.\n  * `{$set: any}` replace the target entirely.\n  * `{$merge: object}` merge the keys of `object` with the target.\n  * `{$apply: function}` passes in the current value to the function and updates it with the new returned value.\n\n## Examples {#examples}\n\n### Simple push {#simple-push}\n\n```js\nconst initialArray = [1, 2, 3];\nconst newArray = update(initialArray, {$push: [4]}); // =\u003e [1, 2, 3, 4]\n```\n`initialArray` is still `[1, 2, 3]`.\n\n### Nested collections {#nested-collections}\n\n```js\nconst collection = [1, 2, {a: [12, 17, 15]}];\nconst newCollection = update(collection, {2: {a: {$splice: [[1, 1, 13, 14]]}}});\n// =\u003e [1, 2, {a: [12, 13, 14, 15]}]\n```\nThis accesses `collection`'s index `2`, key `a`, and does a splice of one item starting from index `1` (to remove `17`) while inserting `13` and `14`.\n\n### Updating a value based on its current one {#updating-a-value-based-on-its-current-one}\n\n```js\nconst obj = {a: 5, b: 3};\nconst newObj = update(obj, {b: {$apply: function(x) {return x * 2;}}});\n// =\u003e {a: 5, b: 6}\n// This is equivalent, but gets verbose for deeply nested collections:\nconst newObj2 = update(obj, {b: {$set: obj.b * 2}});\n```\n\n### (Shallow) Merge {#shallow-merge}\n\n```js\nconst obj = {a: 5, b: 3};\nconst newObj = update(obj, {$merge: {b: 6, c: 7}}); // =\u003e {a: 5, b: 6, c: 7}\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_addons-update.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<h2>description: API Routes provide built-in middlewares that parse the incoming request. Learn more about them here.</h2>
+<h1>API Middlewares</h1>
+<p><details open>
+<summary><b>Examples</b></summary></p>
+  <ul>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/api-routes-middleware">API Routes with middleware</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/api-routes-cors">API Routes with CORS</a></li>
+  </ul>
+</details>
+<p>API routes provide built in middlewares which parse the incoming request (<code>req</code>). Those middlewares are:</p>
+<ul>
+<li><code>req.cookies</code> - An object containing the cookies sent by the request. Defaults to <code>{}</code></li>
+<li><code>req.query</code> - An object containing the <a href="https://en.wikipedia.org/wiki/Query_string">query string</a>. Defaults to <code>{}</code></li>
+<li><code>req.body</code> - An object containing the body parsed by <code>content-type</code>, or <code>null</code> if no body was sent</li>
+</ul>
+<h2>Custom config</h2>
+<p>Every API route can export a <code>config</code> object to change the default configs, which are the following:</p>
+<pre><code class="language-js">export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+}
+</code></pre>
+<p>The <code>api</code> object includes all configs available for API routes.</p>
+<p><code>bodyParser</code> Enables body parsing, you can disable it if you want to consume it as a <code>Stream</code>:</p>
+<pre><code class="language-js">export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+</code></pre>
+<p><code>bodyParser.sizeLimit</code> is the maximum size allowed for the parsed body, in any format supported by <a href="https://github.com/visionmedia/bytes.js">bytes</a>, like so:</p>
+<pre><code class="language-js">export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '500kb',
+    },
+  },
+}
+</code></pre>
+<p><code>externalResolver</code> is an explicit flag that tells the server that this route is being handled by an external resolver like <em>express</em> or <em>connect</em>. Enabling this option disables warnings for unresolved requests.</p>
+<pre><code class="language-js">export const config = {
+  api: {
+    externalResolver: true,
+  },
+}
+</code></pre>
+<h2>Connect/Express middleware support</h2>
+<p>You can also use <a href="https://github.com/senchalabs/connect">Connect</a> compatible middleware.</p>
+<p>For example, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">configuring CORS</a> for your API endpoint can be done leveraging the <a href="https://www.npmjs.com/package/cors">cors</a> package.</p>
+<p>First, install <code>cors</code>:</p>
+<pre><code class="language-bash">npm i cors
+# or
+yarn add cors
+</code></pre>
+<p>Now, let's add <code>cors</code> to the API route:</p>
+<pre><code class="language-js">import Cors from 'cors'
+
+// Initializing the cors middleware
+const cors = Cors({
+  methods: ['GET', 'HEAD'],
+})
+
+// Helper method to wait for a middleware to execute before continuing
+// And to throw an error when an error happens in a middleware
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) =&gt; {
+    fn(req, res, (result) =&gt; {
+      if (result instanceof Error) {
+        return reject(result)
+      }
+
+      return resolve(result)
+    })
+  })
+}
+
+async function handler(req, res) {
+  // Run the middleware
+  await runMiddleware(req, res, cors)
+
+  // Rest of the API logic
+  res.json({ message: 'Hello Everyone!' })
+}
+
+export default handler
+</code></pre>
+<blockquote>
+<p>Go to the <a href="https://github.com/vercel/next.js/tree/canary/examples/api-routes-cors">API Routes with CORS</a> example to see the finished app</p>
+</blockquote>
+<h2>Extending the <code>req</code>/<code>res</code> objects with TypeScript</h2>
+<p>For better type-safety, it is not recommended to extend the <code>req</code> and <code>res</code> objects. Instead, use pure functions to work with them:</p>
+<pre><code class="language-ts">// utils/cookies.ts
+
+import { serialize, CookieSerializeOptions } from 'cookie'
+import { NextApiResponse } from 'next'
+
+/**
+ * This sets `cookie` using the `res` object
+ */
+
+export const setCookie = (
+  res: NextApiResponse,
+  name: string,
+  value: unknown,
+  options: CookieSerializeOptions = {}
+) =&gt; {
+  const stringValue =
+    typeof value === 'object' ? 'j:' + JSON.stringify(value) : String(value)
+
+  if ('maxAge' in options) {
+    options.expires = new Date(Date.now() + options.maxAge)
+    options.maxAge /= 1000
+  }
+
+  res.setHeader('Set-Cookie', serialize(name, String(stringValue), options))
+}
+
+// pages/api/cookies.ts
+
+import { NextApiRequest, NextApiResponse } from 'next'
+import { setCookie } from '../../utils/cookies'
+
+const handler = (req: NextApiRequest, res: NextApiResponse) =&gt; {
+  // Calling our pure function using the `res` object, it will add the `set-cookie` header
+  setCookie(res, 'Next.js', 'api-middleware!')
+  // Return the `set-cookie` header so we can display it in the browser and show that it works!
+  res.end(res.getHeader('Set-Cookie'))
+}
+
+export default handler
+</code></pre>
+<p>If you can't avoid these objects from being extended, you have to create your own type to include the extra properties:</p>
+<pre><code class="language-ts">// pages/api/foo.ts
+
+import { NextApiRequest, NextApiResponse } from 'next'
+import { withFoo } from 'external-lib-foo'
+
+type NextApiRequestWithFoo = NextApiRequest &amp; {
+  foo: (bar: string) =&gt; void
+}
+
+const handler = (req: NextApiRequestWithFoo, res: NextApiResponse) =&gt; {
+  req.foo('bar') // we can now use `req.foo` without type errors
+  res.end('ok')
+}
+
+export default withFoo(handler)
+</code></pre>
+<p>Keep in mind this is not safe since the code will still compile even if you remove <code>withFoo()</code> from the export.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ndescription: API Routes provide built-in middlewares that parse the incoming request. Learn more about them here.\n---\n\n# API Middlewares\n\n\u003cdetails open\u003e\n  \u003csummary\u003e\u003cb\u003eExamples\u003c/b\u003e\u003c/summary\u003e\n  \u003cul\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/api-routes-middleware\"\u003eAPI Routes with middleware\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/api-routes-cors\"\u003eAPI Routes with CORS\u003c/a\u003e\u003c/li\u003e\n  \u003c/ul\u003e\n\u003c/details\u003e\n\nAPI routes provide built in middlewares which parse the incoming request (`req`). Those middlewares are:\n\n- `req.cookies` - An object containing the cookies sent by the request. Defaults to `{}`\n- `req.query` - An object containing the [query string](https://en.wikipedia.org/wiki/Query_string). Defaults to `{}`\n- `req.body` - An object containing the body parsed by `content-type`, or `null` if no body was sent\n\n## Custom config\n\nEvery API route can export a `config` object to change the default configs, which are the following:\n\n```js\nexport const config = {\n  api: {\n    bodyParser: {\n      sizeLimit: '1mb',\n    },\n  },\n}\n```\n\nThe `api` object includes all configs available for API routes.\n\n`bodyParser` Enables body parsing, you can disable it if you want to consume it as a `Stream`:\n\n```js\nexport const config = {\n  api: {\n    bodyParser: false,\n  },\n}\n```\n\n`bodyParser.sizeLimit` is the maximum size allowed for the parsed body, in any format supported by [bytes](https://github.com/visionmedia/bytes.js), like so:\n\n```js\nexport const config = {\n  api: {\n    bodyParser: {\n      sizeLimit: '500kb',\n    },\n  },\n}\n```\n\n`externalResolver` is an explicit flag that tells the server that this route is being handled by an external resolver like _express_ or _connect_. Enabling this option disables warnings for unresolved requests.\n\n```js\nexport const config = {\n  api: {\n    externalResolver: true,\n  },\n}\n```\n\n## Connect/Express middleware support\n\nYou can also use [Connect](https://github.com/senchalabs/connect) compatible middleware.\n\nFor example, [configuring CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) for your API endpoint can be done leveraging the [cors](https://www.npmjs.com/package/cors) package.\n\nFirst, install `cors`:\n\n```bash\nnpm i cors\n# or\nyarn add cors\n```\n\nNow, let's add `cors` to the API route:\n\n```js\nimport Cors from 'cors'\n\n// Initializing the cors middleware\nconst cors = Cors({\n  methods: ['GET', 'HEAD'],\n})\n\n// Helper method to wait for a middleware to execute before continuing\n// And to throw an error when an error happens in a middleware\nfunction runMiddleware(req, res, fn) {\n  return new Promise((resolve, reject) =\u003e {\n    fn(req, res, (result) =\u003e {\n      if (result instanceof Error) {\n        return reject(result)\n      }\n\n      return resolve(result)\n    })\n  })\n}\n\nasync function handler(req, res) {\n  // Run the middleware\n  await runMiddleware(req, res, cors)\n\n  // Rest of the API logic\n  res.json({ message: 'Hello Everyone!' })\n}\n\nexport default handler\n```\n\n\u003e Go to the [API Routes with CORS](https://github.com/vercel/next.js/tree/canary/examples/api-routes-cors) example to see the finished app\n\n## Extending the `req`/`res` objects with TypeScript\n\nFor better type-safety, it is not recommended to extend the `req` and `res` objects. Instead, use pure functions to work with them:\n\n```ts\n// utils/cookies.ts\n\nimport { serialize, CookieSerializeOptions } from 'cookie'\nimport { NextApiResponse } from 'next'\n\n/**\n * This sets `cookie` using the `res` object\n */\n\nexport const setCookie = (\n  res: NextApiResponse,\n  name: string,\n  value: unknown,\n  options: CookieSerializeOptions = {}\n) =\u003e {\n  const stringValue =\n    typeof value === 'object' ? 'j:' + JSON.stringify(value) : String(value)\n\n  if ('maxAge' in options) {\n    options.expires = new Date(Date.now() + options.maxAge)\n    options.maxAge /= 1000\n  }\n\n  res.setHeader('Set-Cookie', serialize(name, String(stringValue), options))\n}\n\n// pages/api/cookies.ts\n\nimport { NextApiRequest, NextApiResponse } from 'next'\nimport { setCookie } from '../../utils/cookies'\n\nconst handler = (req: NextApiRequest, res: NextApiResponse) =\u003e {\n  // Calling our pure function using the `res` object, it will add the `set-cookie` header\n  setCookie(res, 'Next.js', 'api-middleware!')\n  // Return the `set-cookie` header so we can display it in the browser and show that it works!\n  res.end(res.getHeader('Set-Cookie'))\n}\n\nexport default handler\n```\n\nIf you can't avoid these objects from being extended, you have to create your own type to include the extra properties:\n\n```ts\n// pages/api/foo.ts\n\nimport { NextApiRequest, NextApiResponse } from 'next'\nimport { withFoo } from 'external-lib-foo'\n\ntype NextApiRequestWithFoo = NextApiRequest \u0026 {\n  foo: (bar: string) =\u003e void\n}\n\nconst handler = (req: NextApiRequestWithFoo, res: NextApiResponse) =\u003e {\n  req.foo('bar') // we can now use `req.foo` without type errors\n  res.end('ok')\n}\n\nexport default withFoo(handler)\n```\n\nKeep in mind this is not safe since the code will still compile even if you remove `withFoo()` from the export.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_next_api-routes_api-middlewares.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: blog
+title: Using custom labels to improve Author Experience
+date: 2020-10-12
+author: Noviny
+order: 0.3
+[meta]-->
+<p>In Keystone's Admin UI, we want to make it easy to display items and get a feel for your content at a glance. One of the important things here is being able to have meaningful labels for each item in your database when you're viewing a bunch of those items as a list. To do this, we have a feature called <code>labelResolver</code>.</p>
+<p>In this post, we'll walk you through the default behaviour for labels, how to customise the label, and even how to use information from a relationship in the label.</p>
+<h2>What is the Label?</h2>
+<p>Although Keystone has no strong opinions about what fields might be in any given list, it needs a consistent way to identify items to users of the Admin UI. Two examples of this are in the list view, and how items are displayed in relationship fields.</p>
+<p>This is where the label comes in. It's a built-in, read-only string field that Keystone adds to the schema for each list called <code>_label_</code>, and it gives us a predictable way of querying a human-readable reference for what an item 'is' in Keystone.</p>
+<p>Labels have default behaviour, but importantly you can customise them to create a better user experience for content authors and data managers using the Keystone Admin UI.</p>
+<h2>Using the Name Field</h2>
+<p>By default, the label uses the <code>name</code> field of an item. For example, with the following user list schema:</p>
+<pre><code class="language-js">const User = {
+  fields: {
+    name: { type: Text },
+    email: { type: Text, isUnique: true },
+    dob: {
+      type: CalendarDay,
+      format: 'do MMMM yyyy',
+      dateFrom: '1901-01-01',
+      dateTo: formatISO(new Date(), { representation: 'date' }),
+    },
+    password: { type: Password },
+  },
+};
+</code></pre>
+<p>The Admin UI will look like this:</p>
+<p><img src="https://raw.githubusercontent.com/Noviny/images/master/blog1.png" alt="Alt Text"></p>
+<h2>Using Another Field</h2>
+<p>In some circumstances, <code>name</code> may not be the best field to use, or it may not even exist. Say we have a new list <code>Post</code>, which we have set up like this:</p>
+<pre><code class="language-js">const Post = {
+  fields: {
+    title: { type: Text },
+    status: {
+      type: Select,
+      defaultValue: 'draft',
+      options: [
+        { label: 'Draft', value: 'draft' },
+        { label: 'Published', value: 'published' },
+      ],
+    },
+    author: {
+      type: AuthedRelationship,
+      ref: 'User',
+      isRequired: true,
+    },
+    body: { type: Wysiwyg },
+    // and probably some other fields we won't use here
+  },
+};
+</code></pre>
+<p>In our posts, we don't have a <code>name</code> field - the primary identifying field <code>title</code>. As there's no <code>name</code> field, label will use the ID, which will give us something like:</p>
+<p><img src="https://raw.githubusercontent.com/Noviny/images/master/blog2-2.png" alt="Alt Text"></p>
+<p>Not super human friendly.</p>
+<p>We could rename title to name, but that's not what we want. What we <em>do</em> want is to make the label use the title for display. For this, we can add a <code>labelResolver</code> to our post field</p>
+<pre><code class="language-js">const Post = {
+  fields: {
+    title: { type: Text },
+    // and the rest of the fields too
+  },
+  labelResolver: item =&gt; item.title,
+};
+</code></pre>
+<p>Now we get the much more friendly:</p>
+<p><img src="https://raw.githubusercontent.com/Noviny/images/master/blog3-3.png" alt="Alt Text"></p>
+<h2>Providing extra information in the label</h2>
+<p>While sometimes you may just want to use another field, other times though there may be other bits of information that are always pertinent. Say for our post above, we have a status field, and we want to display in the label whether something is in <code>draft</code> mode or not.</p>
+<p>Here we can modify our <code>labelResolver</code> to add in this extra detail.</p>
+<pre><code class="language-js">const Post = {
+  fields: {
+    title: { type: Text },
+    status: {
+      type: Select,
+      defaultValue: 'draft',
+      options: [
+        { label: 'Draft', value: 'draft' },
+        { label: 'Published', value: 'published' },
+      ],
+    },
+    // and the rest of the fields too
+  },
+  labelResolver: item =&gt; `${item.status === 'draft' ? 'DRAFT - ' : ''}` + item.title,
+};
+</code></pre>
+<p>which means our posts now appear as:</p>
+<p><img src="https://raw.githubusercontent.com/Noviny/images/master/blog4-4.png" alt="Alt Text"></p>
+<blockquote>
+<p>Note: The <code>label</code> for items in a public list is always public! Even if other bits of the item may be private. We recommend when picking what to put in a label, make sure nothing private (like email) is included.</p>
+</blockquote>
+<h2>Using Another List</h2>
+<p>Great, we've got a fairly robust <code>Post</code> label, but we want to extend it just a little bit more - like adding the author's name in as well. This information isn't actually found on the item, so we're going to need to fetch it.</p>
+<p>Not to worry though, <code>labelResolver</code> can easily be made async, and we can fetch other information from related items. We can modify our <code>labelResolver</code> to:</p>
+<pre><code class="language-js">const Post = {
+  fields: {
+    author: {
+      type: AuthedRelationship,
+      ref: 'User',
+      isRequired: true,
+    },
+    // and the rest of the fields too
+  },
+  labelResolver: async item =&gt; {
+    const { data } = await keystone.executeGraphQL({
+      query: `query {
+          User(where: {id: &quot;${item.author}&quot; }) {
+            name
+          }
+        }`,
+    });
+
+    return `${item.status === 'draft' ? 'DRAFT ' : ''}` + item.title + ` (${data.User.name})`;
+  },
+};
+</code></pre>
+<p>and we will get our display of:</p>
+<p><img src="https://raw.githubusercontent.com/Noviny/images/master/blog5-5.png" alt="Alt Text"></p>
+<p>Now we have the status of a post, its title, and the name of the author, all bundled into the label.</p>
+<p>Bundling in the author here might be overkill, but if you want to bundle information from a relationship, it's easy to do.</p>
+<h2>Using Other Information</h2>
+<p>Finally, let's have a fun example. Our users have birthdays, and we want to surface this in a warm, friendly way. As such, we've decided to add an emoji right into the label whenever it's a user's birthday - everywhere a label refers to them will show a little party celebration.</p>
+<p>For this we can write a <code>labelResolver</code> such as:</p>
+<pre><code class="language-js">const User = {
+  fields: {
+    // all our previous user fields
+    dob: {
+      type: CalendarDay,
+      format: 'do MMMM yyyy',
+      dateFrom: '1901-01-01',
+      dateTo: formatISO(new Date(), { representation: 'date' }),
+    },
+  },
+  labelResolver: item =&gt; {
+    let currentDay = new Date().toISOString().slice(0, 10);
+    if (item.dob === currentDay) {
+      return `🍰 ${item.name}`;
+    } else {
+      return item.name;
+    }
+  },
+};
+</code></pre>
+<p>And now we can see that it's Luke's birthday! Happy birthday Luke!</p>
+<p><img src="https://raw.githubusercontent.com/Noviny/images/master/blog6-6.png" alt="Alt Text"></p>
+<blockquote>
+<p>Note: this makes the label dynamic, which means it can't be relied upon by other bits of the system as an item's unique identifier. You should be aware of this when making a dynamic label, but if it suits your needs, let the good times roll.</p>
+</blockquote>
+<h2>Enough Labeling for one day</h2>
+<p>Hopefully this gives you a good idea of what labels are for in Keystone (and the ways you can adapt them to your needs when the defaults aren't what you want), as well as good guidance on responsible labeling within the flexibility that Keystone offers.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: blog\ntitle: Using custom labels to improve Author Experience\ndate: 2020-10-12\nauthor: Noviny\norder: 0.3\n[meta]--\u003e\n\nIn Keystone's Admin UI, we want to make it easy to display items and get a feel for your content at a glance. One of the important things here is being able to have meaningful labels for each item in your database when you're viewing a bunch of those items as a list. To do this, we have a feature called `labelResolver`.\n\nIn this post, we'll walk you through the default behaviour for labels, how to customise the label, and even how to use information from a relationship in the label.\n\n## What is the Label?\n\nAlthough Keystone has no strong opinions about what fields might be in any given list, it needs a consistent way to identify items to users of the Admin UI. Two examples of this are in the list view, and how items are displayed in relationship fields.\n\nThis is where the label comes in. It's a built-in, read-only string field that Keystone adds to the schema for each list called `_label_`, and it gives us a predictable way of querying a human-readable reference for what an item 'is' in Keystone.\n\nLabels have default behaviour, but importantly you can customise them to create a better user experience for content authors and data managers using the Keystone Admin UI.\n\n## Using the Name Field\n\nBy default, the label uses the `name` field of an item. For example, with the following user list schema:\n\n```js\nconst User = {\n  fields: {\n    name: { type: Text },\n    email: { type: Text, isUnique: true },\n    dob: {\n      type: CalendarDay,\n      format: 'do MMMM yyyy',\n      dateFrom: '1901-01-01',\n      dateTo: formatISO(new Date(), { representation: 'date' }),\n    },\n    password: { type: Password },\n  },\n};\n```\n\nThe Admin UI will look like this:\n\n![Alt Text](https://raw.githubusercontent.com/Noviny/images/master/blog1.png)\n\n## Using Another Field\n\nIn some circumstances, `name` may not be the best field to use, or it may not even exist. Say we have a new list `Post`, which we have set up like this:\n\n```js\nconst Post = {\n  fields: {\n    title: { type: Text },\n    status: {\n      type: Select,\n      defaultValue: 'draft',\n      options: [\n        { label: 'Draft', value: 'draft' },\n        { label: 'Published', value: 'published' },\n      ],\n    },\n    author: {\n      type: AuthedRelationship,\n      ref: 'User',\n      isRequired: true,\n    },\n    body: { type: Wysiwyg },\n    // and probably some other fields we won't use here\n  },\n};\n```\n\nIn our posts, we don't have a `name` field - the primary identifying field `title`. As there's no `name` field, label will use the ID, which will give us something like:\n\n![Alt Text](https://raw.githubusercontent.com/Noviny/images/master/blog2-2.png)\n\nNot super human friendly.\n\nWe could rename title to name, but that's not what we want. What we _do_ want is to make the label use the title for display. For this, we can add a `labelResolver` to our post field\n\n```js\nconst Post = {\n  fields: {\n    title: { type: Text },\n    // and the rest of the fields too\n  },\n  labelResolver: item =\u003e item.title,\n};\n```\n\nNow we get the much more friendly:\n\n![Alt Text](https://raw.githubusercontent.com/Noviny/images/master/blog3-3.png)\n\n## Providing extra information in the label\n\nWhile sometimes you may just want to use another field, other times though there may be other bits of information that are always pertinent. Say for our post above, we have a status field, and we want to display in the label whether something is in `draft` mode or not.\n\nHere we can modify our `labelResolver` to add in this extra detail.\n\n```js\nconst Post = {\n  fields: {\n    title: { type: Text },\n    status: {\n      type: Select,\n      defaultValue: 'draft',\n      options: [\n        { label: 'Draft', value: 'draft' },\n        { label: 'Published', value: 'published' },\n      ],\n    },\n    // and the rest of the fields too\n  },\n  labelResolver: item =\u003e `${item.status === 'draft' ? 'DRAFT - ' : ''}` + item.title,\n};\n```\n\nwhich means our posts now appear as:\n\n![Alt Text](https://raw.githubusercontent.com/Noviny/images/master/blog4-4.png)\n\n\u003e Note: The `label` for items in a public list is always public! Even if other bits of the item may be private. We recommend when picking what to put in a label, make sure nothing private (like email) is included.\n\n## Using Another List\n\nGreat, we've got a fairly robust `Post` label, but we want to extend it just a little bit more - like adding the author's name in as well. This information isn't actually found on the item, so we're going to need to fetch it.\n\nNot to worry though, `labelResolver` can easily be made async, and we can fetch other information from related items. We can modify our `labelResolver` to:\n\n```js\nconst Post = {\n  fields: {\n    author: {\n      type: AuthedRelationship,\n      ref: 'User',\n      isRequired: true,\n    },\n    // and the rest of the fields too\n  },\n  labelResolver: async item =\u003e {\n    const { data } = await keystone.executeGraphQL({\n      query: `query {\n          User(where: {id: \"${item.author}\" }) {\n            name\n          }\n        }`,\n    });\n\n    return `${item.status === 'draft' ? 'DRAFT ' : ''}` + item.title + ` (${data.User.name})`;\n  },\n};\n```\n\nand we will get our display of:\n\n![Alt Text](https://raw.githubusercontent.com/Noviny/images/master/blog5-5.png)\n\nNow we have the status of a post, its title, and the name of the author, all bundled into the label.\n\nBundling in the author here might be overkill, but if you want to bundle information from a relationship, it's easy to do.\n\n## Using Other Information\n\nFinally, let's have a fun example. Our users have birthdays, and we want to surface this in a warm, friendly way. As such, we've decided to add an emoji right into the label whenever it's a user's birthday - everywhere a label refers to them will show a little party celebration.\n\nFor this we can write a `labelResolver` such as:\n\n```js\nconst User = {\n  fields: {\n    // all our previous user fields\n    dob: {\n      type: CalendarDay,\n      format: 'do MMMM yyyy',\n      dateFrom: '1901-01-01',\n      dateTo: formatISO(new Date(), { representation: 'date' }),\n    },\n  },\n  labelResolver: item =\u003e {\n    let currentDay = new Date().toISOString().slice(0, 10);\n    if (item.dob === currentDay) {\n      return `🍰 ${item.name}`;\n    } else {\n      return item.name;\n    }\n  },\n};\n```\n\nAnd now we can see that it's Luke's birthday! Happy birthday Luke!\n\n![Alt Text](https://raw.githubusercontent.com/Noviny/images/master/blog6-6.png)\n\n\u003e Note: this makes the label dynamic, which means it can't be relied upon by other bits of the system as an item's unique identifier. You should be aware of this when making a dynamic label, but if it suits your needs, let the good times roll.\n\n## Enough Labeling for one day\n\nHopefully this gives you a good idea of what labels are for in Keystone (and the ways you can adapt them to your needs when the defaults aren't what you want), as well as good guidance on responsible labeling within the flexibility that Keystone offers.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_blog_better-ux-with-custom-labels.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

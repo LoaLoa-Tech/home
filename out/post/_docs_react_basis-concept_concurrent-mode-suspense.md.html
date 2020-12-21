@@ -1,0 +1,616 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: concurrent-mode-suspense
+title: Suspense for Data Fetching (Experimental)
+permalink: docs/concurrent-mode-suspense.html
+prev: concurrent-mode-intro.html
+next: concurrent-mode-patterns.html</p>
+<hr>
+<style>
+.scary > blockquote {
+  background-color: rgba(237, 51, 21, 0.2);
+  border-left-color: #ed3315;
+}
+</style>
+<div class="scary">
+<blockquote>
+<p>Caution:</p>
+<p>This page describes <strong>experimental features that are <a href="/docs/concurrent-mode-adoption.html">not yet available</a> in a stable release</strong>. Don't rely on experimental builds of React in production apps. These features may change significantly and without a warning before they become a part of React.</p>
+<p>This documentation is aimed at early adopters and people who are curious. <strong>If you're new to React, don't worry about these features</strong> -- you don't need to learn them right now. For example, if you're looking for a data fetching tutorial that works today, read <a href="https://www.robinwieruch.de/react-hooks-fetch-data/">this article</a> instead.</p>
+</blockquote>
+</div>
+<p>React 16.6 added a <code>&lt;Suspense&gt;</code> component that lets you &quot;wait&quot; for some code to load and declaratively specify a loading state (like a spinner) while we're waiting:</p>
+<pre><code class="language-jsx">const ProfilePage = React.lazy(() =&gt; import('./ProfilePage')); // Lazy-loaded
+
+// Show a spinner while the profile is loading
+&lt;Suspense fallback={&lt;Spinner /&gt;}&gt;
+  &lt;ProfilePage /&gt;
+&lt;/Suspense&gt;
+</code></pre>
+<p>Suspense for Data Fetching is a new feature that lets you also use <code>&lt;Suspense&gt;</code> to <strong>declaratively &quot;wait&quot; for anything else, including data.</strong> This page focuses on the data fetching use case, but it can also wait for images, scripts, or other asynchronous work.</p>
+<ul>
+<li><a href="#what-is-suspense-exactly">What Is Suspense, Exactly?</a>
+<ul>
+<li><a href="#what-suspense-is-not">What Suspense Is Not</a></li>
+<li><a href="#what-suspense-lets-you-do">What Suspense Lets You Do</a></li>
+</ul></li>
+<li><a href="#using-suspense-in-practice">Using Suspense in Practice</a>
+<ul>
+<li><a href="#what-if-i-dont-use-relay">What If I Don’t Use Relay?</a></li>
+<li><a href="#for-library-authors">For Library Authors</a></li>
+</ul></li>
+<li><a href="#traditional-approaches-vs-suspense">Traditional Approaches vs Suspense</a>
+<ul>
+<li><a href="#approach-1-fetch-on-render-not-using-suspense">Approach 1: Fetch-on-Render (not using Suspense)</a></li>
+<li><a href="#approach-2-fetch-then-render-not-using-suspense">Approach 2: Fetch-Then-Render (not using Suspense)</a></li>
+<li><a href="#approach-3-render-as-you-fetch-using-suspense">Approach 3: Render-as-You-Fetch (using Suspense)</a></li>
+</ul></li>
+<li><a href="#start-fetching-early">Start Fetching Early</a>
+<ul>
+<li><a href="#were-still-figuring-this-out">We’re Still Figuring This Out</a></li>
+</ul></li>
+<li><a href="#suspense-and-race-conditions">Suspense and Race Conditions</a>
+<ul>
+<li><a href="#race-conditions-with-useeffect">Race Conditions with useEffect</a></li>
+<li><a href="#race-conditions-with-componentdidupdate">Race Conditions with componentDidUpdate</a></li>
+<li><a href="#the-problem">The Problem</a></li>
+<li><a href="#solving-race-conditions-with-suspense">Solving Race Conditions with Suspense</a></li>
+</ul></li>
+<li><a href="#handling-errors">Handling Errors</a></li>
+<li><a href="#next-steps">Next Steps</a></li>
+</ul>
+<h2>What Is Suspense, Exactly? {#what-is-suspense-exactly}</h2>
+<p>Suspense lets your components &quot;wait&quot; for something before they can render. In <a href="https://codesandbox.io/s/frosty-hermann-bztrp">this example</a>, two components wait for an asynchronous API call to fetch some data:</p>
+<pre><code class="language-js">const resource = fetchProfileData();
+
+function ProfilePage() {
+  return (
+    &lt;Suspense fallback={&lt;h1&gt;Loading profile...&lt;/h1&gt;}&gt;
+      &lt;ProfileDetails /&gt;
+      &lt;Suspense fallback={&lt;h1&gt;Loading posts...&lt;/h1&gt;}&gt;
+        &lt;ProfileTimeline /&gt;
+      &lt;/Suspense&gt;
+    &lt;/Suspense&gt;
+  );
+}
+
+function ProfileDetails() {
+  // Try to read user info, although it might not have loaded yet
+  const user = resource.user.read();
+  return &lt;h1&gt;{user.name}&lt;/h1&gt;;
+}
+
+function ProfileTimeline() {
+  // Try to read posts, although they might not have loaded yet
+  const posts = resource.posts.read();
+  return (
+    &lt;ul&gt;
+      {posts.map(post =&gt; (
+        &lt;li key={post.id}&gt;{post.text}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/frosty-hermann-bztrp">Try it on CodeSandbox</a></strong></p>
+<p>This demo is a teaser. Don't worry if it doesn't quite make sense yet. We'll talk more about how it works below. Keep in mind that Suspense is more of a <em>mechanism</em>, and particular APIs like <code>fetchProfileData()</code> or <code>resource.posts.read()</code> in the above example are not very important. If you're curious, you can find their definitions right in the <a href="https://codesandbox.io/s/frosty-hermann-bztrp">demo sandbox</a>.</p>
+<p>Suspense is not a data fetching library. It's a <strong>mechanism for data fetching libraries</strong> to communicate to React that <em>the data a component is reading is not ready yet</em>. React can then wait for it to be ready and update the UI. At Facebook, we use Relay and its <a href="https://relay.dev/docs/en/experimental/step-by-step">new Suspense integration</a>. We expect that other libraries like Apollo can provide similar integrations.</p>
+<p>In the long term, we intend Suspense to become the primary way to read asynchronous data from components -- no matter where that data is coming from.</p>
+<h3>What Suspense Is Not {#what-suspense-is-not}</h3>
+<p>Suspense is significantly different from existing approaches to these problems, so reading about it for the first time often leads to misconceptions. Let's clarify the most common ones:</p>
+<ul>
+<li><p><strong>It is not a data fetching implementation.</strong> It does not assume that you use GraphQL, REST, or any other particular data format, library, transport, or protocol.</p></li>
+<li><p><strong>It is not a ready-to-use client.</strong> You can't &quot;replace&quot; <code>fetch</code> or Relay with Suspense. But you can use a library that's integrated with Suspense (for example, <a href="https://relay.dev/docs/en/experimental/api-reference">new Relay APIs</a>).</p></li>
+<li><p><strong>It does not couple data fetching to the view layer.</strong> It helps orchestrate displaying the loading states in your UI, but it doesn't tie your network logic to React components.</p></li>
+</ul>
+<h3>What Suspense Lets You Do {#what-suspense-lets-you-do}</h3>
+<p>So what's the point of Suspense? There are a few ways we can answer this:</p>
+<ul>
+<li><p><strong>It lets data fetching libraries deeply integrate with React.</strong> If a data fetching library implements Suspense support, using it from React components feels very natural.</p></li>
+<li><p><strong>It lets you orchestrate intentionally designed loading states.</strong> It doesn't say <em>how</em> the data is fetched, but it lets you closely control the visual loading sequence of your app.</p></li>
+<li><p><strong>It helps you avoid race conditions.</strong> Even with <code>await</code>, asynchronous code is often error-prone. Suspense feels more like reading data <em>synchronously</em> — as if it were already loaded.</p></li>
+</ul>
+<h2>Using Suspense in Practice {#using-suspense-in-practice}</h2>
+<p>At Facebook, so far we have only used the Relay integration with Suspense in production. <strong>If you're looking for a practical guide to get started today, <a href="https://relay.dev/docs/en/experimental/step-by-step">check out the Relay Guide</a>!</strong> It demonstrates patterns that have already worked well for us in production.</p>
+<p><strong>The code demos on this page use a &quot;fake&quot; API implementation rather than Relay.</strong> This makes them easier to understand if you're not familiar with GraphQL, but they won't tell you the &quot;right way&quot; to build an app with Suspense. This page is more conceptual and is intended to help you see <em>why</em> Suspense works in a certain way, and which problems it solves.</p>
+<h3>What If I Don't Use Relay? {#what-if-i-dont-use-relay}</h3>
+<p>If you don't use Relay today, you might have to wait before you can really try Suspense in your app. So far, it's the only implementation that we tested in production and are confident in.</p>
+<p>Over the next several months, many libraries will appear with different takes on Suspense APIs. <strong>If you prefer to learn when things are more stable, you might prefer to ignore this work for now, and come back when the Suspense ecosystem is more mature.</strong></p>
+<p>You can also write your own integration for a data fetching library, if you'd like.</p>
+<h3>For Library Authors {#for-library-authors}</h3>
+<p>We expect to see a lot of experimentation in the community with other libraries. There is one important thing to note for data fetching library authors.</p>
+<p>Although it's technically doable, Suspense is <strong>not</strong> currently intended as a way to start fetching data when a component renders. Rather, it lets components express that they're &quot;waiting&quot; for data that is <em>already being fetched</em>. <strong><a href="/blog/2019/11/06/building-great-user-experiences-with-concurrent-mode-and-suspense.html">Building Great User Experiences with Concurrent Mode and Suspense</a> describes why this matters and how to implement this pattern in practice.</strong></p>
+<p>Unless you have a solution that helps prevent waterfalls, we suggest to prefer APIs that favor or enforce fetching before render. For a concrete example, you can look at how <a href="https://relay.dev/docs/en/experimental/api-reference#usepreloadedquery">Relay Suspense API</a> enforces preloading. Our messaging about this hasn't been very consistent in the past. Suspense for Data Fetching is still experimental, so you can expect our recommendations to change over time as we learn more from production usage and understand the problem space better.</p>
+<h2>Traditional Approaches vs Suspense {#traditional-approaches-vs-suspense}</h2>
+<p>We could introduce Suspense without mentioning the popular data fetching approaches. However, this makes it more difficult to see which problems Suspense solves, why these problems are worth solving, and how Suspense is different from the existing solutions.</p>
+<p>Instead, we'll look at Suspense as a logical next step in a sequence of approaches:</p>
+<ul>
+<li><strong>Fetch-on-render (for example, <code>fetch</code> in <code>useEffect</code>):</strong> Start rendering components. Each of these components may trigger data fetching in their effects and lifecycle methods. This approach often leads to &quot;waterfalls&quot;.</li>
+<li><strong>Fetch-then-render (for example, Relay without Suspense):</strong> Start fetching all the data for the next screen as early as possible. When the data is ready, render the new screen. We can't do anything until the data arrives.</li>
+<li><strong>Render-as-you-fetch (for example, Relay with Suspense):</strong> Start fetching all the required data for the next screen as early as possible, and start rendering the new screen <em>immediately — before we get a network response</em>. As data streams in, React retries rendering components that still need data until they're all ready.</li>
+</ul>
+<blockquote>
+<p>Note</p>
+<p>This is a bit simplified, and in practice solutions tend to use a mix of different approaches. Still, we will look at them in isolation to better contrast their tradeoffs.</p>
+</blockquote>
+<p>To compare these approaches, we'll implement a profile page with each of them.</p>
+<h3>Approach 1: Fetch-on-Render (not using Suspense) {#approach-1-fetch-on-render-not-using-suspense}</h3>
+<p>A common way to fetch data in React apps today is to use an effect:</p>
+<pre><code class="language-js">// In a function component:
+useEffect(() =&gt; {
+  fetchSomething();
+}, []);
+
+// Or, in a class component:
+componentDidMount() {
+  fetchSomething();
+}
+</code></pre>
+<p>We call this approach &quot;fetch-on-render&quot; because it doesn't start fetching until <em>after</em> the component has rendered on the screen. This leads to a problem known as a &quot;waterfall&quot;.</p>
+<p>Consider these <code>&lt;ProfilePage&gt;</code> and <code>&lt;ProfileTimeline&gt;</code> components:</p>
+<pre><code class="language-js{4-6,22-24}">function ProfilePage() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() =&gt; {
+    fetchUser().then(u =&gt; setUser(u));
+  }, []);
+
+  if (user === null) {
+    return &lt;p&gt;Loading profile...&lt;/p&gt;;
+  }
+  return (
+    &lt;&gt;
+      &lt;h1&gt;{user.name}&lt;/h1&gt;
+      &lt;ProfileTimeline /&gt;
+    &lt;/&gt;
+  );
+}
+
+function ProfileTimeline() {
+  const [posts, setPosts] = useState(null);
+
+  useEffect(() =&gt; {
+    fetchPosts().then(p =&gt; setPosts(p));
+  }, []);
+
+  if (posts === null) {
+    return &lt;h2&gt;Loading posts...&lt;/h2&gt;;
+  }
+  return (
+    &lt;ul&gt;
+      {posts.map(post =&gt; (
+        &lt;li key={post.id}&gt;{post.text}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/fragrant-glade-8huj6">Try it on CodeSandbox</a></strong></p>
+<p>If you run this code and watch the console logs, you'll notice the sequence is:</p>
+<ol>
+<li>We start fetching user details</li>
+<li>We wait...</li>
+<li>We finish fetching user details</li>
+<li>We start fetching posts</li>
+<li>We wait...</li>
+<li>We finish fetching posts</li>
+</ol>
+<p>If fetching user details takes three seconds, we'll only <em>start</em> fetching the posts after three seconds! That's a &quot;waterfall&quot;: an unintentional <em>sequence</em> that should have been parallelized.</p>
+<p>Waterfalls are common in code that fetches data on render. They're possible to solve, but as the product grows, many people prefer to use a solution that guards against this problem.</p>
+<h3>Approach 2: Fetch-Then-Render (not using Suspense) {#approach-2-fetch-then-render-not-using-suspense}</h3>
+<p>Libraries can prevent waterfalls by offering a more centralized way to do data fetching. For example, Relay solves this problem by moving the information about the data a component needs to statically analyzable <em>fragments</em>, which later get composed into a single query.</p>
+<p>On this page, we don't assume knowledge of Relay, so we won't be using it for this example. Instead, we'll write something similar manually by combining our data fetching methods:</p>
+<pre><code class="language-js">function fetchProfileData() {
+  return Promise.all([
+    fetchUser(),
+    fetchPosts()
+  ]).then(([user, posts]) =&gt; {
+    return {user, posts};
+  })
+}
+</code></pre>
+<p>In this example, <code>&lt;ProfilePage&gt;</code> waits for both requests but starts them in parallel:</p>
+<pre><code class="language-js{1,2,8-13}">// Kick off fetching as early as possible
+const promise = fetchProfileData();
+
+function ProfilePage() {
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState(null);
+
+  useEffect(() =&gt; {
+    promise.then(data =&gt; {
+      setUser(data.user);
+      setPosts(data.posts);
+    });
+  }, []);
+
+  if (user === null) {
+    return &lt;p&gt;Loading profile...&lt;/p&gt;;
+  }
+  return (
+    &lt;&gt;
+      &lt;h1&gt;{user.name}&lt;/h1&gt;
+      &lt;ProfileTimeline posts={posts} /&gt;
+    &lt;/&gt;
+  );
+}
+
+// The child doesn't trigger fetching anymore
+function ProfileTimeline({ posts }) {
+  if (posts === null) {
+    return &lt;h2&gt;Loading posts...&lt;/h2&gt;;
+  }
+  return (
+    &lt;ul&gt;
+      {posts.map(post =&gt; (
+        &lt;li key={post.id}&gt;{post.text}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/wandering-morning-ev6r0">Try it on CodeSandbox</a></strong></p>
+<p>The event sequence now becomes like this:</p>
+<ol>
+<li>We start fetching user details</li>
+<li>We start fetching posts</li>
+<li>We wait...</li>
+<li>We finish fetching user details</li>
+<li>We finish fetching posts</li>
+</ol>
+<p>We've solved the previous network &quot;waterfall&quot;, but accidentally introduced a different one. We wait for <em>all</em> data to come back with <code>Promise.all()</code> inside <code>fetchProfileData</code>, so now we can't render profile details until the posts have been fetched too. We have to wait for both.</p>
+<p>Of course, this is possible to fix in this particular example. We could remove the <code>Promise.all()</code> call, and wait for both Promises separately. However, this approach gets progressively more difficult as the complexity of our data and component tree grows. It's hard to write reliable components when arbitrary parts of the data tree may be missing or stale. So fetching all data for the new screen and <em>then</em> rendering is often a more practical option.</p>
+<h3>Approach 3: Render-as-You-Fetch (using Suspense) {#approach-3-render-as-you-fetch-using-suspense}</h3>
+<p>In the previous approach, we fetched data before we called <code>setState</code>:</p>
+<ol>
+<li>Start fetching</li>
+<li>Finish fetching</li>
+<li>Start rendering</li>
+</ol>
+<p>With Suspense, we still start fetching first, but we flip the last two steps around:</p>
+<ol>
+<li>Start fetching</li>
+<li><strong>Start rendering</strong></li>
+<li><strong>Finish fetching</strong></li>
+</ol>
+<p><strong>With Suspense, we don't wait for the response to come back before we start rendering.</strong> In fact, we start rendering <em>pretty much immediately</em> after kicking off the network request:</p>
+<pre><code class="language-js{2,17,23}">// This is not a Promise. It's a special object from our Suspense integration.
+const resource = fetchProfileData();
+
+function ProfilePage() {
+  return (
+    &lt;Suspense fallback={&lt;h1&gt;Loading profile...&lt;/h1&gt;}&gt;
+      &lt;ProfileDetails /&gt;
+      &lt;Suspense fallback={&lt;h1&gt;Loading posts...&lt;/h1&gt;}&gt;
+        &lt;ProfileTimeline /&gt;
+      &lt;/Suspense&gt;
+    &lt;/Suspense&gt;
+  );
+}
+
+function ProfileDetails() {
+  // Try to read user info, although it might not have loaded yet
+  const user = resource.user.read();
+  return &lt;h1&gt;{user.name}&lt;/h1&gt;;
+}
+
+function ProfileTimeline() {
+  // Try to read posts, although they might not have loaded yet
+  const posts = resource.posts.read();
+  return (
+    &lt;ul&gt;
+      {posts.map(post =&gt; (
+        &lt;li key={post.id}&gt;{post.text}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/frosty-hermann-bztrp">Try it on CodeSandbox</a></strong></p>
+<p>Here's what happens when we render <code>&lt;ProfilePage&gt;</code> on the screen:</p>
+<ol>
+<li>We've already kicked off the requests in <code>fetchProfileData()</code>. It gave us a special &quot;resource&quot; instead of a Promise. In a realistic example, it would be provided by our data library's Suspense integration, like Relay.</li>
+<li>React tries to render <code>&lt;ProfilePage&gt;</code>. It returns <code>&lt;ProfileDetails&gt;</code> and <code>&lt;ProfileTimeline&gt;</code> as children.</li>
+<li>React tries to render <code>&lt;ProfileDetails&gt;</code>. It calls <code>resource.user.read()</code>. None of the data is fetched yet, so this component &quot;suspends&quot;. React skips over it, and tries rendering other components in the tree.</li>
+<li>React tries to render <code>&lt;ProfileTimeline&gt;</code>. It calls <code>resource.posts.read()</code>. Again, there's no data yet, so this component also &quot;suspends&quot;. React skips over it too, and tries rendering other components in the tree.</li>
+<li>There's nothing left to try rendering. Because <code>&lt;ProfileDetails&gt;</code> suspended, React shows the closest <code>&lt;Suspense&gt;</code> fallback above it in the tree: <code>&lt;h1&gt;Loading profile...&lt;/h1&gt;</code>. We're done for now.</li>
+</ol>
+<p>This <code>resource</code> object represents the data that isn't there yet, but might eventually get loaded. When we call <code>read()</code>, we either get the data, or the component &quot;suspends&quot;.</p>
+<p><strong>As more data streams in, React will retry rendering, and each time it might be able to progress &quot;deeper&quot;.</strong> When <code>resource.user</code> is fetched, the <code>&lt;ProfileDetails&gt;</code> component will render successfully and we'll no longer need the <code>&lt;h1&gt;Loading profile...&lt;/h1&gt;</code> fallback. Eventually, we'll get all the data, and there will be no fallbacks on the screen.</p>
+<p>This has an interesting implication. Even if we use a GraphQL client that collects all data requirements in a single request, <em>streaming the response lets us show more content sooner</em>. Because we render-<em>as-we-fetch</em> (as opposed to <em>after</em> fetching), if <code>user</code> appears in the response earlier than <code>posts</code>, we'll be able to &quot;unlock&quot; the outer <code>&lt;Suspense&gt;</code> boundary before the response even finishes. We might have missed this earlier, but even the fetch-then-render solution contained a waterfall: between fetching and rendering. Suspense doesn't inherently suffer from this waterfall, and libraries like Relay take advantage of this.</p>
+<p>Note how we eliminated the <code>if (...)</code> &quot;is loading&quot; checks from our components. This doesn't only remove boilerplate code, but it also simplifies making quick design changes. For example, if we wanted profile details and posts to always &quot;pop in&quot; together, we could delete the <code>&lt;Suspense&gt;</code> boundary between them. Or we could make them independent from each other by giving each <em>its own</em> <code>&lt;Suspense&gt;</code> boundary. Suspense lets us change the granularity of our loading states and orchestrate their sequencing without invasive changes to our code.</p>
+<h2>Start Fetching Early {#start-fetching-early}</h2>
+<p>If you're working on a data fetching library, there's a crucial aspect of Render-as-You-Fetch you don't want to miss. <strong>We kick off fetching <em>before</em> rendering.</strong> Look at this code example closer:</p>
+<pre><code class="language-js">// Start fetching early!
+const resource = fetchProfileData();
+
+// ...
+
+function ProfileDetails() {
+  // Try to read user info
+  const user = resource.user.read();
+  return &lt;h1&gt;{user.name}&lt;/h1&gt;;
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/frosty-hermann-bztrp">Try it on CodeSandbox</a></strong></p>
+<p>Note that the <code>read()</code> call in this example doesn't <em>start</em> fetching. It only tries to read the data that is <strong>already being fetched</strong>. This difference is crucial to creating fast applications with Suspense. We don't want to delay loading data until a component starts rendering. As a data fetching library author, you can enforce this by making it impossible to get a <code>resource</code> object without also starting a fetch. Every demo on this page using our &quot;fake API&quot; enforces this.</p>
+<p>You might object that fetching &quot;at the top level&quot; like in this example is impractical. What are we going to do if we navigate to another profile's page? We might want to fetch based on props. The answer to this is <strong>we want to start fetching in the event handlers instead</strong>. Here is a simplified example of navigating between user's pages:</p>
+<pre><code class="language-js{1,2,10,11}">// First fetch: as soon as possible
+const initialResource = fetchProfileData(0);
+
+function App() {
+  const [resource, setResource] = useState(initialResource);
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; {
+        const nextUserId = getNextId(resource.userId);
+        // Next fetch: when the user clicks
+        setResource(fetchProfileData(nextUserId));
+      }}&gt;
+        Next
+      &lt;/button&gt;
+      &lt;ProfilePage resource={resource} /&gt;
+    &lt;/&gt;
+  );
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/infallible-feather-xjtbu">Try it on CodeSandbox</a></strong></p>
+<p>With this approach, we can <strong>fetch code and data in parallel</strong>. When we navigate between pages, we don't need to wait for a page's code to load to start loading its data. We can start fetching both code and data at the same time (during the link click), delivering a much better user experience.</p>
+<p>This poses a question of how do we know <em>what</em> to fetch before rendering the next screen. There are several ways to solve this (for example, by integrating data fetching closer with your routing solution). If you work on a data fetching library, <a href="/blog/2019/11/06/building-great-user-experiences-with-concurrent-mode-and-suspense.html">Building Great User Experiences with Concurrent Mode and Suspense</a> presents a deep dive on how to accomplish this and why it's important.</p>
+<h3>We're Still Figuring This Out {#were-still-figuring-this-out}</h3>
+<p>Suspense itself as a mechanism is flexible and doesn't have many constraints. Product code needs to be more constrained to ensure no waterfalls, but there are different ways to provide these guarantees. Some questions that we're currently exploring include:</p>
+<ul>
+<li>Fetching early can be cumbersome to express. How do we make it easier to avoid waterfalls?</li>
+<li>When we fetch data for a page, can the API encourage including data for instant transitions <em>from</em> it?</li>
+<li>What is the lifetime of a response? Should caching be global or local? Who manages the cache?</li>
+<li>Can Proxies help express lazy-loaded APIs without inserting <code>read()</code> calls everywhere?</li>
+<li>What would the equivalent of composing GraphQL queries look like for arbitrary Suspense data?</li>
+</ul>
+<p>Relay has its own answers to some of these questions. There is certainly more than a single way to do it, and we're excited to see what new ideas the React community comes up with.</p>
+<h2>Suspense and Race Conditions {#suspense-and-race-conditions}</h2>
+<p>Race conditions are bugs that happen due to incorrect assumptions about the order in which our code may run. Fetching data in the <code>useEffect</code> Hook or in class lifecycle methods like <code>componentDidUpdate</code> often leads to them. Suspense can help here, too — let's see how.</p>
+<p>To demonstrate the issue, we will add a top-level <code>&lt;App&gt;</code> component that renders our <code>&lt;ProfilePage&gt;</code> with a button that lets us <strong>switch between different profiles</strong>:</p>
+<pre><code class="language-js{9-11}">function getNextId(id) {
+  // ...
+}
+
+function App() {
+  const [id, setId] = useState(0);
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; setId(getNextId(id))}&gt;
+        Next
+      &lt;/button&gt;
+      &lt;ProfilePage id={id} /&gt;
+    &lt;/&gt;
+  );
+}
+</code></pre>
+<p>Let's compare how different data fetching strategies deal with this requirement.</p>
+<h3>Race Conditions with <code>useEffect</code> {#race-conditions-with-useeffect}</h3>
+<p>First, we'll try a version of our original &quot;fetch in effect&quot; example. We'll modify it to pass an <code>id</code> parameter from the <code>&lt;ProfilePage&gt;</code> props to <code>fetchUser(id)</code> and <code>fetchPosts(id)</code>:</p>
+<pre><code class="language-js{1,5,6,14,19,23,24}">function ProfilePage({ id }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() =&gt; {
+    fetchUser(id).then(u =&gt; setUser(u));
+  }, [id]);
+
+  if (user === null) {
+    return &lt;p&gt;Loading profile...&lt;/p&gt;;
+  }
+  return (
+    &lt;&gt;
+      &lt;h1&gt;{user.name}&lt;/h1&gt;
+      &lt;ProfileTimeline id={id} /&gt;
+    &lt;/&gt;
+  );
+}
+
+function ProfileTimeline({ id }) {
+  const [posts, setPosts] = useState(null);
+
+  useEffect(() =&gt; {
+    fetchPosts(id).then(p =&gt; setPosts(p));
+  }, [id]);
+
+  if (posts === null) {
+    return &lt;h2&gt;Loading posts...&lt;/h2&gt;;
+  }
+  return (
+    &lt;ul&gt;
+      {posts.map(post =&gt; (
+        &lt;li key={post.id}&gt;{post.text}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/nervous-glade-b5sel">Try it on CodeSandbox</a></strong></p>
+<p>Note how we also changed the effect dependencies from <code>[]</code> to <code>[id]</code> — because we want the effect to re-run when the <code>id</code> changes. Otherwise, we wouldn't refetch new data.</p>
+<p>If we try this code, it might seem like it works at first. However, if we randomize the delay time in our &quot;fake API&quot; implementation and press the &quot;Next&quot; button fast enough, we'll see from the console logs that something is going very wrong. <strong>Requests from the previous profiles may sometimes &quot;come back&quot; after we've already switched the profile to another ID -- and in that case they can overwrite the new state with a stale response for a different ID.</strong></p>
+<p>This problem is possible to fix (you could use the effect cleanup function to either ignore or cancel stale requests), but it's unintuitive and difficult to debug.</p>
+<h3>Race Conditions with <code>componentDidUpdate</code> {#race-conditions-with-componentdidupdate}</h3>
+<p>One might think that this is a problem specific to <code>useEffect</code> or Hooks. Maybe if we port this code to classes or use convenient syntax like <code>async</code> / <code>await</code>, it will solve the problem?</p>
+<p>Let's try that:</p>
+<pre><code class="language-js">class ProfilePage extends React.Component {
+  state = {
+    user: null,
+  };
+  componentDidMount() {
+    this.fetchData(this.props.id);
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.id !== this.props.id) {
+      this.fetchData(this.props.id);
+    }
+  }
+  async fetchData(id) {
+    const user = await fetchUser(id);
+    this.setState({ user });
+  }
+  render() {
+    const { id } = this.props;
+    const { user } = this.state;
+    if (user === null) {
+      return &lt;p&gt;Loading profile...&lt;/p&gt;;
+    }
+    return (
+      &lt;&gt;
+        &lt;h1&gt;{user.name}&lt;/h1&gt;
+        &lt;ProfileTimeline id={id} /&gt;
+      &lt;/&gt;
+    );
+  }
+}
+
+class ProfileTimeline extends React.Component {
+  state = {
+    posts: null,
+  };
+  componentDidMount() {
+    this.fetchData(this.props.id);
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.id !== this.props.id) {
+      this.fetchData(this.props.id);
+    }
+  }
+  async fetchData(id) {
+    const posts = await fetchPosts(id);
+    this.setState({ posts });
+  }
+  render() {
+    const { posts } = this.state;
+    if (posts === null) {
+      return &lt;h2&gt;Loading posts...&lt;/h2&gt;;
+    }
+    return (
+      &lt;ul&gt;
+        {posts.map(post =&gt; (
+          &lt;li key={post.id}&gt;{post.text}&lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    );
+  }
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/trusting-clarke-8twuq">Try it on CodeSandbox</a></strong></p>
+<p>This code is deceptively easy to read.</p>
+<p>Unfortunately, neither using a class nor the <code>async</code> / <code>await</code> syntax helped us solve this problem. This version suffers from exactly the same race conditions, for the same reasons.</p>
+<h3>The Problem {#the-problem}</h3>
+<p>React components have their own &quot;lifecycle&quot;. They may receive props or update state at any point in time. However, each asynchronous request <em>also</em> has its own &quot;lifecycle&quot;. It starts when we kick it off, and finishes when we get a response. The difficulty we're experiencing is &quot;synchronizing&quot; several processes in time that affect each other. This is hard to think about.</p>
+<h3>Solving Race Conditions with Suspense {#solving-race-conditions-with-suspense}</h3>
+<p>Let's rewrite this example again, but using Suspense only:</p>
+<pre><code class="language-js">const initialResource = fetchProfileData(0);
+
+function App() {
+  const [resource, setResource] = useState(initialResource);
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; {
+        const nextUserId = getNextId(resource.userId);
+        setResource(fetchProfileData(nextUserId));
+      }}&gt;
+        Next
+      &lt;/button&gt;
+      &lt;ProfilePage resource={resource} /&gt;
+    &lt;/&gt;
+  );
+}
+
+function ProfilePage({ resource }) {
+  return (
+    &lt;Suspense fallback={&lt;h1&gt;Loading profile...&lt;/h1&gt;}&gt;
+      &lt;ProfileDetails resource={resource} /&gt;
+      &lt;Suspense fallback={&lt;h1&gt;Loading posts...&lt;/h1&gt;}&gt;
+        &lt;ProfileTimeline resource={resource} /&gt;
+      &lt;/Suspense&gt;
+    &lt;/Suspense&gt;
+  );
+}
+
+function ProfileDetails({ resource }) {
+  const user = resource.user.read();
+  return &lt;h1&gt;{user.name}&lt;/h1&gt;;
+}
+
+function ProfileTimeline({ resource }) {
+  const posts = resource.posts.read();
+  return (
+    &lt;ul&gt;
+      {posts.map(post =&gt; (
+        &lt;li key={post.id}&gt;{post.text}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/infallible-feather-xjtbu">Try it on CodeSandbox</a></strong></p>
+<p>In the previous Suspense example, we only had one <code>resource</code>, so we held it in a top-level variable. Now that we have multiple resources, we moved it to the <code>&lt;App&gt;</code>'s component state:</p>
+<pre><code class="language-js{4}">const initialResource = fetchProfileData(0);
+
+function App() {
+  const [resource, setResource] = useState(initialResource);
+</code></pre>
+<p>When we click &quot;Next&quot;, the <code>&lt;App&gt;</code> component kicks off a request for the next profile, and passes <em>that</em> object down to the <code>&lt;ProfilePage&gt;</code> component:</p>
+<pre><code class="language-js{4,8}">  &lt;&gt;
+    &lt;button onClick={() =&gt; {
+      const nextUserId = getNextId(resource.userId);
+      setResource(fetchProfileData(nextUserId));
+    }}&gt;
+      Next
+    &lt;/button&gt;
+    &lt;ProfilePage resource={resource} /&gt;
+  &lt;/&gt;
+</code></pre>
+<p>Again, notice that <strong>we're not waiting for the response to set the state. It's the other way around: we set the state (and start rendering) immediately after kicking off a request</strong>. As soon as we have more data, React &quot;fills in&quot; the content inside <code>&lt;Suspense&gt;</code> components.</p>
+<p>This code is very readable, but unlike the examples earlier, the Suspense version doesn't suffer from race conditions. You might be wondering why. The answer is that in the Suspense version, we don't have to think about <em>time</em> as much in our code. Our original code with race conditions needed to set the state <em>at the right moment later</em>, or otherwise it would be wrong. But with Suspense, we set the state <em>immediately</em> -- so it's harder to mess it up.</p>
+<h2>Handling Errors {#handling-errors}</h2>
+<p>When we write code with Promises, we might use <code>catch()</code> to handle errors. How does this work with Suspense, given that we don't <em>wait</em> for Promises to start rendering?</p>
+<p>With Suspense, handling fetching errors works the same way as handling rendering errors -- you can render an <a href="/docs/error-boundaries.html">error boundary</a> anywhere to &quot;catch&quot; errors in components below.</p>
+<p>First, we'll define an error boundary component to use across our project:</p>
+<pre><code class="language-js">// Error boundaries currently have to be classes.
+class ErrorBoundary extends React.Component {
+  state = { hasError: false, error: null };
+  static getDerivedStateFromError(error) {
+    return {
+      hasError: true,
+      error
+    };
+  }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+</code></pre>
+<p>And then we can put it anywhere in the tree to catch errors:</p>
+<pre><code class="language-js{5,9}">function ProfilePage() {
+  return (
+    &lt;Suspense fallback={&lt;h1&gt;Loading profile...&lt;/h1&gt;}&gt;
+      &lt;ProfileDetails /&gt;
+      &lt;ErrorBoundary fallback={&lt;h2&gt;Could not fetch posts.&lt;/h2&gt;}&gt;
+        &lt;Suspense fallback={&lt;h1&gt;Loading posts...&lt;/h1&gt;}&gt;
+          &lt;ProfileTimeline /&gt;
+        &lt;/Suspense&gt;
+      &lt;/ErrorBoundary&gt;
+    &lt;/Suspense&gt;
+  );
+}
+</code></pre>
+<p><strong><a href="https://codesandbox.io/s/adoring-goodall-8wbn7">Try it on CodeSandbox</a></strong></p>
+<p>It would catch both rendering errors <em>and</em> errors from Suspense data fetching. We can have as many error boundaries as we like but it's best to <a href="https://aweary.dev/fault-tolerance-react/">be intentional</a> about their placement.</p>
+<h2>Next Steps {#next-steps}</h2>
+<p>We've now covered the basics of Suspense for Data Fetching! Importantly, we now better understand <em>why</em> Suspense works this way, and how it fits into the data fetching space.</p>
+<p>Suspense answers some questions, but it also poses new questions of its own:</p>
+<ul>
+<li>If some component &quot;suspends&quot;, does the app freeze? How to avoid this?</li>
+<li>What if we want to show a spinner in a different place than &quot;above&quot; the component in a tree?</li>
+<li>If we intentionally <em>want</em> to show an inconsistent UI for a small period of time, can we do that?</li>
+<li>Instead of showing a spinner, can we add a visual effect like &quot;greying out&quot; the current screen?</li>
+<li>Why does our <a href="https://codesandbox.io/s/infallible-feather-xjtbu">last Suspense example</a> log a warning when clicking the &quot;Next&quot; button?</li>
+</ul>
+<p>To answer these questions, we will refer to the next section on <a href="/docs/concurrent-mode-patterns.html">Concurrent UI Patterns</a>.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: concurrent-mode-suspense\ntitle: Suspense for Data Fetching (Experimental)\npermalink: docs/concurrent-mode-suspense.html\nprev: concurrent-mode-intro.html\nnext: concurrent-mode-patterns.html\n---\n\n\u003cstyle\u003e\n.scary \u003e blockquote {\n  background-color: rgba(237, 51, 21, 0.2);\n  border-left-color: #ed3315;\n}\n\u003c/style\u003e\n\n\u003cdiv class=\"scary\"\u003e\n\n\u003eCaution:\n\u003e\n\u003eThis page describes **experimental features that are [not yet available](/docs/concurrent-mode-adoption.html) in a stable release**. Don't rely on experimental builds of React in production apps. These features may change significantly and without a warning before they become a part of React.\n\u003e\n\u003eThis documentation is aimed at early adopters and people who are curious. **If you're new to React, don't worry about these features** -- you don't need to learn them right now. For example, if you're looking for a data fetching tutorial that works today, read [this article](https://www.robinwieruch.de/react-hooks-fetch-data/) instead.\n\n\u003c/div\u003e\n\nReact 16.6 added a `\u003cSuspense\u003e` component that lets you \"wait\" for some code to load and declaratively specify a loading state (like a spinner) while we're waiting:\n\n```jsx\nconst ProfilePage = React.lazy(() =\u003e import('./ProfilePage')); // Lazy-loaded\n\n// Show a spinner while the profile is loading\n\u003cSuspense fallback={\u003cSpinner /\u003e}\u003e\n  \u003cProfilePage /\u003e\n\u003c/Suspense\u003e\n```\n\nSuspense for Data Fetching is a new feature that lets you also use `\u003cSuspense\u003e` to **declaratively \"wait\" for anything else, including data.** This page focuses on the data fetching use case, but it can also wait for images, scripts, or other asynchronous work.\n\n- [What Is Suspense, Exactly?](#what-is-suspense-exactly)\n  - [What Suspense Is Not](#what-suspense-is-not)\n  - [What Suspense Lets You Do](#what-suspense-lets-you-do)\n- [Using Suspense in Practice](#using-suspense-in-practice)\n  - [What If I Don’t Use Relay?](#what-if-i-dont-use-relay)\n  - [For Library Authors](#for-library-authors)\n- [Traditional Approaches vs Suspense](#traditional-approaches-vs-suspense)\n  - [Approach 1: Fetch-on-Render (not using Suspense)](#approach-1-fetch-on-render-not-using-suspense)\n  - [Approach 2: Fetch-Then-Render (not using Suspense)](#approach-2-fetch-then-render-not-using-suspense)\n  - [Approach 3: Render-as-You-Fetch (using Suspense)](#approach-3-render-as-you-fetch-using-suspense)\n- [Start Fetching Early](#start-fetching-early)\n  - [We’re Still Figuring This Out](#were-still-figuring-this-out)\n- [Suspense and Race Conditions](#suspense-and-race-conditions)\n  - [Race Conditions with useEffect](#race-conditions-with-useeffect)\n  - [Race Conditions with componentDidUpdate](#race-conditions-with-componentdidupdate)\n  - [The Problem](#the-problem)\n  - [Solving Race Conditions with Suspense](#solving-race-conditions-with-suspense)\n- [Handling Errors](#handling-errors)\n- [Next Steps](#next-steps)\n\n## What Is Suspense, Exactly? {#what-is-suspense-exactly}\n\nSuspense lets your components \"wait\" for something before they can render. In [this example](https://codesandbox.io/s/frosty-hermann-bztrp), two components wait for an asynchronous API call to fetch some data:\n\n```js\nconst resource = fetchProfileData();\n\nfunction ProfilePage() {\n  return (\n    \u003cSuspense fallback={\u003ch1\u003eLoading profile...\u003c/h1\u003e}\u003e\n      \u003cProfileDetails /\u003e\n      \u003cSuspense fallback={\u003ch1\u003eLoading posts...\u003c/h1\u003e}\u003e\n        \u003cProfileTimeline /\u003e\n      \u003c/Suspense\u003e\n    \u003c/Suspense\u003e\n  );\n}\n\nfunction ProfileDetails() {\n  // Try to read user info, although it might not have loaded yet\n  const user = resource.user.read();\n  return \u003ch1\u003e{user.name}\u003c/h1\u003e;\n}\n\nfunction ProfileTimeline() {\n  // Try to read posts, although they might not have loaded yet\n  const posts = resource.posts.read();\n  return (\n    \u003cul\u003e\n      {posts.map(post =\u003e (\n        \u003cli key={post.id}\u003e{post.text}\u003c/li\u003e\n      ))}\n    \u003c/ul\u003e\n  );\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/frosty-hermann-bztrp)**\n\nThis demo is a teaser. Don't worry if it doesn't quite make sense yet. We'll talk more about how it works below. Keep in mind that Suspense is more of a *mechanism*, and particular APIs like `fetchProfileData()` or `resource.posts.read()` in the above example are not very important. If you're curious, you can find their definitions right in the [demo sandbox](https://codesandbox.io/s/frosty-hermann-bztrp).\n\nSuspense is not a data fetching library. It's a **mechanism for data fetching libraries** to communicate to React that *the data a component is reading is not ready yet*. React can then wait for it to be ready and update the UI. At Facebook, we use Relay and its [new Suspense integration](https://relay.dev/docs/en/experimental/step-by-step). We expect that other libraries like Apollo can provide similar integrations.\n\nIn the long term, we intend Suspense to become the primary way to read asynchronous data from components -- no matter where that data is coming from.\n\n### What Suspense Is Not {#what-suspense-is-not}\n\nSuspense is significantly different from existing approaches to these problems, so reading about it for the first time often leads to misconceptions. Let's clarify the most common ones:\n\n * **It is not a data fetching implementation.** It does not assume that you use GraphQL, REST, or any other particular data format, library, transport, or protocol.\n\n * **It is not a ready-to-use client.** You can't \"replace\" `fetch` or Relay with Suspense. But you can use a library that's integrated with Suspense (for example, [new Relay APIs](https://relay.dev/docs/en/experimental/api-reference)).\n\n * **It does not couple data fetching to the view layer.** It helps orchestrate displaying the loading states in your UI, but it doesn't tie your network logic to React components.\n\n### What Suspense Lets You Do {#what-suspense-lets-you-do}\n\nSo what's the point of Suspense? There are a few ways we can answer this:\n\n* **It lets data fetching libraries deeply integrate with React.** If a data fetching library implements Suspense support, using it from React components feels very natural.\n\n* **It lets you orchestrate intentionally designed loading states.** It doesn't say _how_ the data is fetched, but it lets you closely control the visual loading sequence of your app.\n\n* **It helps you avoid race conditions.** Even with `await`, asynchronous code is often error-prone. Suspense feels more like reading data *synchronously* — as if it were already loaded.\n\n## Using Suspense in Practice {#using-suspense-in-practice}\n\nAt Facebook, so far we have only used the Relay integration with Suspense in production. **If you're looking for a practical guide to get started today, [check out the Relay Guide](https://relay.dev/docs/en/experimental/step-by-step)!** It demonstrates patterns that have already worked well for us in production.\n\n**The code demos on this page use a \"fake\" API implementation rather than Relay.** This makes them easier to understand if you're not familiar with GraphQL, but they won't tell you the \"right way\" to build an app with Suspense. This page is more conceptual and is intended to help you see *why* Suspense works in a certain way, and which problems it solves.\n\n### What If I Don't Use Relay? {#what-if-i-dont-use-relay}\n\nIf you don't use Relay today, you might have to wait before you can really try Suspense in your app. So far, it's the only implementation that we tested in production and are confident in.\n\nOver the next several months, many libraries will appear with different takes on Suspense APIs. **If you prefer to learn when things are more stable, you might prefer to ignore this work for now, and come back when the Suspense ecosystem is more mature.**\n\nYou can also write your own integration for a data fetching library, if you'd like.\n\n### For Library Authors {#for-library-authors}\n\nWe expect to see a lot of experimentation in the community with other libraries. There is one important thing to note for data fetching library authors.\n\nAlthough it's technically doable, Suspense is **not** currently intended as a way to start fetching data when a component renders. Rather, it lets components express that they're \"waiting\" for data that is *already being fetched*. **[Building Great User Experiences with Concurrent Mode and Suspense](/blog/2019/11/06/building-great-user-experiences-with-concurrent-mode-and-suspense.html) describes why this matters and how to implement this pattern in practice.**\n\nUnless you have a solution that helps prevent waterfalls, we suggest to prefer APIs that favor or enforce fetching before render. For a concrete example, you can look at how [Relay Suspense API](https://relay.dev/docs/en/experimental/api-reference#usepreloadedquery) enforces preloading. Our messaging about this hasn't been very consistent in the past. Suspense for Data Fetching is still experimental, so you can expect our recommendations to change over time as we learn more from production usage and understand the problem space better.\n\n## Traditional Approaches vs Suspense {#traditional-approaches-vs-suspense}\n\nWe could introduce Suspense without mentioning the popular data fetching approaches. However, this makes it more difficult to see which problems Suspense solves, why these problems are worth solving, and how Suspense is different from the existing solutions.\n\nInstead, we'll look at Suspense as a logical next step in a sequence of approaches:\n\n* **Fetch-on-render (for example, `fetch` in `useEffect`):** Start rendering components. Each of these components may trigger data fetching in their effects and lifecycle methods. This approach often leads to \"waterfalls\".\n* **Fetch-then-render (for example, Relay without Suspense):** Start fetching all the data for the next screen as early as possible. When the data is ready, render the new screen. We can't do anything until the data arrives.\n* **Render-as-you-fetch (for example, Relay with Suspense):** Start fetching all the required data for the next screen as early as possible, and start rendering the new screen *immediately — before we get a network response*. As data streams in, React retries rendering components that still need data until they're all ready.\n\n\u003eNote\n\u003e\n\u003eThis is a bit simplified, and in practice solutions tend to use a mix of different approaches. Still, we will look at them in isolation to better contrast their tradeoffs.\n\nTo compare these approaches, we'll implement a profile page with each of them.\n\n### Approach 1: Fetch-on-Render (not using Suspense) {#approach-1-fetch-on-render-not-using-suspense}\n\nA common way to fetch data in React apps today is to use an effect:\n\n```js\n// In a function component:\nuseEffect(() =\u003e {\n  fetchSomething();\n}, []);\n\n// Or, in a class component:\ncomponentDidMount() {\n  fetchSomething();\n}\n```\n\nWe call this approach \"fetch-on-render\" because it doesn't start fetching until *after* the component has rendered on the screen. This leads to a problem known as a \"waterfall\".\n\nConsider these `\u003cProfilePage\u003e` and `\u003cProfileTimeline\u003e` components:\n\n```js{4-6,22-24}\nfunction ProfilePage() {\n  const [user, setUser] = useState(null);\n\n  useEffect(() =\u003e {\n    fetchUser().then(u =\u003e setUser(u));\n  }, []);\n\n  if (user === null) {\n    return \u003cp\u003eLoading profile...\u003c/p\u003e;\n  }\n  return (\n    \u003c\u003e\n      \u003ch1\u003e{user.name}\u003c/h1\u003e\n      \u003cProfileTimeline /\u003e\n    \u003c/\u003e\n  );\n}\n\nfunction ProfileTimeline() {\n  const [posts, setPosts] = useState(null);\n\n  useEffect(() =\u003e {\n    fetchPosts().then(p =\u003e setPosts(p));\n  }, []);\n\n  if (posts === null) {\n    return \u003ch2\u003eLoading posts...\u003c/h2\u003e;\n  }\n  return (\n    \u003cul\u003e\n      {posts.map(post =\u003e (\n        \u003cli key={post.id}\u003e{post.text}\u003c/li\u003e\n      ))}\n    \u003c/ul\u003e\n  );\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/fragrant-glade-8huj6)**\n\nIf you run this code and watch the console logs, you'll notice the sequence is:\n\n1. We start fetching user details\n2. We wait...\n3. We finish fetching user details\n4. We start fetching posts\n5. We wait...\n6. We finish fetching posts\n\nIf fetching user details takes three seconds, we'll only *start* fetching the posts after three seconds! That's a \"waterfall\": an unintentional *sequence* that should have been parallelized.\n\nWaterfalls are common in code that fetches data on render. They're possible to solve, but as the product grows, many people prefer to use a solution that guards against this problem.\n\n### Approach 2: Fetch-Then-Render (not using Suspense) {#approach-2-fetch-then-render-not-using-suspense}\n\nLibraries can prevent waterfalls by offering a more centralized way to do data fetching. For example, Relay solves this problem by moving the information about the data a component needs to statically analyzable *fragments*, which later get composed into a single query.\n\nOn this page, we don't assume knowledge of Relay, so we won't be using it for this example. Instead, we'll write something similar manually by combining our data fetching methods:\n\n```js\nfunction fetchProfileData() {\n  return Promise.all([\n    fetchUser(),\n    fetchPosts()\n  ]).then(([user, posts]) =\u003e {\n    return {user, posts};\n  })\n}\n```\n\nIn this example, `\u003cProfilePage\u003e` waits for both requests but starts them in parallel:\n\n```js{1,2,8-13}\n// Kick off fetching as early as possible\nconst promise = fetchProfileData();\n\nfunction ProfilePage() {\n  const [user, setUser] = useState(null);\n  const [posts, setPosts] = useState(null);\n\n  useEffect(() =\u003e {\n    promise.then(data =\u003e {\n      setUser(data.user);\n      setPosts(data.posts);\n    });\n  }, []);\n\n  if (user === null) {\n    return \u003cp\u003eLoading profile...\u003c/p\u003e;\n  }\n  return (\n    \u003c\u003e\n      \u003ch1\u003e{user.name}\u003c/h1\u003e\n      \u003cProfileTimeline posts={posts} /\u003e\n    \u003c/\u003e\n  );\n}\n\n// The child doesn't trigger fetching anymore\nfunction ProfileTimeline({ posts }) {\n  if (posts === null) {\n    return \u003ch2\u003eLoading posts...\u003c/h2\u003e;\n  }\n  return (\n    \u003cul\u003e\n      {posts.map(post =\u003e (\n        \u003cli key={post.id}\u003e{post.text}\u003c/li\u003e\n      ))}\n    \u003c/ul\u003e\n  );\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/wandering-morning-ev6r0)**\n\nThe event sequence now becomes like this:\n\n1. We start fetching user details\n2. We start fetching posts\n3. We wait...\n4. We finish fetching user details\n5. We finish fetching posts\n\nWe've solved the previous network \"waterfall\", but accidentally introduced a different one. We wait for *all* data to come back with `Promise.all()` inside `fetchProfileData`, so now we can't render profile details until the posts have been fetched too. We have to wait for both.\n\nOf course, this is possible to fix in this particular example. We could remove the `Promise.all()` call, and wait for both Promises separately. However, this approach gets progressively more difficult as the complexity of our data and component tree grows. It's hard to write reliable components when arbitrary parts of the data tree may be missing or stale. So fetching all data for the new screen and *then* rendering is often a more practical option.\n\n### Approach 3: Render-as-You-Fetch (using Suspense) {#approach-3-render-as-you-fetch-using-suspense}\n\nIn the previous approach, we fetched data before we called `setState`:\n\n1. Start fetching\n2. Finish fetching\n3. Start rendering\n\nWith Suspense, we still start fetching first, but we flip the last two steps around:\n\n1. Start fetching\n2. **Start rendering**\n3. **Finish fetching**\n\n**With Suspense, we don't wait for the response to come back before we start rendering.** In fact, we start rendering *pretty much immediately* after kicking off the network request:\n\n```js{2,17,23}\n// This is not a Promise. It's a special object from our Suspense integration.\nconst resource = fetchProfileData();\n\nfunction ProfilePage() {\n  return (\n    \u003cSuspense fallback={\u003ch1\u003eLoading profile...\u003c/h1\u003e}\u003e\n      \u003cProfileDetails /\u003e\n      \u003cSuspense fallback={\u003ch1\u003eLoading posts...\u003c/h1\u003e}\u003e\n        \u003cProfileTimeline /\u003e\n      \u003c/Suspense\u003e\n    \u003c/Suspense\u003e\n  );\n}\n\nfunction ProfileDetails() {\n  // Try to read user info, although it might not have loaded yet\n  const user = resource.user.read();\n  return \u003ch1\u003e{user.name}\u003c/h1\u003e;\n}\n\nfunction ProfileTimeline() {\n  // Try to read posts, although they might not have loaded yet\n  const posts = resource.posts.read();\n  return (\n    \u003cul\u003e\n      {posts.map(post =\u003e (\n        \u003cli key={post.id}\u003e{post.text}\u003c/li\u003e\n      ))}\n    \u003c/ul\u003e\n  );\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/frosty-hermann-bztrp)**\n\nHere's what happens when we render `\u003cProfilePage\u003e` on the screen:\n\n1. We've already kicked off the requests in `fetchProfileData()`. It gave us a special \"resource\" instead of a Promise. In a realistic example, it would be provided by our data library's Suspense integration, like Relay.\n2. React tries to render `\u003cProfilePage\u003e`. It returns `\u003cProfileDetails\u003e` and `\u003cProfileTimeline\u003e` as children.\n3. React tries to render `\u003cProfileDetails\u003e`. It calls `resource.user.read()`. None of the data is fetched yet, so this component \"suspends\". React skips over it, and tries rendering other components in the tree.\n4. React tries to render `\u003cProfileTimeline\u003e`. It calls `resource.posts.read()`. Again, there's no data yet, so this component also \"suspends\". React skips over it too, and tries rendering other components in the tree.\n5. There's nothing left to try rendering. Because `\u003cProfileDetails\u003e` suspended, React shows the closest `\u003cSuspense\u003e` fallback above it in the tree: `\u003ch1\u003eLoading profile...\u003c/h1\u003e`. We're done for now.\n\nThis `resource` object represents the data that isn't there yet, but might eventually get loaded. When we call `read()`, we either get the data, or the component \"suspends\".\n\n**As more data streams in, React will retry rendering, and each time it might be able to progress \"deeper\".** When `resource.user` is fetched, the `\u003cProfileDetails\u003e` component will render successfully and we'll no longer need the `\u003ch1\u003eLoading profile...\u003c/h1\u003e` fallback. Eventually, we'll get all the data, and there will be no fallbacks on the screen.\n\nThis has an interesting implication. Even if we use a GraphQL client that collects all data requirements in a single request, *streaming the response lets us show more content sooner*. Because we render-*as-we-fetch* (as opposed to *after* fetching), if `user` appears in the response earlier than `posts`, we'll be able to \"unlock\" the outer `\u003cSuspense\u003e` boundary before the response even finishes. We might have missed this earlier, but even the fetch-then-render solution contained a waterfall: between fetching and rendering. Suspense doesn't inherently suffer from this waterfall, and libraries like Relay take advantage of this.\n\nNote how we eliminated the `if (...)` \"is loading\" checks from our components. This doesn't only remove boilerplate code, but it also simplifies making quick design changes. For example, if we wanted profile details and posts to always \"pop in\" together, we could delete the `\u003cSuspense\u003e` boundary between them. Or we could make them independent from each other by giving each *its own* `\u003cSuspense\u003e` boundary. Suspense lets us change the granularity of our loading states and orchestrate their sequencing without invasive changes to our code.\n\n## Start Fetching Early {#start-fetching-early}\n\nIf you're working on a data fetching library, there's a crucial aspect of Render-as-You-Fetch you don't want to miss. **We kick off fetching _before_ rendering.** Look at this code example closer:\n\n```js\n// Start fetching early!\nconst resource = fetchProfileData();\n\n// ...\n\nfunction ProfileDetails() {\n  // Try to read user info\n  const user = resource.user.read();\n  return \u003ch1\u003e{user.name}\u003c/h1\u003e;\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/frosty-hermann-bztrp)**\n\nNote that the `read()` call in this example doesn't *start* fetching. It only tries to read the data that is **already being fetched**. This difference is crucial to creating fast applications with Suspense. We don't want to delay loading data until a component starts rendering. As a data fetching library author, you can enforce this by making it impossible to get a `resource` object without also starting a fetch. Every demo on this page using our \"fake API\" enforces this.\n\nYou might object that fetching \"at the top level\" like in this example is impractical. What are we going to do if we navigate to another profile's page? We might want to fetch based on props. The answer to this is **we want to start fetching in the event handlers instead**. Here is a simplified example of navigating between user's pages:\n\n```js{1,2,10,11}\n// First fetch: as soon as possible\nconst initialResource = fetchProfileData(0);\n\nfunction App() {\n  const [resource, setResource] = useState(initialResource);\n  return (\n    \u003c\u003e\n      \u003cbutton onClick={() =\u003e {\n        const nextUserId = getNextId(resource.userId);\n        // Next fetch: when the user clicks\n        setResource(fetchProfileData(nextUserId));\n      }}\u003e\n        Next\n      \u003c/button\u003e\n      \u003cProfilePage resource={resource} /\u003e\n    \u003c/\u003e\n  );\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/infallible-feather-xjtbu)**\n\nWith this approach, we can **fetch code and data in parallel**. When we navigate between pages, we don't need to wait for a page's code to load to start loading its data. We can start fetching both code and data at the same time (during the link click), delivering a much better user experience.\n\nThis poses a question of how do we know *what* to fetch before rendering the next screen. There are several ways to solve this (for example, by integrating data fetching closer with your routing solution). If you work on a data fetching library, [Building Great User Experiences with Concurrent Mode and Suspense](/blog/2019/11/06/building-great-user-experiences-with-concurrent-mode-and-suspense.html) presents a deep dive on how to accomplish this and why it's important.\n\n### We're Still Figuring This Out {#were-still-figuring-this-out}\n\nSuspense itself as a mechanism is flexible and doesn't have many constraints. Product code needs to be more constrained to ensure no waterfalls, but there are different ways to provide these guarantees. Some questions that we're currently exploring include:\n\n* Fetching early can be cumbersome to express. How do we make it easier to avoid waterfalls?\n* When we fetch data for a page, can the API encourage including data for instant transitions *from* it?\n* What is the lifetime of a response? Should caching be global or local? Who manages the cache?\n* Can Proxies help express lazy-loaded APIs without inserting `read()` calls everywhere?\n* What would the equivalent of composing GraphQL queries look like for arbitrary Suspense data?\n\nRelay has its own answers to some of these questions. There is certainly more than a single way to do it, and we're excited to see what new ideas the React community comes up with.\n\n## Suspense and Race Conditions {#suspense-and-race-conditions}\n\nRace conditions are bugs that happen due to incorrect assumptions about the order in which our code may run. Fetching data in the `useEffect` Hook or in class lifecycle methods like `componentDidUpdate` often leads to them. Suspense can help here, too — let's see how.\n\nTo demonstrate the issue, we will add a top-level `\u003cApp\u003e` component that renders our `\u003cProfilePage\u003e` with a button that lets us **switch between different profiles**:\n\n```js{9-11}\nfunction getNextId(id) {\n  // ...\n}\n\nfunction App() {\n  const [id, setId] = useState(0);\n  return (\n    \u003c\u003e\n      \u003cbutton onClick={() =\u003e setId(getNextId(id))}\u003e\n        Next\n      \u003c/button\u003e\n      \u003cProfilePage id={id} /\u003e\n    \u003c/\u003e\n  );\n}\n```\n\nLet's compare how different data fetching strategies deal with this requirement.\n\n### Race Conditions with `useEffect` {#race-conditions-with-useeffect}\n\nFirst, we'll try a version of our original \"fetch in effect\" example. We'll modify it to pass an `id` parameter from the `\u003cProfilePage\u003e` props to `fetchUser(id)` and `fetchPosts(id)`:\n\n```js{1,5,6,14,19,23,24}\nfunction ProfilePage({ id }) {\n  const [user, setUser] = useState(null);\n\n  useEffect(() =\u003e {\n    fetchUser(id).then(u =\u003e setUser(u));\n  }, [id]);\n\n  if (user === null) {\n    return \u003cp\u003eLoading profile...\u003c/p\u003e;\n  }\n  return (\n    \u003c\u003e\n      \u003ch1\u003e{user.name}\u003c/h1\u003e\n      \u003cProfileTimeline id={id} /\u003e\n    \u003c/\u003e\n  );\n}\n\nfunction ProfileTimeline({ id }) {\n  const [posts, setPosts] = useState(null);\n\n  useEffect(() =\u003e {\n    fetchPosts(id).then(p =\u003e setPosts(p));\n  }, [id]);\n\n  if (posts === null) {\n    return \u003ch2\u003eLoading posts...\u003c/h2\u003e;\n  }\n  return (\n    \u003cul\u003e\n      {posts.map(post =\u003e (\n        \u003cli key={post.id}\u003e{post.text}\u003c/li\u003e\n      ))}\n    \u003c/ul\u003e\n  );\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/nervous-glade-b5sel)**\n\nNote how we also changed the effect dependencies from `[]` to `[id]` — because we want the effect to re-run when the `id` changes. Otherwise, we wouldn't refetch new data.\n\nIf we try this code, it might seem like it works at first. However, if we randomize the delay time in our \"fake API\" implementation and press the \"Next\" button fast enough, we'll see from the console logs that something is going very wrong. **Requests from the previous profiles may sometimes \"come back\" after we've already switched the profile to another ID -- and in that case they can overwrite the new state with a stale response for a different ID.**\n\nThis problem is possible to fix (you could use the effect cleanup function to either ignore or cancel stale requests), but it's unintuitive and difficult to debug.\n\n### Race Conditions with `componentDidUpdate` {#race-conditions-with-componentdidupdate}\n\nOne might think that this is a problem specific to `useEffect` or Hooks. Maybe if we port this code to classes or use convenient syntax like `async` / `await`, it will solve the problem?\n\nLet's try that:\n\n```js\nclass ProfilePage extends React.Component {\n  state = {\n    user: null,\n  };\n  componentDidMount() {\n    this.fetchData(this.props.id);\n  }\n  componentDidUpdate(prevProps) {\n    if (prevProps.id !== this.props.id) {\n      this.fetchData(this.props.id);\n    }\n  }\n  async fetchData(id) {\n    const user = await fetchUser(id);\n    this.setState({ user });\n  }\n  render() {\n    const { id } = this.props;\n    const { user } = this.state;\n    if (user === null) {\n      return \u003cp\u003eLoading profile...\u003c/p\u003e;\n    }\n    return (\n      \u003c\u003e\n        \u003ch1\u003e{user.name}\u003c/h1\u003e\n        \u003cProfileTimeline id={id} /\u003e\n      \u003c/\u003e\n    );\n  }\n}\n\nclass ProfileTimeline extends React.Component {\n  state = {\n    posts: null,\n  };\n  componentDidMount() {\n    this.fetchData(this.props.id);\n  }\n  componentDidUpdate(prevProps) {\n    if (prevProps.id !== this.props.id) {\n      this.fetchData(this.props.id);\n    }\n  }\n  async fetchData(id) {\n    const posts = await fetchPosts(id);\n    this.setState({ posts });\n  }\n  render() {\n    const { posts } = this.state;\n    if (posts === null) {\n      return \u003ch2\u003eLoading posts...\u003c/h2\u003e;\n    }\n    return (\n      \u003cul\u003e\n        {posts.map(post =\u003e (\n          \u003cli key={post.id}\u003e{post.text}\u003c/li\u003e\n        ))}\n      \u003c/ul\u003e\n    );\n  }\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/trusting-clarke-8twuq)**\n\nThis code is deceptively easy to read.\n\nUnfortunately, neither using a class nor the `async` / `await` syntax helped us solve this problem. This version suffers from exactly the same race conditions, for the same reasons.\n\n### The Problem {#the-problem}\n\nReact components have their own \"lifecycle\". They may receive props or update state at any point in time. However, each asynchronous request *also* has its own \"lifecycle\". It starts when we kick it off, and finishes when we get a response. The difficulty we're experiencing is \"synchronizing\" several processes in time that affect each other. This is hard to think about.\n\n### Solving Race Conditions with Suspense {#solving-race-conditions-with-suspense}\n\nLet's rewrite this example again, but using Suspense only:\n\n```js\nconst initialResource = fetchProfileData(0);\n\nfunction App() {\n  const [resource, setResource] = useState(initialResource);\n  return (\n    \u003c\u003e\n      \u003cbutton onClick={() =\u003e {\n        const nextUserId = getNextId(resource.userId);\n        setResource(fetchProfileData(nextUserId));\n      }}\u003e\n        Next\n      \u003c/button\u003e\n      \u003cProfilePage resource={resource} /\u003e\n    \u003c/\u003e\n  );\n}\n\nfunction ProfilePage({ resource }) {\n  return (\n    \u003cSuspense fallback={\u003ch1\u003eLoading profile...\u003c/h1\u003e}\u003e\n      \u003cProfileDetails resource={resource} /\u003e\n      \u003cSuspense fallback={\u003ch1\u003eLoading posts...\u003c/h1\u003e}\u003e\n        \u003cProfileTimeline resource={resource} /\u003e\n      \u003c/Suspense\u003e\n    \u003c/Suspense\u003e\n  );\n}\n\nfunction ProfileDetails({ resource }) {\n  const user = resource.user.read();\n  return \u003ch1\u003e{user.name}\u003c/h1\u003e;\n}\n\nfunction ProfileTimeline({ resource }) {\n  const posts = resource.posts.read();\n  return (\n    \u003cul\u003e\n      {posts.map(post =\u003e (\n        \u003cli key={post.id}\u003e{post.text}\u003c/li\u003e\n      ))}\n    \u003c/ul\u003e\n  );\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/infallible-feather-xjtbu)**\n\nIn the previous Suspense example, we only had one `resource`, so we held it in a top-level variable. Now that we have multiple resources, we moved it to the `\u003cApp\u003e`'s component state:\n\n```js{4}\nconst initialResource = fetchProfileData(0);\n\nfunction App() {\n  const [resource, setResource] = useState(initialResource);\n```\n\nWhen we click \"Next\", the `\u003cApp\u003e` component kicks off a request for the next profile, and passes *that* object down to the `\u003cProfilePage\u003e` component:\n\n```js{4,8}\n  \u003c\u003e\n    \u003cbutton onClick={() =\u003e {\n      const nextUserId = getNextId(resource.userId);\n      setResource(fetchProfileData(nextUserId));\n    }}\u003e\n      Next\n    \u003c/button\u003e\n    \u003cProfilePage resource={resource} /\u003e\n  \u003c/\u003e\n```\n\nAgain, notice that **we're not waiting for the response to set the state. It's the other way around: we set the state (and start rendering) immediately after kicking off a request**. As soon as we have more data, React \"fills in\" the content inside `\u003cSuspense\u003e` components.\n\nThis code is very readable, but unlike the examples earlier, the Suspense version doesn't suffer from race conditions. You might be wondering why. The answer is that in the Suspense version, we don't have to think about *time* as much in our code. Our original code with race conditions needed to set the state *at the right moment later*, or otherwise it would be wrong. But with Suspense, we set the state *immediately* -- so it's harder to mess it up.\n\n## Handling Errors {#handling-errors}\n\nWhen we write code with Promises, we might use `catch()` to handle errors. How does this work with Suspense, given that we don't *wait* for Promises to start rendering?\n\nWith Suspense, handling fetching errors works the same way as handling rendering errors -- you can render an [error boundary](/docs/error-boundaries.html) anywhere to \"catch\" errors in components below.\n\nFirst, we'll define an error boundary component to use across our project:\n\n```js\n// Error boundaries currently have to be classes.\nclass ErrorBoundary extends React.Component {\n  state = { hasError: false, error: null };\n  static getDerivedStateFromError(error) {\n    return {\n      hasError: true,\n      error\n    };\n  }\n  render() {\n    if (this.state.hasError) {\n      return this.props.fallback;\n    }\n    return this.props.children;\n  }\n}\n```\n\nAnd then we can put it anywhere in the tree to catch errors:\n\n```js{5,9}\nfunction ProfilePage() {\n  return (\n    \u003cSuspense fallback={\u003ch1\u003eLoading profile...\u003c/h1\u003e}\u003e\n      \u003cProfileDetails /\u003e\n      \u003cErrorBoundary fallback={\u003ch2\u003eCould not fetch posts.\u003c/h2\u003e}\u003e\n        \u003cSuspense fallback={\u003ch1\u003eLoading posts...\u003c/h1\u003e}\u003e\n          \u003cProfileTimeline /\u003e\n        \u003c/Suspense\u003e\n      \u003c/ErrorBoundary\u003e\n    \u003c/Suspense\u003e\n  );\n}\n```\n\n**[Try it on CodeSandbox](https://codesandbox.io/s/adoring-goodall-8wbn7)**\n\nIt would catch both rendering errors *and* errors from Suspense data fetching. We can have as many error boundaries as we like but it's best to [be intentional](https://aweary.dev/fault-tolerance-react/) about their placement.\n\n## Next Steps {#next-steps}\n\nWe've now covered the basics of Suspense for Data Fetching! Importantly, we now better understand *why* Suspense works this way, and how it fits into the data fetching space.\n\nSuspense answers some questions, but it also poses new questions of its own:\n\n* If some component \"suspends\", does the app freeze? How to avoid this?\n* What if we want to show a spinner in a different place than \"above\" the component in a tree?\n* If we intentionally *want* to show an inconsistent UI for a small period of time, can we do that?\n* Instead of showing a spinner, can we add a visual effect like \"greying out\" the current screen?\n* Why does our [last Suspense example](https://codesandbox.io/s/infallible-feather-xjtbu) log a warning when clicking the \"Next\" button?\n\nTo answer these questions, we will refer to the next section on [Concurrent UI Patterns](/docs/concurrent-mode-patterns.html).\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_concurrent-mode-suspense.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

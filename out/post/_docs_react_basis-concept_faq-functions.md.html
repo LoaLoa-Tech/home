@@ -1,0 +1,283 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: faq-functions
+title: Passing Functions to Components
+permalink: docs/faq-functions.html
+layout: docs
+category: FAQ</p>
+<hr>
+<h3>How do I pass an event handler (like onClick) to a component? {#how-do-i-pass-an-event-handler-like-onclick-to-a-component}</h3>
+<p>Pass event handlers and other functions as props to child components:</p>
+<pre><code class="language-jsx">&lt;button onClick={this.handleClick}&gt;
+</code></pre>
+<p>If you need to have access to the parent component in the handler, you also need to bind the function to the component instance (see below).</p>
+<h3>How do I bind a function to a component instance? {#how-do-i-bind-a-function-to-a-component-instance}</h3>
+<p>There are several ways to make sure functions have access to component attributes like <code>this.props</code> and <code>this.state</code>, depending on which syntax and build steps you are using.</p>
+<h4>Bind in Constructor (ES2015) {#bind-in-constructor-es2015}</h4>
+<pre><code class="language-jsx">class Foo extends Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick() {
+    console.log('Click happened');
+  }
+  render() {
+    return &lt;button onClick={this.handleClick}&gt;Click Me&lt;/button&gt;;
+  }
+}
+</code></pre>
+<h4>Class Properties (Stage 3 Proposal) {#class-properties-stage-3-proposal}</h4>
+<pre><code class="language-jsx">class Foo extends Component {
+  // Note: this syntax is experimental and not standardized yet.
+  handleClick = () =&gt; {
+    console.log('Click happened');
+  }
+  render() {
+    return &lt;button onClick={this.handleClick}&gt;Click Me&lt;/button&gt;;
+  }
+}
+</code></pre>
+<h4>Bind in Render {#bind-in-render}</h4>
+<pre><code class="language-jsx">class Foo extends Component {
+  handleClick() {
+    console.log('Click happened');
+  }
+  render() {
+    return &lt;button onClick={this.handleClick.bind(this)}&gt;Click Me&lt;/button&gt;;
+  }
+}
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>Using <code>Function.prototype.bind</code> in render creates a new function each time the component renders, which may have performance implications (see below).</p>
+</blockquote>
+<h4>Arrow Function in Render {#arrow-function-in-render}</h4>
+<pre><code class="language-jsx">class Foo extends Component {
+  handleClick() {
+    console.log('Click happened');
+  }
+  render() {
+    return &lt;button onClick={() =&gt; this.handleClick()}&gt;Click Me&lt;/button&gt;;
+  }
+}
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>Using an arrow function in render creates a new function each time the component renders, which may break optimizations based on strict identity comparison.</p>
+</blockquote>
+<h3>Is it OK to use arrow functions in render methods? {#is-it-ok-to-use-arrow-functions-in-render-methods}</h3>
+<p>Generally speaking, yes, it is OK, and it is often the easiest way to pass parameters to callback functions.</p>
+<p>If you do have performance issues, by all means, optimize!</p>
+<h3>Why is binding necessary at all? {#why-is-binding-necessary-at-all}</h3>
+<p>In JavaScript, these two code snippets are <strong>not</strong> equivalent:</p>
+<pre><code class="language-js">obj.method();
+</code></pre>
+<pre><code class="language-js">var method = obj.method;
+method();
+</code></pre>
+<p>Binding methods helps ensure that the second snippet works the same way as the first one.</p>
+<p>With React, typically you only need to bind the methods you <em>pass</em> to other components. For example, <code>&lt;button onClick={this.handleClick}&gt;</code> passes <code>this.handleClick</code> so you want to bind it. However, it is unnecessary to bind the <code>render</code> method or the lifecycle methods: we don't pass them to other components.</p>
+<p><a href="https://yehudakatz.com/2011/08/11/understanding-javascript-function-invocation-and-this/">This post by Yehuda Katz</a> explains what binding is, and how functions work in JavaScript, in detail.</p>
+<h3>Why is my function being called every time the component renders? {#why-is-my-function-being-called-every-time-the-component-renders}</h3>
+<p>Make sure you aren't <em>calling the function</em> when you pass it to the component:</p>
+<pre><code class="language-jsx">render() {
+  // Wrong: handleClick is called instead of passed as a reference!
+  return &lt;button onClick={this.handleClick()}&gt;Click Me&lt;/button&gt;
+}
+</code></pre>
+<p>Instead, <em>pass the function itself</em> (without parens):</p>
+<pre><code class="language-jsx">render() {
+  // Correct: handleClick is passed as a reference!
+  return &lt;button onClick={this.handleClick}&gt;Click Me&lt;/button&gt;
+}
+</code></pre>
+<h3>How do I pass a parameter to an event handler or callback? {#how-do-i-pass-a-parameter-to-an-event-handler-or-callback}</h3>
+<p>You can use an arrow function to wrap around an event handler and pass parameters:</p>
+<pre><code class="language-jsx">&lt;button onClick={() =&gt; this.handleClick(id)} /&gt;
+</code></pre>
+<p>This is equivalent to calling <code>.bind</code>:</p>
+<pre><code class="language-jsx">&lt;button onClick={this.handleClick.bind(this, id)} /&gt;
+</code></pre>
+<h4>Example: Passing params using arrow functions {#example-passing-params-using-arrow-functions}</h4>
+<pre><code class="language-jsx">const A = 65 // ASCII character code
+
+class Alphabet extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      justClicked: null,
+      letters: Array.from({length: 26}, (_, i) =&gt; String.fromCharCode(A + i))
+    };
+  }
+  handleClick(letter) {
+    this.setState({ justClicked: letter });
+  }
+  render() {
+    return (
+      &lt;div&gt;
+        Just clicked: {this.state.justClicked}
+        &lt;ul&gt;
+          {this.state.letters.map(letter =&gt;
+            &lt;li key={letter} onClick={() =&gt; this.handleClick(letter)}&gt;
+              {letter}
+            &lt;/li&gt;
+          )}
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    )
+  }
+}
+</code></pre>
+<h4>Example: Passing params using data-attributes {#example-passing-params-using-data-attributes}</h4>
+<p>Alternately, you can use DOM APIs to store data needed for event handlers. Consider this approach if you need to optimize a large number of elements or have a render tree that relies on React.PureComponent equality checks.</p>
+<pre><code class="language-jsx">const A = 65 // ASCII character code
+
+class Alphabet extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+    this.state = {
+      justClicked: null,
+      letters: Array.from({length: 26}, (_, i) =&gt; String.fromCharCode(A + i))
+    };
+  }
+
+  handleClick(e) {
+    this.setState({
+      justClicked: e.target.dataset.letter
+    });
+  }
+
+  render() {
+    return (
+      &lt;div&gt;
+        Just clicked: {this.state.justClicked}
+        &lt;ul&gt;
+          {this.state.letters.map(letter =&gt;
+            &lt;li key={letter} data-letter={letter} onClick={this.handleClick}&gt;
+              {letter}
+            &lt;/li&gt;
+          )}
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    )
+  }
+}
+</code></pre>
+<h3>How can I prevent a function from being called too quickly or too many times in a row? {#how-can-i-prevent-a-function-from-being-called-too-quickly-or-too-many-times-in-a-row}</h3>
+<p>If you have an event handler such as <code>onClick</code> or <code>onScroll</code> and want to prevent the callback from being fired too quickly, then you can limit the rate at which callback is executed. This can be done by using:</p>
+<ul>
+<li><strong>throttling</strong>: sample changes based on a time based frequency (eg <a href="https://lodash.com/docs#throttle"><code>_.throttle</code></a>)</li>
+<li><strong>debouncing</strong>: publish changes after a period of inactivity (eg <a href="https://lodash.com/docs#debounce"><code>_.debounce</code></a>)</li>
+<li><strong><code>requestAnimationFrame</code> throttling</strong>: sample changes based on <a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame"><code>requestAnimationFrame</code></a> (eg <a href="https://github.com/alexreardon/raf-schd"><code>raf-schd</code></a>)</li>
+</ul>
+<p>See <a href="http://demo.nimius.net/debounce_throttle/">this visualization</a> for a comparison of <code>throttle</code> and <code>debounce</code> functions.</p>
+<blockquote>
+<p>Note:</p>
+<p><code>_.debounce</code>, <code>_.throttle</code> and <code>raf-schd</code> provide a <code>cancel</code> method to cancel delayed callbacks. You should either call this method from <code>componentWillUnmount</code> <em>or</em> check to ensure that the component is still mounted within the delayed function.</p>
+</blockquote>
+<h4>Throttle {#throttle}</h4>
+<p>Throttling prevents a function from being called more than once in a given window of time. The example below throttles a &quot;click&quot; handler to prevent calling it more than once per second.</p>
+<pre><code class="language-jsx">import throttle from 'lodash.throttle';
+
+class LoadMoreButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleClickThrottled = throttle(this.handleClick, 1000);
+  }
+
+  componentWillUnmount() {
+    this.handleClickThrottled.cancel();
+  }
+
+  render() {
+    return &lt;button onClick={this.handleClickThrottled}&gt;Load More&lt;/button&gt;;
+  }
+
+  handleClick() {
+    this.props.loadMore();
+  }
+}
+</code></pre>
+<h4>Debounce {#debounce}</h4>
+<p>Debouncing ensures that a function will not be executed until after a certain amount of time has passed since it was last called. This can be useful when you have to perform some expensive calculation in response to an event that might dispatch rapidly (eg scroll or keyboard events). The example below debounces text input with a 250ms delay.</p>
+<pre><code class="language-jsx">import debounce from 'lodash.debounce';
+
+class Searchbox extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.emitChangeDebounced = debounce(this.emitChange, 250);
+  }
+
+  componentWillUnmount() {
+    this.emitChangeDebounced.cancel();
+  }
+
+  render() {
+    return (
+      &lt;input
+        type=&quot;text&quot;
+        onChange={this.handleChange}
+        placeholder=&quot;Search...&quot;
+        defaultValue={this.props.value}
+      /&gt;
+    );
+  }
+
+  handleChange(e) {
+    this.emitChangeDebounced(e.target.value);
+  }
+
+  emitChange(value) {
+    this.props.onChange(value);
+  }
+}
+</code></pre>
+<h4><code>requestAnimationFrame</code> throttling {#requestanimationframe-throttling}</h4>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame"><code>requestAnimationFrame</code></a> is a way of queuing a function to be executed in the browser at the optimal time for rendering performance. A function that is queued with <code>requestAnimationFrame</code> will fire in the next frame. The browser will work hard to ensure that there are 60 frames per second (60 fps). However, if the browser is unable to it will naturally <em>limit</em> the amount of frames in a second. For example, a device might only be able to handle 30 fps and so you will only get 30 frames in that second. Using <code>requestAnimationFrame</code> for throttling is a useful technique in that it prevents you from doing more than 60 updates in a second. If you are doing 100 updates in a second this creates additional work for the browser that the user will not see anyway.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>Using this technique will only capture the last published value in a frame. You can see an example of how this optimization works on <a href="https://developer.mozilla.org/en-US/docs/Web/Events/scroll"><code>MDN</code></a></p>
+</blockquote>
+<pre><code class="language-jsx">import rafSchedule from 'raf-schd';
+
+class ScrollListener extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleScroll = this.handleScroll.bind(this);
+
+    // Create a new function to schedule updates.
+    this.scheduleUpdate = rafSchedule(
+      point =&gt; this.props.onScroll(point)
+    );
+  }
+
+  handleScroll(e) {
+    // When we receive a scroll event, schedule an update.
+    // If we receive many updates within a frame, we'll only publish the latest value.
+    this.scheduleUpdate({ x: e.clientX, y: e.clientY });
+  }
+
+  componentWillUnmount() {
+    // Cancel any pending updates since we're unmounting.
+    this.scheduleUpdate.cancel();
+  }
+
+  render() {
+    return (
+      &lt;div
+        style={{ overflow: 'scroll' }}
+        onScroll={this.handleScroll}
+      &gt;
+        &lt;img src=&quot;/my-huge-image.jpg&quot; /&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+</code></pre>
+<h4>Testing your rate limiting {#testing-your-rate-limiting}</h4>
+<p>When testing your rate limiting code works correctly it is helpful to have the ability to fast forward time. If you are using <a href="https://facebook.github.io/jest/"><code>jest</code></a> then you can use <a href="https://facebook.github.io/jest/docs/en/timer-mocks.html"><code>mock timers</code></a> to fast forward time. If you are using <code>requestAnimationFrame</code> throttling then you may find <a href="https://github.com/alexreardon/raf-stub"><code>raf-stub</code></a> to be a useful tool to control the ticking of animation frames.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: faq-functions\ntitle: Passing Functions to Components\npermalink: docs/faq-functions.html\nlayout: docs\ncategory: FAQ\n---\n\n### How do I pass an event handler (like onClick) to a component? {#how-do-i-pass-an-event-handler-like-onclick-to-a-component}\n\nPass event handlers and other functions as props to child components:\n\n```jsx\n\u003cbutton onClick={this.handleClick}\u003e\n```\n\nIf you need to have access to the parent component in the handler, you also need to bind the function to the component instance (see below).\n\n### How do I bind a function to a component instance? {#how-do-i-bind-a-function-to-a-component-instance}\n\nThere are several ways to make sure functions have access to component attributes like `this.props` and `this.state`, depending on which syntax and build steps you are using.\n\n#### Bind in Constructor (ES2015) {#bind-in-constructor-es2015}\n\n```jsx\nclass Foo extends Component {\n  constructor(props) {\n    super(props);\n    this.handleClick = this.handleClick.bind(this);\n  }\n  handleClick() {\n    console.log('Click happened');\n  }\n  render() {\n    return \u003cbutton onClick={this.handleClick}\u003eClick Me\u003c/button\u003e;\n  }\n}\n```\n\n#### Class Properties (Stage 3 Proposal) {#class-properties-stage-3-proposal}\n\n```jsx\nclass Foo extends Component {\n  // Note: this syntax is experimental and not standardized yet.\n  handleClick = () =\u003e {\n    console.log('Click happened');\n  }\n  render() {\n    return \u003cbutton onClick={this.handleClick}\u003eClick Me\u003c/button\u003e;\n  }\n}\n```\n\n#### Bind in Render {#bind-in-render}\n\n```jsx\nclass Foo extends Component {\n  handleClick() {\n    console.log('Click happened');\n  }\n  render() {\n    return \u003cbutton onClick={this.handleClick.bind(this)}\u003eClick Me\u003c/button\u003e;\n  }\n}\n```\n\n\u003e**Note:**\n\u003e\n\u003eUsing `Function.prototype.bind` in render creates a new function each time the component renders, which may have performance implications (see below).\n\n#### Arrow Function in Render {#arrow-function-in-render}\n\n```jsx\nclass Foo extends Component {\n  handleClick() {\n    console.log('Click happened');\n  }\n  render() {\n    return \u003cbutton onClick={() =\u003e this.handleClick()}\u003eClick Me\u003c/button\u003e;\n  }\n}\n```\n\n\u003e**Note:**\n\u003e\n\u003eUsing an arrow function in render creates a new function each time the component renders, which may break optimizations based on strict identity comparison.\n\n### Is it OK to use arrow functions in render methods? {#is-it-ok-to-use-arrow-functions-in-render-methods}\n\nGenerally speaking, yes, it is OK, and it is often the easiest way to pass parameters to callback functions.\n\nIf you do have performance issues, by all means, optimize!\n\n### Why is binding necessary at all? {#why-is-binding-necessary-at-all}\n\nIn JavaScript, these two code snippets are **not** equivalent:\n\n```js\nobj.method();\n```\n\n```js\nvar method = obj.method;\nmethod();\n```\n\nBinding methods helps ensure that the second snippet works the same way as the first one.\n\nWith React, typically you only need to bind the methods you *pass* to other components. For example, `\u003cbutton onClick={this.handleClick}\u003e` passes `this.handleClick` so you want to bind it. However, it is unnecessary to bind the `render` method or the lifecycle methods: we don't pass them to other components.\n\n[This post by Yehuda Katz](https://yehudakatz.com/2011/08/11/understanding-javascript-function-invocation-and-this/) explains what binding is, and how functions work in JavaScript, in detail.\n\n### Why is my function being called every time the component renders? {#why-is-my-function-being-called-every-time-the-component-renders}\n\nMake sure you aren't _calling the function_ when you pass it to the component:\n\n```jsx\nrender() {\n  // Wrong: handleClick is called instead of passed as a reference!\n  return \u003cbutton onClick={this.handleClick()}\u003eClick Me\u003c/button\u003e\n}\n```\n\nInstead, *pass the function itself* (without parens):\n\n```jsx\nrender() {\n  // Correct: handleClick is passed as a reference!\n  return \u003cbutton onClick={this.handleClick}\u003eClick Me\u003c/button\u003e\n}\n```\n\n### How do I pass a parameter to an event handler or callback? {#how-do-i-pass-a-parameter-to-an-event-handler-or-callback}\n\nYou can use an arrow function to wrap around an event handler and pass parameters:\n\n```jsx\n\u003cbutton onClick={() =\u003e this.handleClick(id)} /\u003e\n```\n\nThis is equivalent to calling `.bind`:\n\n```jsx\n\u003cbutton onClick={this.handleClick.bind(this, id)} /\u003e\n```\n\n#### Example: Passing params using arrow functions {#example-passing-params-using-arrow-functions}\n\n```jsx\nconst A = 65 // ASCII character code\n\nclass Alphabet extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = {\n      justClicked: null,\n      letters: Array.from({length: 26}, (_, i) =\u003e String.fromCharCode(A + i))\n    };\n  }\n  handleClick(letter) {\n    this.setState({ justClicked: letter });\n  }\n  render() {\n    return (\n      \u003cdiv\u003e\n        Just clicked: {this.state.justClicked}\n        \u003cul\u003e\n          {this.state.letters.map(letter =\u003e\n            \u003cli key={letter} onClick={() =\u003e this.handleClick(letter)}\u003e\n              {letter}\n            \u003c/li\u003e\n          )}\n        \u003c/ul\u003e\n      \u003c/div\u003e\n    )\n  }\n}\n```\n\n#### Example: Passing params using data-attributes {#example-passing-params-using-data-attributes}\n\nAlternately, you can use DOM APIs to store data needed for event handlers. Consider this approach if you need to optimize a large number of elements or have a render tree that relies on React.PureComponent equality checks.\n\n```jsx\nconst A = 65 // ASCII character code\n\nclass Alphabet extends React.Component {\n  constructor(props) {\n    super(props);\n    this.handleClick = this.handleClick.bind(this);\n    this.state = {\n      justClicked: null,\n      letters: Array.from({length: 26}, (_, i) =\u003e String.fromCharCode(A + i))\n    };\n  }\n\n  handleClick(e) {\n    this.setState({\n      justClicked: e.target.dataset.letter\n    });\n  }\n\n  render() {\n    return (\n      \u003cdiv\u003e\n        Just clicked: {this.state.justClicked}\n        \u003cul\u003e\n          {this.state.letters.map(letter =\u003e\n            \u003cli key={letter} data-letter={letter} onClick={this.handleClick}\u003e\n              {letter}\n            \u003c/li\u003e\n          )}\n        \u003c/ul\u003e\n      \u003c/div\u003e\n    )\n  }\n}\n```\n\n### How can I prevent a function from being called too quickly or too many times in a row? {#how-can-i-prevent-a-function-from-being-called-too-quickly-or-too-many-times-in-a-row}\n\nIf you have an event handler such as `onClick` or `onScroll` and want to prevent the callback from being fired too quickly, then you can limit the rate at which callback is executed. This can be done by using:\n\n- **throttling**: sample changes based on a time based frequency (eg [`_.throttle`](https://lodash.com/docs#throttle))\n- **debouncing**: publish changes after a period of inactivity (eg [`_.debounce`](https://lodash.com/docs#debounce))\n- **`requestAnimationFrame` throttling**: sample changes based on [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame) (eg [`raf-schd`](https://github.com/alexreardon/raf-schd))\n\nSee [this visualization](http://demo.nimius.net/debounce_throttle/) for a comparison of `throttle` and `debounce` functions.\n\n\u003e Note:\n\u003e\n\u003e `_.debounce`, `_.throttle` and `raf-schd` provide a `cancel` method to cancel delayed callbacks. You should either call this method from `componentWillUnmount` _or_ check to ensure that the component is still mounted within the delayed function.\n\n#### Throttle {#throttle}\n\nThrottling prevents a function from being called more than once in a given window of time. The example below throttles a \"click\" handler to prevent calling it more than once per second.\n\n```jsx\nimport throttle from 'lodash.throttle';\n\nclass LoadMoreButton extends React.Component {\n  constructor(props) {\n    super(props);\n    this.handleClick = this.handleClick.bind(this);\n    this.handleClickThrottled = throttle(this.handleClick, 1000);\n  }\n\n  componentWillUnmount() {\n    this.handleClickThrottled.cancel();\n  }\n\n  render() {\n    return \u003cbutton onClick={this.handleClickThrottled}\u003eLoad More\u003c/button\u003e;\n  }\n\n  handleClick() {\n    this.props.loadMore();\n  }\n}\n```\n\n#### Debounce {#debounce}\n\nDebouncing ensures that a function will not be executed until after a certain amount of time has passed since it was last called. This can be useful when you have to perform some expensive calculation in response to an event that might dispatch rapidly (eg scroll or keyboard events). The example below debounces text input with a 250ms delay.\n\n```jsx\nimport debounce from 'lodash.debounce';\n\nclass Searchbox extends React.Component {\n  constructor(props) {\n    super(props);\n    this.handleChange = this.handleChange.bind(this);\n    this.emitChangeDebounced = debounce(this.emitChange, 250);\n  }\n\n  componentWillUnmount() {\n    this.emitChangeDebounced.cancel();\n  }\n\n  render() {\n    return (\n      \u003cinput\n        type=\"text\"\n        onChange={this.handleChange}\n        placeholder=\"Search...\"\n        defaultValue={this.props.value}\n      /\u003e\n    );\n  }\n\n  handleChange(e) {\n    this.emitChangeDebounced(e.target.value);\n  }\n\n  emitChange(value) {\n    this.props.onChange(value);\n  }\n}\n```\n\n#### `requestAnimationFrame` throttling {#requestanimationframe-throttling}\n\n[`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame) is a way of queuing a function to be executed in the browser at the optimal time for rendering performance. A function that is queued with `requestAnimationFrame` will fire in the next frame. The browser will work hard to ensure that there are 60 frames per second (60 fps). However, if the browser is unable to it will naturally *limit* the amount of frames in a second. For example, a device might only be able to handle 30 fps and so you will only get 30 frames in that second. Using `requestAnimationFrame` for throttling is a useful technique in that it prevents you from doing more than 60 updates in a second. If you are doing 100 updates in a second this creates additional work for the browser that the user will not see anyway.\n\n\u003e**Note:**\n\u003e\n\u003eUsing this technique will only capture the last published value in a frame. You can see an example of how this optimization works on [`MDN`](https://developer.mozilla.org/en-US/docs/Web/Events/scroll)\n\n```jsx\nimport rafSchedule from 'raf-schd';\n\nclass ScrollListener extends React.Component {\n  constructor(props) {\n    super(props);\n\n    this.handleScroll = this.handleScroll.bind(this);\n\n    // Create a new function to schedule updates.\n    this.scheduleUpdate = rafSchedule(\n      point =\u003e this.props.onScroll(point)\n    );\n  }\n\n  handleScroll(e) {\n    // When we receive a scroll event, schedule an update.\n    // If we receive many updates within a frame, we'll only publish the latest value.\n    this.scheduleUpdate({ x: e.clientX, y: e.clientY });\n  }\n\n  componentWillUnmount() {\n    // Cancel any pending updates since we're unmounting.\n    this.scheduleUpdate.cancel();\n  }\n\n  render() {\n    return (\n      \u003cdiv\n        style={{ overflow: 'scroll' }}\n        onScroll={this.handleScroll}\n      \u003e\n        \u003cimg src=\"/my-huge-image.jpg\" /\u003e\n      \u003c/div\u003e\n    );\n  }\n}\n```\n\n#### Testing your rate limiting {#testing-your-rate-limiting}\n\nWhen testing your rate limiting code works correctly it is helpful to have the ability to fast forward time. If you are using [`jest`](https://facebook.github.io/jest/) then you can use [`mock timers`](https://facebook.github.io/jest/docs/en/timer-mocks.html) to fast forward time. If you are using `requestAnimationFrame` throttling then you may find [`raf-stub`](https://github.com/alexreardon/raf-stub) to be a useful tool to control the ticking of animation frames.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_faq-functions.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

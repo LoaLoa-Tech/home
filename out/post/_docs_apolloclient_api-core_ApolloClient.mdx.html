@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: ApolloClient
+description: ApolloClient API reference
+order: 11</p>
+<hr>
+<p>import { TypescriptApiBox } from 'gatsby-theme-apollo-docs';</p>
+<p>The <code>ApolloClient</code> class encapsulates Apollo's core client-side API. It backs all available view-layer integrations (React, iOS, and so on).</p>
+<h2>The <code>ApolloClient</code> constructor</h2>
+<p><TypescriptApiBox name="ApolloClient.constructor" /></p>
+<p>The constructor for <code>ApolloClient</code> accepts an <code>ApolloClientOptions</code> object that supports the required and optional fields listed below. These fields make it easy to customize how Apollo works based on your application's needs.</p>
+<h3>Example constructor call</h3>
+<pre><code class="language-js">import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+
+// Instantiate required constructor fields
+const cache = new InMemoryCache();
+const link = createHttpLink({
+  uri: 'http://localhost:4000/',
+});
+
+const client = new ApolloClient({
+  // Provide required constructor fields
+  cache: cache,
+  link: link,
+
+  // Provide some optional constructor fields
+  name: 'react-web-client',
+  version: '1.3',
+  queryDeduplication: false,
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'cache-and-network',
+    },
+  },
+});
+</code></pre>
+<h3>Required fields</h3>
+<table>
+<thead>
+<tr><th>Name</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>uri</code></td><td>A URI pointing to the backend GraphQL endpoint that Apollo Client will communicate with. <strong>Note:</strong> One of <code>uri</code> or <code>link</code> is required; if both are specified, <code>link</code> will take precedence. You may also <a href="../../networking/basic-http-networking/">specify <code>credentials</code> and <code>headers</code></a> along with <code>uri</code>.</td></tr>
+<tr><td><code>link</code></td><td>You can provide an Apollo Link instance to serve as Apollo Client's network layer. For more information, see the <a href="../../networking/advanced-http-networking/">advanced HTTP networking</a> section. <strong>Note:</strong> One of <code>uri</code> or <code>link</code> is required; if both are specified, <code>link</code> will take precedence.</td></tr>
+<tr><td><code>cache</code></td><td>Apollo Client uses an Apollo Cache instance to handle its caching strategy. The recommended cache is <code>InMemoryCache</code> which is provided by the <code>@apollo/client</code> package. For more information, see <a href="../../caching/cache-configuration/">Configuring the cache</a>.</td></tr>
+</tbody>
+</table>
+<h3>Optional fields</h3>
+<table>
+<thead>
+<tr><th>Name</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>name</code></td><td>A custom name (e.g., <code>iOS</code>) that identifies this particular client among your set of clients. Apollo Server uses this property as part of its <a href="https://www.apollographql.com/docs/apollo-server/v2/features/metrics#Client-Awareness">Client Awareness</a> feature.</td></tr>
+<tr><td><code>version</code></td><td>A custom version that identifies the current version of this particular client (e.g., <code>1.2</code>). Apollo Server uses this property as part of its <a href="https://www.apollographql.com/docs/apollo-server/v2/features/metrics#Client-Awareness">Client Awareness</a> feature. <br/><br/> Note that this version string is <strong>not</strong> the version of Apollo Client that you are using, but rather any version string that helps you differentiate between versions of your client.</td></tr>
+<tr><td><code>ssrMode</code></td><td>When using Apollo Client for <a href="../../performance/server-side-rendering/">server-side rendering</a>, set this to <code>true</code> so that React Apollo's <code>getDataFromTree</code> function can work effectively.</td></tr>
+<tr><td><code>ssrForceFetchDelay</code></td><td>Provide this to specify a time interval (in milliseconds) before Apollo Client force-fetches queries after a server-side render. This value is <code>0</code> by default.</td></tr>
+<tr><td><code>connectToDevTools</code></td><td>Set this to <code>true</code> to allow the <a href="../../development-testing/developer-tooling/#apollo-client-devtools">Apollo Client Devtools</a> Chrome extension to connect to your application's Apollo Client in production. (This connection is allowed automatically in dev mode.)</td></tr>
+<tr><td><code>queryDeduplication</code></td><td>Set this to <code>false</code> to force all created queries to be sent to the server, even if a query with completely identical parameters (query, variables, operationName) is already in flight.</td></tr>
+<tr><td><code>defaultOptions</code></td><td>Provide this object to set application-wide default values for options you can provide to the <code>watchQuery</code>, <code>query</code>, and <code>mutate</code> functions. See below for an example object.</td></tr>
+</tbody>
+</table>
+<h3>Example <code>defaultOptions</code> object</h3>
+<pre><code class="language-js">const defaultOptions = {
+  watchQuery: {
+    fetchPolicy: 'cache-and-network',
+    errorPolicy: 'ignore',
+  },
+  query: {
+    fetchPolicy: 'network-only',
+    errorPolicy: 'all',
+  },
+  mutate: {
+    errorPolicy: 'all',
+  },
+};
+</code></pre>
+<p>You can override any default option you specify in this object by providing a
+different value for the same option in individual function calls.</p>
+<blockquote>
+<p><strong>Note:</strong> The <code>useQuery</code> hook uses Apollo Client's <code>watchQuery</code> function. To set <code>defaultOptions</code> when using the <code>useQuery</code> hook, make sure to set them under the <code>defaultOptions.watchQuery</code> property.</p>
+</blockquote>
+<h2><code>ApolloClient</code> functions</h2>
+<p><TypescriptApiBox name="ApolloClient.watchQuery" />
+<TypescriptApiBox name="ApolloClient.query" />
+<TypescriptApiBox name="ApolloClient.mutate" />
+<TypescriptApiBox name="ApolloClient.subscribe" />
+<TypescriptApiBox name="ApolloClient.readQuery" />
+<TypescriptApiBox name="ApolloClient.readFragment" />
+<TypescriptApiBox name="ApolloClient.writeQuery" />
+<TypescriptApiBox name="ApolloClient.writeFragment" />
+<TypescriptApiBox name="ApolloClient.resetStore" />
+<TypescriptApiBox name="ApolloClient.onResetStore" />
+<TypescriptApiBox name="ApolloClient.clearStore" />
+<TypescriptApiBox name="ApolloClient.onClearStore" />
+<TypescriptApiBox name="ApolloClient.stop" />
+<TypescriptApiBox name="ApolloClient.reFetchObservableQueries" /></p>
+<h2>Types</h2>
+<p><TypescriptApiBox name="ApolloClientOptions" />
+<TypescriptApiBox name="DefaultOptions" /></p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: ApolloClient\ndescription: ApolloClient API reference\norder: 11\n---\n\nimport { TypescriptApiBox } from 'gatsby-theme-apollo-docs';\n\nThe `ApolloClient` class encapsulates Apollo's core client-side API. It backs all available view-layer integrations (React, iOS, and so on).\n\n## The `ApolloClient` constructor\n\n\u003cTypescriptApiBox name=\"ApolloClient.constructor\" /\u003e\n\nThe constructor for `ApolloClient` accepts an `ApolloClientOptions` object that supports the required and optional fields listed below. These fields make it easy to customize how Apollo works based on your application's needs.\n\n### Example constructor call\n\n```js\nimport { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';\n\n// Instantiate required constructor fields\nconst cache = new InMemoryCache();\nconst link = createHttpLink({\n  uri: 'http://localhost:4000/',\n});\n\nconst client = new ApolloClient({\n  // Provide required constructor fields\n  cache: cache,\n  link: link,\n\n  // Provide some optional constructor fields\n  name: 'react-web-client',\n  version: '1.3',\n  queryDeduplication: false,\n  defaultOptions: {\n    watchQuery: {\n      fetchPolicy: 'cache-and-network',\n    },\n  },\n});\n```\n\n### Required fields\n\n| Name | Description |\n| - | - |\n| `uri` | A URI pointing to the backend GraphQL endpoint that Apollo Client will communicate with. **Note:** One of `uri` or `link` is required; if both are specified, `link` will take precedence. You may also [specify `credentials` and `headers`](../../networking/basic-http-networking/) along with `uri`. |\n| `link` | You can provide an Apollo Link instance to serve as Apollo Client's network layer. For more information, see the [advanced HTTP networking](../../networking/advanced-http-networking/) section. **Note:** One of `uri` or `link` is required; if both are specified, `link` will take precedence. |\n| `cache` | Apollo Client uses an Apollo Cache instance to handle its caching strategy. The recommended cache is `InMemoryCache` which is provided by the `@apollo/client` package. For more information, see [Configuring the cache](../../caching/cache-configuration/). |\n\n### Optional fields\n\n| Name | Description |\n| - | - |\n| `name` | A custom name (e.g., `iOS`) that identifies this particular client among your set of clients. Apollo Server uses this property as part of its [Client Awareness](https://www.apollographql.com/docs/apollo-server/v2/features/metrics#Client-Awareness) feature. |\n| `version` | A custom version that identifies the current version of this particular client (e.g., `1.2`). Apollo Server uses this property as part of its [Client Awareness](https://www.apollographql.com/docs/apollo-server/v2/features/metrics#Client-Awareness) feature. \u003cbr/\u003e\u003cbr/\u003e Note that this version string is **not** the version of Apollo Client that you are using, but rather any version string that helps you differentiate between versions of your client. |\n| `ssrMode` | When using Apollo Client for [server-side rendering](../../performance/server-side-rendering/), set this to `true` so that React Apollo's `getDataFromTree` function can work effectively. |\n| `ssrForceFetchDelay` | Provide this to specify a time interval (in milliseconds) before Apollo Client force-fetches queries after a server-side render. This value is `0` by default. |\n| `connectToDevTools` | Set this to `true` to allow the [Apollo Client Devtools](../../development-testing/developer-tooling/#apollo-client-devtools) Chrome extension to connect to your application's Apollo Client in production. (This connection is allowed automatically in dev mode.) |\n| `queryDeduplication` | Set this to `false` to force all created queries to be sent to the server, even if a query with completely identical parameters (query, variables, operationName) is already in flight. |\n| `defaultOptions` | Provide this object to set application-wide default values for options you can provide to the `watchQuery`, `query`, and `mutate` functions. See below for an example object. |\n\n### Example `defaultOptions` object\n\n```js\nconst defaultOptions = {\n  watchQuery: {\n    fetchPolicy: 'cache-and-network',\n    errorPolicy: 'ignore',\n  },\n  query: {\n    fetchPolicy: 'network-only',\n    errorPolicy: 'all',\n  },\n  mutate: {\n    errorPolicy: 'all',\n  },\n};\n```\n\nYou can override any default option you specify in this object by providing a\ndifferent value for the same option in individual function calls.\n\n\u003e **Note:** The `useQuery` hook uses Apollo Client's `watchQuery` function. To set `defaultOptions` when using the `useQuery` hook, make sure to set them under the `defaultOptions.watchQuery` property.\n\n## `ApolloClient` functions\n\n\u003cTypescriptApiBox name=\"ApolloClient.watchQuery\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.query\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.mutate\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.subscribe\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.readQuery\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.readFragment\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.writeQuery\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.writeFragment\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.resetStore\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.onResetStore\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.clearStore\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.onClearStore\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.stop\" /\u003e\n\u003cTypescriptApiBox name=\"ApolloClient.reFetchObservableQueries\" /\u003e\n\n## Types\n\n\u003cTypescriptApiBox name=\"ApolloClientOptions\" /\u003e\n\u003cTypescriptApiBox name=\"DefaultOptions\" /\u003e\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_api-core_ApolloClient.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

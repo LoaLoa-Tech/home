@@ -1,0 +1,772 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: hooks-faq
+title: Hooks FAQ
+permalink: docs/hooks-faq.html
+prev: hooks-reference.html</p>
+<hr>
+<p><em>Hooks</em> are a new addition in React 16.8. They let you use state and other React features without writing a class.</p>
+<p>This page answers some of the frequently asked questions about <a href="/docs/hooks-overview.html">Hooks</a>.</p>
+<!--
+  if you ever need to regenerate this, this snippet in the devtools console might help:
+<p>$$('.anchor').map(a =&gt;
+<code>${' '.repeat(2 * +a.parentNode.nodeName.slice(1))}</code> +
+<code>[${a.parentNode.textContent}](${a.getAttribute('href')})</code>
+).join('\n')
+--&gt;</p>
+<ul>
+<li><strong><a href="#adoption-strategy">Adoption Strategy</a></strong>
+<ul>
+<li><a href="#which-versions-of-react-include-hooks">Which versions of React include Hooks?</a></li>
+<li><a href="#do-i-need-to-rewrite-all-my-class-components">Do I need to rewrite all my class components?</a></li>
+<li><a href="#what-can-i-do-with-hooks-that-i-couldnt-with-classes">What can I do with Hooks that I couldn't with classes?</a></li>
+<li><a href="#how-much-of-my-react-knowledge-stays-relevant">How much of my React knowledge stays relevant?</a></li>
+<li><a href="#should-i-use-hooks-classes-or-a-mix-of-both">Should I use Hooks, classes, or a mix of both?</a></li>
+<li><a href="#do-hooks-cover-all-use-cases-for-classes">Do Hooks cover all use cases for classes?</a></li>
+<li><a href="#do-hooks-replace-render-props-and-higher-order-components">Do Hooks replace render props and higher-order components?</a></li>
+<li><a href="#what-do-hooks-mean-for-popular-apis-like-redux-connect-and-react-router">What do Hooks mean for popular APIs like Redux connect() and React Router?</a></li>
+<li><a href="#do-hooks-work-with-static-typing">Do Hooks work with static typing?</a></li>
+<li><a href="#how-to-test-components-that-use-hooks">How to test components that use Hooks?</a></li>
+<li><a href="#what-exactly-do-the-lint-rules-enforce">What exactly do the lint rules enforce?</a></li>
+</ul></li>
+<li><strong><a href="#from-classes-to-hooks">From Classes to Hooks</a></strong>
+<ul>
+<li><a href="#how-do-lifecycle-methods-correspond-to-hooks">How do lifecycle methods correspond to Hooks?</a></li>
+<li><a href="#how-can-i-do-data-fetching-with-hooks">How can I do data fetching with Hooks?</a></li>
+<li><a href="#is-there-something-like-instance-variables">Is there something like instance variables?</a></li>
+<li><a href="#should-i-use-one-or-many-state-variables">Should I use one or many state variables?</a></li>
+<li><a href="#can-i-run-an-effect-only-on-updates">Can I run an effect only on updates?</a></li>
+<li><a href="#how-to-get-the-previous-props-or-state">How to get the previous props or state?</a></li>
+<li><a href="#why-am-i-seeing-stale-props-or-state-inside-my-function">Why am I seeing stale props or state inside my function?</a></li>
+<li><a href="#how-do-i-implement-getderivedstatefromprops">How do I implement getDerivedStateFromProps?</a></li>
+<li><a href="#is-there-something-like-forceupdate">Is there something like forceUpdate?</a></li>
+<li><a href="#can-i-make-a-ref-to-a-function-component">Can I make a ref to a function component?</a></li>
+<li><a href="#how-can-i-measure-a-dom-node">How can I measure a DOM node?</a></li>
+<li><a href="#what-does-const-thing-setthing--usestate-mean">What does const [thing, setThing] = useState() mean?</a></li>
+</ul></li>
+<li><strong><a href="#performance-optimizations">Performance Optimizations</a></strong>
+<ul>
+<li><a href="#can-i-skip-an-effect-on-updates">Can I skip an effect on updates?</a></li>
+<li><a href="#is-it-safe-to-omit-functions-from-the-list-of-dependencies">Is it safe to omit functions from the list of dependencies?</a></li>
+<li><a href="#what-can-i-do-if-my-effect-dependencies-change-too-often">What can I do if my effect dependencies change too often?</a></li>
+<li><a href="#how-do-i-implement-shouldcomponentupdate">How do I implement shouldComponentUpdate?</a></li>
+<li><a href="#how-to-memoize-calculations">How to memoize calculations?</a></li>
+<li><a href="#how-to-create-expensive-objects-lazily">How to create expensive objects lazily?</a></li>
+<li><a href="#are-hooks-slow-because-of-creating-functions-in-render">Are Hooks slow because of creating functions in render?</a></li>
+<li><a href="#how-to-avoid-passing-callbacks-down">How to avoid passing callbacks down?</a></li>
+<li><a href="#how-to-read-an-often-changing-value-from-usecallback">How to read an often-changing value from useCallback?</a></li>
+</ul></li>
+<li><strong><a href="#under-the-hood">Under the Hood</a></strong>
+<ul>
+<li><a href="#how-does-react-associate-hook-calls-with-components">How does React associate Hook calls with components?</a></li>
+<li><a href="#what-is-the-prior-art-for-hooks">What is the prior art for Hooks?</a></li>
+</ul></li>
+</ul>
+<h2>Adoption Strategy {#adoption-strategy}</h2>
+<h3>Which versions of React include Hooks? {#which-versions-of-react-include-hooks}</h3>
+<p>Starting with 16.8.0, React includes a stable implementation of React Hooks for:</p>
+<ul>
+<li>React DOM</li>
+<li>React Native</li>
+<li>React DOM Server</li>
+<li>React Test Renderer</li>
+<li>React Shallow Renderer</li>
+</ul>
+<p>Note that <strong>to enable Hooks, all React packages need to be 16.8.0 or higher</strong>. Hooks won't work if you forget to update, for example, React DOM.</p>
+<p><a href="https://reactnative.dev/blog/2019/03/12/releasing-react-native-059">React Native 0.59</a> and above support Hooks.</p>
+<h3>Do I need to rewrite all my class components? {#do-i-need-to-rewrite-all-my-class-components}</h3>
+<p>No. There are <a href="/docs/hooks-intro.html#gradual-adoption-strategy">no plans</a> to remove classes from React -- we all need to keep shipping products and can't afford rewrites. We recommend trying Hooks in new code.</p>
+<h3>What can I do with Hooks that I couldn't with classes? {#what-can-i-do-with-hooks-that-i-couldnt-with-classes}</h3>
+<p>Hooks offer a powerful and expressive new way to reuse functionality between components. <a href="/docs/hooks-custom.html">&quot;Building Your Own Hooks&quot;</a> provides a glimpse of what's possible. <a href="https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889">This article</a> by a React core team member dives deeper into the new capabilities unlocked by Hooks.</p>
+<h3>How much of my React knowledge stays relevant? {#how-much-of-my-react-knowledge-stays-relevant}</h3>
+<p>Hooks are a more direct way to use the React features you already know -- such as state, lifecycle, context, and refs. They don't fundamentally change how React works, and your knowledge of components, props, and top-down data flow is just as relevant.</p>
+<p>Hooks do have a learning curve of their own. If there's something missing in this documentation, <a href="https://github.com/reactjs/reactjs.org/issues/new">raise an issue</a> and we'll try to help.</p>
+<h3>Should I use Hooks, classes, or a mix of both? {#should-i-use-hooks-classes-or-a-mix-of-both}</h3>
+<p>When you're ready, we'd encourage you to start trying Hooks in new components you write. Make sure everyone on your team is on board with using them and familiar with this documentation. We don't recommend rewriting your existing classes to Hooks unless you planned to rewrite them anyway (e.g. to fix bugs).</p>
+<p>You can't use Hooks <em>inside</em> a class component, but you can definitely mix classes and function components with Hooks in a single tree. Whether a component is a class or a function that uses Hooks is an implementation detail of that component. In the longer term, we expect Hooks to be the primary way people write React components.</p>
+<h3>Do Hooks cover all use cases for classes? {#do-hooks-cover-all-use-cases-for-classes}</h3>
+<p>Our goal is for Hooks to cover all use cases for classes as soon as possible. There are no Hook equivalents to the uncommon <code>getSnapshotBeforeUpdate</code>, <code>getDerivedStateFromError</code> and <code>componentDidCatch</code> lifecycles yet, but we plan to add them soon.</p>
+<p>It is an early time for Hooks, and some third-party libraries might not be compatible with Hooks at the moment.</p>
+<h3>Do Hooks replace render props and higher-order components? {#do-hooks-replace-render-props-and-higher-order-components}</h3>
+<p>Often, render props and higher-order components render only a single child. We think Hooks are a simpler way to serve this use case. There is still a place for both patterns (for example, a virtual scroller component might have a <code>renderItem</code> prop, or a visual container component might have its own DOM structure). But in most cases, Hooks will be sufficient and can help reduce nesting in your tree.</p>
+<h3>What do Hooks mean for popular APIs like Redux <code>connect()</code> and React Router? {#what-do-hooks-mean-for-popular-apis-like-redux-connect-and-react-router}</h3>
+<p>You can continue to use the exact same APIs as you always have; they'll continue to work.</p>
+<p>React Redux since v7.1.0 <a href="https://react-redux.js.org/api/hooks">supports Hooks API</a> and exposes hooks like <code>useDispatch</code> or <code>useSelector</code>.</p>
+<p>React Router <a href="https://reacttraining.com/react-router/web/api/Hooks">supports hooks</a> since v5.1.</p>
+<p>Other libraries might support hooks in the future too.</p>
+<h3>Do Hooks work with static typing? {#do-hooks-work-with-static-typing}</h3>
+<p>Hooks were designed with static typing in mind. Because they're functions, they are easier to type correctly than patterns like higher-order components. The latest Flow and TypeScript React definitions include support for React Hooks.</p>
+<p>Importantly, custom Hooks give you the power to constrain React API if you'd like to type them more strictly in some way. React gives you the primitives, but you can combine them in different ways than what we provide out of the box.</p>
+<h3>How to test components that use Hooks? {#how-to-test-components-that-use-hooks}</h3>
+<p>From React's point of view, a component using Hooks is just a regular component. If your testing solution doesn't rely on React internals, testing components with Hooks shouldn't be different from how you normally test components.</p>
+<blockquote>
+<p>Note</p>
+<p><a href="/docs/testing-recipes.html">Testing Recipes</a> include many examples that you can copy and paste.</p>
+</blockquote>
+<p>For example, let's say we have this counter component:</p>
+<pre><code class="language-js">function Example() {
+  const [count, setCount] = useState(0);
+  useEffect(() =&gt; {
+    document.title = `You clicked ${count} times`;
+  });
+  return (
+    &lt;div&gt;
+      &lt;p&gt;You clicked {count} times&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+        Click me
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>We'll test it using React DOM. To make sure that the behavior matches what happens in the browser, we'll wrap the code rendering and updating it into <a href="/docs/test-utils.html#act"><code>ReactTestUtils.act()</code></a> calls:</p>
+<pre><code class="language-js{3,20-22,29-31}">import React from 'react';
+import ReactDOM from 'react-dom';
+import { act } from 'react-dom/test-utils';
+import Counter from './Counter';
+
+let container;
+
+beforeEach(() =&gt; {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+});
+
+afterEach(() =&gt; {
+  document.body.removeChild(container);
+  container = null;
+});
+
+it('can render and update a counter', () =&gt; {
+  // Test first render and effect
+  act(() =&gt; {
+    ReactDOM.render(&lt;Counter /&gt;, container);
+  });
+  const button = container.querySelector('button');
+  const label = container.querySelector('p');
+  expect(label.textContent).toBe('You clicked 0 times');
+  expect(document.title).toBe('You clicked 0 times');
+
+  // Test second render and effect
+  act(() =&gt; {
+    button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+  });
+  expect(label.textContent).toBe('You clicked 1 times');
+  expect(document.title).toBe('You clicked 1 times');
+});
+</code></pre>
+<p>The calls to <code>act()</code> will also flush the effects inside of them.</p>
+<p>If you need to test a custom Hook, you can do so by creating a component in your test, and using your Hook from it. Then you can test the component you wrote.</p>
+<p>To reduce the boilerplate, we recommend using <a href="https://testing-library.com/react">React Testing Library</a> which is designed to encourage writing tests that use your components as the end users do.</p>
+<p>For more information, check out <a href="/docs/testing-recipes.html">Testing Recipes</a>.</p>
+<h3>What exactly do the <a href="https://www.npmjs.com/package/eslint-plugin-react-hooks">lint rules</a> enforce? {#what-exactly-do-the-lint-rules-enforce}</h3>
+<p>We provide an <a href="https://www.npmjs.com/package/eslint-plugin-react-hooks">ESLint plugin</a> that enforces <a href="/docs/hooks-rules.html">rules of Hooks</a> to avoid bugs. It assumes that any function starting with &quot;<code>use</code>&quot; and a capital letter right after it is a Hook. We recognize this heuristic isn't perfect and there may be some false positives, but without an ecosystem-wide convention there is just no way to make Hooks work well -- and longer names will discourage people from either adopting Hooks or following the convention.</p>
+<p>In particular, the rule enforces that:</p>
+<ul>
+<li>Calls to Hooks are either inside a <code>PascalCase</code> function (assumed to be a component) or another <code>useSomething</code> function (assumed to be a custom Hook).</li>
+<li>Hooks are called in the same order on every render.</li>
+</ul>
+<p>There are a few more heuristics, and they might change over time as we fine-tune the rule to balance finding bugs with avoiding false positives.</p>
+<h2>From Classes to Hooks {#from-classes-to-hooks}</h2>
+<h3>How do lifecycle methods correspond to Hooks? {#how-do-lifecycle-methods-correspond-to-hooks}</h3>
+<ul>
+<li><p><code>constructor</code>: Function components don't need a constructor. You can initialize the state in the <a href="/docs/hooks-reference.html#usestate"><code>useState</code></a> call. If computing the initial state is expensive, you can pass a function to <code>useState</code>.</p></li>
+<li><p><code>getDerivedStateFromProps</code>: Schedule an update <a href="#how-do-i-implement-getderivedstatefromprops">while rendering</a> instead.</p></li>
+<li><p><code>shouldComponentUpdate</code>: See <code>React.memo</code> <a href="#how-do-i-implement-shouldcomponentupdate">below</a>.</p></li>
+<li><p><code>render</code>: This is the function component body itself.</p></li>
+<li><p><code>componentDidMount</code>, <code>componentDidUpdate</code>, <code>componentWillUnmount</code>: The <a href="/docs/hooks-reference.html#useeffect"><code>useEffect</code> Hook</a> can express all combinations of these (including <a href="#can-i-skip-an-effect-on-updates">less</a> <a href="#can-i-run-an-effect-only-on-updates">common</a> cases).</p></li>
+<li><p><code>getSnapshotBeforeUpdate</code>, <code>componentDidCatch</code> and <code>getDerivedStateFromError</code>: There are no Hook equivalents for these methods yet, but they will be added soon.</p></li>
+</ul>
+<h3>How can I do data fetching with Hooks? {#how-can-i-do-data-fetching-with-hooks}</h3>
+<p>Here is a <a href="https://codesandbox.io/s/jvvkoo8pq3">small demo</a> to get you started. To learn more, check out <a href="https://www.robinwieruch.de/react-hooks-fetch-data/">this article</a> about data fetching with Hooks.</p>
+<h3>Is there something like instance variables? {#is-there-something-like-instance-variables}</h3>
+<p>Yes! The <a href="/docs/hooks-reference.html#useref"><code>useRef()</code></a> Hook isn't just for DOM refs. The &quot;ref&quot; object is a generic container whose <code>current</code> property is mutable and can hold any value, similar to an instance property on a class.</p>
+<p>You can write to it from inside <code>useEffect</code>:</p>
+<pre><code class="language-js{2,8}">function Timer() {
+  const intervalRef = useRef();
+
+  useEffect(() =&gt; {
+    const id = setInterval(() =&gt; {
+      // ...
+    });
+    intervalRef.current = id;
+    return () =&gt; {
+      clearInterval(intervalRef.current);
+    };
+  });
+
+  // ...
+}
+</code></pre>
+<p>If we just wanted to set an interval, we wouldn't need the ref (<code>id</code> could be local to the effect), but it's useful if we want to clear the interval from an event handler:</p>
+<pre><code class="language-js{3}">  // ...
+  function handleCancelClick() {
+    clearInterval(intervalRef.current);
+  }
+  // ...
+</code></pre>
+<p>Conceptually, you can think of refs as similar to instance variables in a class. Unless you're doing <a href="#how-to-create-expensive-objects-lazily">lazy initialization</a>, avoid setting refs during rendering -- this can lead to surprising behavior. Instead, typically you want to modify refs in event handlers and effects.</p>
+<h3>Should I use one or many state variables? {#should-i-use-one-or-many-state-variables}</h3>
+<p>If you're coming from classes, you might be tempted to always call <code>useState()</code> once and put all state into a single object. You can do it if you'd like. Here is an example of a component that follows the mouse movement. We keep its position and size in the local state:</p>
+<pre><code class="language-js">function Box() {
+  const [state, setState] = useState({ left: 0, top: 0, width: 100, height: 100 });
+  // ...
+}
+</code></pre>
+<p>Now let's say we want to write some logic that changes <code>left</code> and <code>top</code> when the user moves their mouse. Note how we have to merge these fields into the previous state object manually:</p>
+<pre><code class="language-js{4,5}">  // ...
+  useEffect(() =&gt; {
+    function handleWindowMouseMove(e) {
+      // Spreading &quot;...state&quot; ensures we don't &quot;lose&quot; width and height
+      setState(state =&gt; ({ ...state, left: e.pageX, top: e.pageY }));
+    }
+    // Note: this implementation is a bit simplified
+    window.addEventListener('mousemove', handleWindowMouseMove);
+    return () =&gt; window.removeEventListener('mousemove', handleWindowMouseMove);
+  }, []);
+  // ...
+</code></pre>
+<p>This is because when we update a state variable, we <em>replace</em> its value. This is different from <code>this.setState</code> in a class, which <em>merges</em> the updated fields into the object.</p>
+<p>If you miss automatic merging, you could write a custom <code>useLegacyState</code> Hook that merges object state updates. However, <strong>we recommend to split state into multiple state variables based on which values tend to change together.</strong></p>
+<p>For example, we could split our component state into <code>position</code> and <code>size</code> objects, and always replace the <code>position</code> with no need for merging:</p>
+<pre><code class="language-js{2,7}">function Box() {
+  const [position, setPosition] = useState({ left: 0, top: 0 });
+  const [size, setSize] = useState({ width: 100, height: 100 });
+
+  useEffect(() =&gt; {
+    function handleWindowMouseMove(e) {
+      setPosition({ left: e.pageX, top: e.pageY });
+    }
+    // ...
+</code></pre>
+<p>Separating independent state variables also has another benefit. It makes it easy to later extract some related logic into a custom Hook, for example:</p>
+<pre><code class="language-js{2,7}">function Box() {
+  const position = useWindowPosition();
+  const [size, setSize] = useState({ width: 100, height: 100 });
+  // ...
+}
+
+function useWindowPosition() {
+  const [position, setPosition] = useState({ left: 0, top: 0 });
+  useEffect(() =&gt; {
+    // ...
+  }, []);
+  return position;
+}
+</code></pre>
+<p>Note how we were able to move the <code>useState</code> call for the <code>position</code> state variable and the related effect into a custom Hook without changing their code. If all state was in a single object, extracting it would be more difficult.</p>
+<p>Both putting all state in a single <code>useState</code> call, and having a <code>useState</code> call per each field can work. Components tend to be most readable when you find a balance between these two extremes, and group related state into a few independent state variables. If the state logic becomes complex, we recommend <a href="/docs/hooks-reference.html#usereducer">managing it with a reducer</a> or a custom Hook.</p>
+<h3>Can I run an effect only on updates? {#can-i-run-an-effect-only-on-updates}</h3>
+<p>This is a rare use case. If you need it, you can <a href="#is-there-something-like-instance-variables">use a mutable ref</a> to manually store a boolean value corresponding to whether you are on the first or a subsequent render, then check that flag in your effect. (If you find yourself doing this often, you could create a custom Hook for it.)</p>
+<h3>How to get the previous props or state? {#how-to-get-the-previous-props-or-state}</h3>
+<p>Currently, you can do it manually <a href="#is-there-something-like-instance-variables">with a ref</a>:</p>
+<pre><code class="language-js{6,8}">function Counter() {
+  const [count, setCount] = useState(0);
+
+  const prevCountRef = useRef();
+  useEffect(() =&gt; {
+    prevCountRef.current = count;
+  });
+  const prevCount = prevCountRef.current;
+
+  return &lt;h1&gt;Now: {count}, before: {prevCount}&lt;/h1&gt;;
+}
+</code></pre>
+<p>This might be a bit convoluted but you can extract it into a custom Hook:</p>
+<pre><code class="language-js{3,7}">function Counter() {
+  const [count, setCount] = useState(0);
+  const prevCount = usePrevious(count);
+  return &lt;h1&gt;Now: {count}, before: {prevCount}&lt;/h1&gt;;
+}
+
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() =&gt; {
+    ref.current = value;
+  });
+  return ref.current;
+}
+</code></pre>
+<p>Note how this would work for props, state, or any other calculated value.</p>
+<pre><code class="language-js{5}">function Counter() {
+  const [count, setCount] = useState(0);
+
+  const calculation = count + 100;
+  const prevCalculation = usePrevious(calculation);
+  // ...
+</code></pre>
+<p>It's possible that in the future React will provide a <code>usePrevious</code> Hook out of the box since it's a relatively common use case.</p>
+<p>See also <a href="#how-do-i-implement-getderivedstatefromprops">the recommended pattern for derived state</a>.</p>
+<h3>Why am I seeing stale props or state inside my function? {#why-am-i-seeing-stale-props-or-state-inside-my-function}</h3>
+<p>Any function inside a component, including event handlers and effects, &quot;sees&quot; the props and state from the render it was created in. For example, consider code like this:</p>
+<pre><code class="language-js">function Example() {
+  const [count, setCount] = useState(0);
+
+  function handleAlertClick() {
+    setTimeout(() =&gt; {
+      alert('You clicked on: ' + count);
+    }, 3000);
+  }
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;You clicked {count} times&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+        Click me
+      &lt;/button&gt;
+      &lt;button onClick={handleAlertClick}&gt;
+        Show alert
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>If you first click &quot;Show alert&quot; and then increment the counter, the alert will show the <code>count</code> variable <strong>at the time you clicked the &quot;Show alert&quot; button</strong>. This prevents bugs caused by the code assuming props and state don't change.</p>
+<p>If you intentionally want to read the <em>latest</em> state from some asynchronous callback, you could keep it in <a href="/docs/hooks-faq.html#is-there-something-like-instance-variables">a ref</a>, mutate it, and read from it.</p>
+<p>Finally, another possible reason you're seeing stale props or state is if you use the &quot;dependency array&quot; optimization but didn't correctly specify all the dependencies. For example, if an effect specifies <code>[]</code> as the second argument but reads <code>someProp</code> inside, it will keep &quot;seeing&quot; the initial value of <code>someProp</code>. The solution is to either remove the dependency array, or to fix it. Here's <a href="#is-it-safe-to-omit-functions-from-the-list-of-dependencies">how you can deal with functions</a>, and here's <a href="#what-can-i-do-if-my-effect-dependencies-change-too-often">other common strategies</a> to run effects less often without incorrectly skipping dependencies.</p>
+<blockquote>
+<p>Note</p>
+<p>We provide an <a href="https://github.com/facebook/react/issues/14920"><code>exhaustive-deps</code></a> ESLint rule as a part of the <a href="https://www.npmjs.com/package/eslint-plugin-react-hooks#installation"><code>eslint-plugin-react-hooks</code></a> package. It warns when dependencies are specified incorrectly and suggests a fix.</p>
+</blockquote>
+<h3>How do I implement <code>getDerivedStateFromProps</code>? {#how-do-i-implement-getderivedstatefromprops}</h3>
+<p>While you probably <a href="/blog/2018/06/07/you-probably-dont-need-derived-state.html">don't need it</a>, in rare cases that you do (such as implementing a <code>&lt;Transition&gt;</code> component), you can update the state right during rendering. React will re-run the component with updated state immediately after exiting the first render so it wouldn't be expensive.</p>
+<p>Here, we store the previous value of the <code>row</code> prop in a state variable so that we can compare:</p>
+<pre><code class="language-js">function ScrollView({row}) {
+  const [isScrollingDown, setIsScrollingDown] = useState(false);
+  const [prevRow, setPrevRow] = useState(null);
+
+  if (row !== prevRow) {
+    // Row changed since last render. Update isScrollingDown.
+    setIsScrollingDown(prevRow !== null &amp;&amp; row &gt; prevRow);
+    setPrevRow(row);
+  }
+
+  return `Scrolling down: ${isScrollingDown}`;
+}
+</code></pre>
+<p>This might look strange at first, but an update during rendering is exactly what <code>getDerivedStateFromProps</code> has always been like conceptually.</p>
+<h3>Is there something like forceUpdate? {#is-there-something-like-forceupdate}</h3>
+<p>Both <code>useState</code> and <code>useReducer</code> Hooks <a href="/docs/hooks-reference.html#bailing-out-of-a-state-update">bail out of updates</a> if the next value is the same as the previous one. Mutating state in place and calling <code>setState</code> will not cause a re-render.</p>
+<p>Normally, you shouldn't mutate local state in React. However, as an escape hatch, you can use an incrementing counter to force a re-render even if the state has not changed:</p>
+<pre><code class="language-js">  const [ignored, forceUpdate] = useReducer(x =&gt; x + 1, 0);
+
+  function handleClick() {
+    forceUpdate();
+  }
+</code></pre>
+<p>Try to avoid this pattern if possible.</p>
+<h3>Can I make a ref to a function component? {#can-i-make-a-ref-to-a-function-component}</h3>
+<p>While you shouldn't need this often, you may expose some imperative methods to a parent component with the <a href="/docs/hooks-reference.html#useimperativehandle"><code>useImperativeHandle</code></a> Hook.</p>
+<h3>How can I measure a DOM node? {#how-can-i-measure-a-dom-node}</h3>
+<p>One rudimentary way to measure the position or size of a DOM node is to use a <a href="/docs/refs-and-the-dom.html#callback-refs">callback ref</a>. React will call that callback whenever the ref gets attached to a different node. Here is a <a href="https://codesandbox.io/s/l7m0v5x4v9">small demo</a>:</p>
+<pre><code class="language-js{4-8,12}">function MeasureExample() {
+  const [height, setHeight] = useState(0);
+
+  const measuredRef = useCallback(node =&gt; {
+    if (node !== null) {
+      setHeight(node.getBoundingClientRect().height);
+    }
+  }, []);
+
+  return (
+    &lt;&gt;
+      &lt;h1 ref={measuredRef}&gt;Hello, world&lt;/h1&gt;
+      &lt;h2&gt;The above header is {Math.round(height)}px tall&lt;/h2&gt;
+    &lt;/&gt;
+  );
+}
+</code></pre>
+<p>We didn't choose <code>useRef</code> in this example because an object ref doesn't notify us about <em>changes</em> to the current ref value. Using a callback ref ensures that <a href="https://codesandbox.io/s/818zzk8m78">even if a child component displays the measured node later</a> (e.g. in response to a click), we still get notified about it in the parent component and can update the measurements.</p>
+<p>Note that we pass <code>[]</code> as a dependency array to <code>useCallback</code>. This ensures that our ref callback doesn't change between the re-renders, and so React won't call it unnecessarily.</p>
+<p>In this example, the callback ref will be called only when the component mounts and unmounts, since the rendered <code>&lt;h1&gt;</code> component stays present throughout any rerenders. If you want to be notified any time a component resizes, you may want to use <a href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver"><code>ResizeObserver</code></a> or a third-party Hook built on it.</p>
+<p>If you want, you can <a href="https://codesandbox.io/s/m5o42082xy">extract this logic</a> into a reusable Hook:</p>
+<pre><code class="language-js{2}">function MeasureExample() {
+  const [rect, ref] = useClientRect();
+  return (
+    &lt;&gt;
+      &lt;h1 ref={ref}&gt;Hello, world&lt;/h1&gt;
+      {rect !== null &amp;&amp;
+        &lt;h2&gt;The above header is {Math.round(rect.height)}px tall&lt;/h2&gt;
+      }
+    &lt;/&gt;
+  );
+}
+
+function useClientRect() {
+  const [rect, setRect] = useState(null);
+  const ref = useCallback(node =&gt; {
+    if (node !== null) {
+      setRect(node.getBoundingClientRect());
+    }
+  }, []);
+  return [rect, ref];
+}
+</code></pre>
+<h3>What does <code>const [thing, setThing] = useState()</code> mean? {#what-does-const-thing-setthing--usestate-mean}</h3>
+<p>If you're not familiar with this syntax, check out the <a href="/docs/hooks-state.html#tip-what-do-square-brackets-mean">explanation</a> in the State Hook documentation.</p>
+<h2>Performance Optimizations {#performance-optimizations}</h2>
+<h3>Can I skip an effect on updates? {#can-i-skip-an-effect-on-updates}</h3>
+<p>Yes. See <a href="/docs/hooks-reference.html#conditionally-firing-an-effect">conditionally firing an effect</a>. Note that forgetting to handle updates often <a href="/docs/hooks-effect.html#explanation-why-effects-run-on-each-update">introduces bugs</a>, which is why this isn't the default behavior.</p>
+<h3>Is it safe to omit functions from the list of dependencies? {#is-it-safe-to-omit-functions-from-the-list-of-dependencies}</h3>
+<p>Generally speaking, no.</p>
+<pre><code class="language-js{3,8}">function Example({ someProp }) {
+  function doSomething() {
+    console.log(someProp);
+  }
+
+  useEffect(() =&gt; {
+    doSomething();
+  }, []); // 🔴 This is not safe (it calls `doSomething` which uses `someProp`)
+}
+</code></pre>
+<p>It's difficult to remember which props or state are used by functions outside of the effect. This is why <strong>usually you'll want to declare functions needed by an effect <em>inside</em> of it.</strong> Then it's easy to see what values from the component scope that effect depends on:</p>
+<pre><code class="language-js{4,8}">function Example({ someProp }) {
+  useEffect(() =&gt; {
+    function doSomething() {
+      console.log(someProp);
+    }
+
+    doSomething();
+  }, [someProp]); // ✅ OK (our effect only uses `someProp`)
+}
+</code></pre>
+<p>If after that we still don't use any values from the component scope, it's safe to specify <code>[]</code>:</p>
+<pre><code class="language-js{7}">useEffect(() =&gt; {
+  function doSomething() {
+    console.log('hello');
+  }
+
+  doSomething();
+}, []); // ✅ OK in this example because we don't use *any* values from component scope
+</code></pre>
+<p>Depending on your use case, there are a few more options described below.</p>
+<blockquote>
+<p>Note</p>
+<p>We provide the <a href="https://github.com/facebook/react/issues/14920"><code>exhaustive-deps</code></a> ESLint rule as a part of the <a href="https://www.npmjs.com/package/eslint-plugin-react-hooks#installation"><code>eslint-plugin-react-hooks</code></a> package. It helps you find components that don't handle updates consistently.</p>
+</blockquote>
+<p>Let's see why this matters.</p>
+<p>If you specify a <a href="/docs/hooks-reference.html#conditionally-firing-an-effect">list of dependencies</a> as the last argument to <code>useEffect</code>, <code>useLayoutEffect</code>, <code>useMemo</code>, <code>useCallback</code>, or <code>useImperativeHandle</code>, it must include all values that are used inside the callback and participate in the React data flow. That includes props, state, and anything derived from them.</p>
+<p>It is <strong>only</strong> safe to omit a function from the dependency list if nothing in it (or the functions called by it) references props, state, or values derived from them. This example has a bug:</p>
+<pre><code class="language-js{5,12}">function ProductPage({ productId }) {
+  const [product, setProduct] = useState(null);
+
+  async function fetchProduct() {
+    const response = await fetch('http://myapi/product/' + productId); // Uses productId prop
+    const json = await response.json();
+    setProduct(json);
+  }
+
+  useEffect(() =&gt; {
+    fetchProduct();
+  }, []); // 🔴 Invalid because `fetchProduct` uses `productId`
+  // ...
+}
+</code></pre>
+<p><strong>The recommended fix is to move that function <em>inside</em> of your effect</strong>. That makes it easy to see which props or state your effect uses, and to ensure they're all declared:</p>
+<pre><code class="language-js{5-10,13}">function ProductPage({ productId }) {
+  const [product, setProduct] = useState(null);
+
+  useEffect(() =&gt; {
+    // By moving this function inside the effect, we can clearly see the values it uses.
+    async function fetchProduct() {
+      const response = await fetch('http://myapi/product/' + productId);
+      const json = await response.json();
+      setProduct(json);
+    }
+
+    fetchProduct();
+  }, [productId]); // ✅ Valid because our effect only uses productId
+  // ...
+}
+</code></pre>
+<p>This also allows you to handle out-of-order responses with a local variable inside the effect:</p>
+<pre><code class="language-js{2,6,10}">  useEffect(() =&gt; {
+    let ignore = false;
+    async function fetchProduct() {
+      const response = await fetch('http://myapi/product/' + productId);
+      const json = await response.json();
+      if (!ignore) setProduct(json);
+    }
+
+    fetchProduct();
+    return () =&gt; { ignore = true };
+  }, [productId]);
+</code></pre>
+<p>We moved the function inside the effect so it doesn't need to be in its dependency list.</p>
+<blockquote>
+<p>Tip</p>
+<p>Check out <a href="https://codesandbox.io/s/jvvkoo8pq3">this small demo</a> and <a href="https://www.robinwieruch.de/react-hooks-fetch-data/">this article</a> to learn more about data fetching with Hooks.</p>
+</blockquote>
+<p><strong>If for some reason you <em>can't</em> move a function inside an effect, there are a few more options:</strong></p>
+<ul>
+<li><strong>You can try moving that function outside of your component</strong>. In that case, the function is guaranteed to not reference any props or state, and also doesn't need to be in the list of dependencies.</li>
+<li>If the function you're calling is a pure computation and is safe to call while rendering, you may <strong>call it outside of the effect instead,</strong> and make the effect depend on the returned value.</li>
+<li>As a last resort, you can <strong>add a function to effect dependencies but <em>wrap its definition</em></strong> into the <a href="/docs/hooks-reference.html#usecallback"><code>useCallback</code></a> Hook. This ensures it doesn't change on every render unless <em>its own</em> dependencies also change:</li>
+</ul>
+<pre><code class="language-js{2-5}">function ProductPage({ productId }) {
+  // ✅ Wrap with useCallback to avoid change on every render
+  const fetchProduct = useCallback(() =&gt; {
+    // ... Does something with productId ...
+  }, [productId]); // ✅ All useCallback dependencies are specified
+
+  return &lt;ProductDetails fetchProduct={fetchProduct} /&gt;;
+}
+
+function ProductDetails({ fetchProduct }) {
+  useEffect(() =&gt; {
+    fetchProduct();
+  }, [fetchProduct]); // ✅ All useEffect dependencies are specified
+  // ...
+}
+</code></pre>
+<p>Note that in the above example we <strong>need</strong> to keep the function in the dependencies list. This ensures that a change in the <code>productId</code> prop of <code>ProductPage</code> automatically triggers a refetch in the <code>ProductDetails</code> component.</p>
+<h3>What can I do if my effect dependencies change too often? {#what-can-i-do-if-my-effect-dependencies-change-too-often}</h3>
+<p>Sometimes, your effect may be using state that changes too often. You might be tempted to omit that state from a list of dependencies, but that usually leads to bugs:</p>
+<pre><code class="language-js{6,9}">function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() =&gt; {
+    const id = setInterval(() =&gt; {
+      setCount(count + 1); // This effect depends on the `count` state
+    }, 1000);
+    return () =&gt; clearInterval(id);
+  }, []); // 🔴 Bug: `count` is not specified as a dependency
+
+  return &lt;h1&gt;{count}&lt;/h1&gt;;
+}
+</code></pre>
+<p>The empty set of dependencies, <code>[]</code>, means that the effect will only run once when the component mounts, and not on every re-render. The problem is that inside the <code>setInterval</code> callback, the value of <code>count</code> does not change, because we've created a closure with the value of <code>count</code> set to <code>0</code> as it was when the effect callback ran. Every second, this callback then calls <code>setCount(0 + 1)</code>, so the count never goes above 1.</p>
+<p>Specifying <code>[count]</code> as a list of dependencies would fix the bug, but would cause the interval to be reset on every change. Effectively, each <code>setInterval</code> would get one chance to execute before being cleared (similar to a <code>setTimeout</code>.) That may not be desirable. To fix this, we can use the <a href="/docs/hooks-reference.html#functional-updates">functional update form of <code>setState</code></a>. It lets us specify <em>how</em> the state needs to change without referencing the <em>current</em> state:</p>
+<pre><code class="language-js{6,9}">function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() =&gt; {
+    const id = setInterval(() =&gt; {
+      setCount(c =&gt; c + 1); // ✅ This doesn't depend on `count` variable outside
+    }, 1000);
+    return () =&gt; clearInterval(id);
+  }, []); // ✅ Our effect doesn't use any variables in the component scope
+
+  return &lt;h1&gt;{count}&lt;/h1&gt;;
+}
+</code></pre>
+<p>(The identity of the <code>setCount</code> function is guaranteed to be stable so it's safe to omit.)</p>
+<p>Now, the <code>setInterval</code> callback executes once a second, but each time the inner call to <code>setCount</code> can use an up-to-date value for <code>count</code> (called <code>c</code> in the callback here.)</p>
+<p>In more complex cases (such as if one state depends on another state), try moving the state update logic outside the effect with the <a href="/docs/hooks-reference.html#usereducer"><code>useReducer</code> Hook</a>. <a href="https://adamrackis.dev/state-and-use-reducer/">This article</a> offers an example of how you can do this. <strong>The identity of the <code>dispatch</code> function from <code>useReducer</code> is always stable</strong> — even if the reducer function is declared inside the component and reads its props.</p>
+<p>As a last resort, if you want something like <code>this</code> in a class, you can <a href="/docs/hooks-faq.html#is-there-something-like-instance-variables">use a ref</a> to hold a mutable variable. Then you can write and read to it. For example:</p>
+<pre><code class="language-js{2-6,10-11,16}">function Example(props) {
+  // Keep latest props in a ref.
+  const latestProps = useRef(props);
+  useEffect(() =&gt; {
+    latestProps.current = props;
+  });
+
+  useEffect(() =&gt; {
+    function tick() {
+      // Read latest props at any time
+      console.log(latestProps.current);
+    }
+
+    const id = setInterval(tick, 1000);
+    return () =&gt; clearInterval(id);
+  }, []); // This effect never re-runs
+}
+</code></pre>
+<p>Only do this if you couldn't find a better alternative, as relying on mutation makes components less predictable. If there's a specific pattern that doesn't translate well, <a href="https://github.com/facebook/react/issues/new">file an issue</a> with a runnable example code and we can try to help.</p>
+<h3>How do I implement <code>shouldComponentUpdate</code>? {#how-do-i-implement-shouldcomponentupdate}</h3>
+<p>You can wrap a function component with <code>React.memo</code> to shallowly compare its props:</p>
+<pre><code class="language-js">const Button = React.memo((props) =&gt; {
+  // your component
+});
+</code></pre>
+<p>It's not a Hook because it doesn't compose like Hooks do. <code>React.memo</code> is equivalent to <code>PureComponent</code>, but it only compares props. (You can also add a second argument to specify a custom comparison function that takes the old and new props. If it returns true, the update is skipped.)</p>
+<p><code>React.memo</code> doesn't compare state because there is no single state object to compare. But you can make children pure too, or even <a href="/docs/hooks-faq.html#how-to-memoize-calculations">optimize individual children with <code>useMemo</code></a>.</p>
+<h3>How to memoize calculations? {#how-to-memoize-calculations}</h3>
+<p>The <a href="/docs/hooks-reference.html#usememo"><code>useMemo</code></a> Hook lets you cache calculations between multiple renders by &quot;remembering&quot; the previous computation:</p>
+<pre><code class="language-js">const memoizedValue = useMemo(() =&gt; computeExpensiveValue(a, b), [a, b]);
+</code></pre>
+<p>This code calls <code>computeExpensiveValue(a, b)</code>. But if the dependencies <code>[a, b]</code> haven't changed since the last value, <code>useMemo</code> skips calling it a second time and simply reuses the last value it returned.</p>
+<p>Remember that the function passed to <code>useMemo</code> runs during rendering. Don't do anything there that you wouldn't normally do while rendering. For example, side effects belong in <code>useEffect</code>, not <code>useMemo</code>.</p>
+<p><strong>You may rely on <code>useMemo</code> as a performance optimization, not as a semantic guarantee.</strong> In the future, React may choose to &quot;forget&quot; some previously memoized values and recalculate them on next render, e.g. to free memory for offscreen components. Write your code so that it still works without <code>useMemo</code> — and then add it to optimize performance. (For rare cases when a value must <em>never</em> be recomputed, you can <a href="#how-to-create-expensive-objects-lazily">lazily initialize</a> a ref.)</p>
+<p>Conveniently, <code>useMemo</code> also lets you skip an expensive re-render of a child:</p>
+<pre><code class="language-js">function Parent({ a, b }) {
+  // Only re-rendered if `a` changes:
+  const child1 = useMemo(() =&gt; &lt;Child1 a={a} /&gt;, [a]);
+  // Only re-rendered if `b` changes:
+  const child2 = useMemo(() =&gt; &lt;Child2 b={b} /&gt;, [b]);
+  return (
+    &lt;&gt;
+      {child1}
+      {child2}
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>Note that this approach won't work in a loop because Hook calls <a href="/docs/hooks-rules.html">can't</a> be placed inside loops. But you can extract a separate component for the list item, and call <code>useMemo</code> there.</p>
+<h3>How to create expensive objects lazily? {#how-to-create-expensive-objects-lazily}</h3>
+<p><code>useMemo</code> lets you <a href="#how-to-memoize-calculations">memoize an expensive calculation</a> if the dependencies are the same. However, it only serves as a hint, and doesn't <em>guarantee</em> the computation won't re-run. But sometimes you need to be sure an object is only created once.</p>
+<p><strong>The first common use case is when creating the initial state is expensive:</strong></p>
+<pre><code class="language-js">function Table(props) {
+  // ⚠️ createRows() is called on every render
+  const [rows, setRows] = useState(createRows(props.count));
+  // ...
+}
+</code></pre>
+<p>To avoid re-creating the ignored initial state, we can pass a <strong>function</strong> to <code>useState</code>:</p>
+<pre><code class="language-js">function Table(props) {
+  // ✅ createRows() is only called once
+  const [rows, setRows] = useState(() =&gt; createRows(props.count));
+  // ...
+}
+</code></pre>
+<p>React will only call this function during the first render. See the <a href="/docs/hooks-reference.html#usestate"><code>useState</code> API reference</a>.</p>
+<p><strong>You might also occasionally want to avoid re-creating the <code>useRef()</code> initial value.</strong> For example, maybe you want to ensure some imperative class instance only gets created once:</p>
+<pre><code class="language-js">function Image(props) {
+  // ⚠️ IntersectionObserver is created on every render
+  const ref = useRef(new IntersectionObserver(onIntersect));
+  // ...
+}
+</code></pre>
+<p><code>useRef</code> <strong>does not</strong> accept a special function overload like <code>useState</code>. Instead, you can write your own function that creates and sets it lazily:</p>
+<pre><code class="language-js">function Image(props) {
+  const ref = useRef(null);
+
+  // ✅ IntersectionObserver is created lazily once
+  function getObserver() {
+    if (ref.current === null) {
+      ref.current = new IntersectionObserver(onIntersect);
+    }
+    return ref.current;
+  }
+
+  // When you need it, call getObserver()
+  // ...
+}
+</code></pre>
+<p>This avoids creating an expensive object until it's truly needed for the first time. If you use Flow or TypeScript, you can also give <code>getObserver()</code> a non-nullable type for convenience.</p>
+<h3>Are Hooks slow because of creating functions in render? {#are-hooks-slow-because-of-creating-functions-in-render}</h3>
+<p>No. In modern browsers, the raw performance of closures compared to classes doesn't differ significantly except in extreme scenarios.</p>
+<p>In addition, consider that the design of Hooks is more efficient in a couple ways:</p>
+<ul>
+<li><p>Hooks avoid a lot of the overhead that classes require, like the cost of creating class instances and binding event handlers in the constructor.</p></li>
+<li><p><strong>Idiomatic code using Hooks doesn't need the deep component tree nesting</strong> that is prevalent in codebases that use higher-order components, render props, and context. With smaller component trees, React has less work to do.</p></li>
+</ul>
+<p>Traditionally, performance concerns around inline functions in React have been related to how passing new callbacks on each render breaks <code>shouldComponentUpdate</code> optimizations in child components. Hooks approach this problem from three sides.</p>
+<ul>
+<li><p>The <a href="/docs/hooks-reference.html#usecallback"><code>useCallback</code></a> Hook lets you keep the same callback reference between re-renders so that <code>shouldComponentUpdate</code> continues to work:</p>
+<pre><code class="language-js{2}">// Will not change unless `a` or `b` changes
+const memoizedCallback = useCallback(() =&gt; {
+  doSomething(a, b);
+}, [a, b]);
+</code></pre></li>
+<li><p>The <a href="/docs/hooks-faq.html#how-to-memoize-calculations"><code>useMemo</code></a> Hook makes it easier to control when individual children update, reducing the need for pure components.</p></li>
+<li><p>Finally, the <a href="/docs/hooks-reference.html#usereducer"><code>useReducer</code></a> Hook reduces the need to pass callbacks deeply, as explained below.</p></li>
+</ul>
+<h3>How to avoid passing callbacks down? {#how-to-avoid-passing-callbacks-down}</h3>
+<p>We've found that most people don't enjoy manually passing callbacks through every level of a component tree. Even though it is more explicit, it can feel like a lot of &quot;plumbing&quot;.</p>
+<p>In large component trees, an alternative we recommend is to pass down a <code>dispatch</code> function from <a href="/docs/hooks-reference.html#usereducer"><code>useReducer</code></a> via context:</p>
+<pre><code class="language-js{4,5}">const TodosDispatch = React.createContext(null);
+
+function TodosApp() {
+  // Note: `dispatch` won't change between re-renders
+  const [todos, dispatch] = useReducer(todosReducer);
+
+  return (
+    &lt;TodosDispatch.Provider value={dispatch}&gt;
+      &lt;DeepTree todos={todos} /&gt;
+    &lt;/TodosDispatch.Provider&gt;
+  );
+}
+</code></pre>
+<p>Any child in the tree inside <code>TodosApp</code> can use the <code>dispatch</code> function to pass actions up to <code>TodosApp</code>:</p>
+<pre><code class="language-js{2,3}">function DeepChild(props) {
+  // If we want to perform an action, we can get dispatch from context.
+  const dispatch = useContext(TodosDispatch);
+
+  function handleClick() {
+    dispatch({ type: 'add', text: 'hello' });
+  }
+
+  return (
+    &lt;button onClick={handleClick}&gt;Add todo&lt;/button&gt;
+  );
+}
+</code></pre>
+<p>This is both more convenient from the maintenance perspective (no need to keep forwarding callbacks), and avoids the callback problem altogether. Passing <code>dispatch</code> down like this is the recommended pattern for deep updates.</p>
+<p>Note that you can still choose whether to pass the application <em>state</em> down as props (more explicit) or as context (more convenient for very deep updates). If you use context to pass down the state too, use two different context types -- the <code>dispatch</code> context never changes, so components that read it don't need to rerender unless they also need the application state.</p>
+<h3>How to read an often-changing value from <code>useCallback</code>? {#how-to-read-an-often-changing-value-from-usecallback}</h3>
+<blockquote>
+<p>Note</p>
+<p>We recommend to <a href="#how-to-avoid-passing-callbacks-down">pass <code>dispatch</code> down in context</a> rather than individual callbacks in props. The approach below is only mentioned here for completeness and as an escape hatch.</p>
+<p>Also note that this pattern might cause problems in the <a href="/blog/2018/03/27/update-on-async-rendering.html">concurrent mode</a>. We plan to provide more ergonomic alternatives in the future, but the safest solution right now is to always invalidate the callback if some value it depends on changes.</p>
+</blockquote>
+<p>In some rare cases you might need to memoize a callback with <a href="/docs/hooks-reference.html#usecallback"><code>useCallback</code></a> but the memoization doesn't work very well because the inner function has to be re-created too often. If the function you're memoizing is an event handler and isn't used during rendering, you can use <a href="#is-there-something-like-instance-variables">ref as an instance variable</a>, and save the last committed value into it manually:</p>
+<pre><code class="language-js{6,10}">function Form() {
+  const [text, updateText] = useState('');
+  const textRef = useRef();
+
+  useEffect(() =&gt; {
+    textRef.current = text; // Write it to the ref
+  });
+
+  const handleSubmit = useCallback(() =&gt; {
+    const currentText = textRef.current; // Read it from the ref
+    alert(currentText);
+  }, [textRef]); // Don't recreate handleSubmit like [text] would do
+
+  return (
+    &lt;&gt;
+      &lt;input value={text} onChange={e =&gt; updateText(e.target.value)} /&gt;
+      &lt;ExpensiveTree onSubmit={handleSubmit} /&gt;
+    &lt;/&gt;
+  );
+}
+</code></pre>
+<p>This is a rather convoluted pattern but it shows that you can do this escape hatch optimization if you need it. It's more bearable if you extract it to a custom Hook:</p>
+<pre><code class="language-js{4,16}">function Form() {
+  const [text, updateText] = useState('');
+  // Will be memoized even if `text` changes:
+  const handleSubmit = useEventCallback(() =&gt; {
+    alert(text);
+  }, [text]);
+
+  return (
+    &lt;&gt;
+      &lt;input value={text} onChange={e =&gt; updateText(e.target.value)} /&gt;
+      &lt;ExpensiveTree onSubmit={handleSubmit} /&gt;
+    &lt;/&gt;
+  );
+}
+
+function useEventCallback(fn, dependencies) {
+  const ref = useRef(() =&gt; {
+    throw new Error('Cannot call an event handler while rendering.');
+  });
+
+  useEffect(() =&gt; {
+    ref.current = fn;
+  }, [fn, ...dependencies]);
+
+  return useCallback(() =&gt; {
+    const fn = ref.current;
+    return fn();
+  }, [ref]);
+}
+</code></pre>
+<p>In either case, we <strong>don't recommend this pattern</strong> and only show it here for completeness. Instead, it is preferable to <a href="#how-to-avoid-passing-callbacks-down">avoid passing callbacks deep down</a>.</p>
+<h2>Under the Hood {#under-the-hood}</h2>
+<h3>How does React associate Hook calls with components? {#how-does-react-associate-hook-calls-with-components}</h3>
+<p>React keeps track of the currently rendering component. Thanks to the <a href="/docs/hooks-rules.html">Rules of Hooks</a>, we know that Hooks are only called from React components (or custom Hooks -- which are also only called from React components).</p>
+<p>There is an internal list of &quot;memory cells&quot; associated with each component. They're just JavaScript objects where we can put some data. When you call a Hook like <code>useState()</code>, it reads the current cell (or initializes it during the first render), and then moves the pointer to the next one. This is how multiple <code>useState()</code> calls each get independent local state.</p>
+<h3>What is the prior art for Hooks? {#what-is-the-prior-art-for-hooks}</h3>
+<p>Hooks synthesize ideas from several different sources:</p>
+<ul>
+<li>Our old experiments with functional APIs in the <a href="https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State">react-future</a> repository.</li>
+<li>React community's experiments with render prop APIs, including <a href="https://github.com/ryanflorence">Ryan Florence</a>'s <a href="https://github.com/reactions/component">Reactions Component</a>.</li>
+<li><a href="https://github.com/trueadm">Dominic Gannaway</a>'s <a href="https://gist.github.com/trueadm/17beb64288e30192f3aa29cad0218067"><code>adopt</code> keyword</a> proposal as a sugar syntax for render props.</li>
+<li>State variables and state cells in <a href="http://displayscript.org/introduction.html">DisplayScript</a>.</li>
+<li><a href="https://reasonml.github.io/reason-react/docs/en/state-actions-reducer.html">Reducer components</a> in ReasonReact.</li>
+<li><a href="http://reactivex.io/rxjs/class/es6/Subscription.js~Subscription.html">Subscriptions</a> in Rx.</li>
+<li><a href="https://github.com/ocamllabs/ocaml-effects-tutorial#2-effectful-computations-in-a-pure-setting">Algebraic effects</a> in Multicore OCaml.</li>
+</ul>
+<p><a href="https://github.com/sebmarkbage">Sebastian Markbåge</a> came up with the original design for Hooks, later refined by <a href="https://github.com/acdlite">Andrew Clark</a>, <a href="https://github.com/sophiebits">Sophie Alpert</a>, <a href="https://github.com/trueadm">Dominic Gannaway</a>, and other members of the React team.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: hooks-faq\ntitle: Hooks FAQ\npermalink: docs/hooks-faq.html\nprev: hooks-reference.html\n---\n\n*Hooks* are a new addition in React 16.8. They let you use state and other React features without writing a class.\n\nThis page answers some of the frequently asked questions about [Hooks](/docs/hooks-overview.html).\n\n\u003c!--\n  if you ever need to regenerate this, this snippet in the devtools console might help:\n\n  $$('.anchor').map(a =\u003e\n    `${' '.repeat(2 * +a.parentNode.nodeName.slice(1))}` +\n    `[${a.parentNode.textContent}](${a.getAttribute('href')})`\n  ).join('\\n')\n--\u003e\n\n* **[Adoption Strategy](#adoption-strategy)**\n  * [Which versions of React include Hooks?](#which-versions-of-react-include-hooks)\n  * [Do I need to rewrite all my class components?](#do-i-need-to-rewrite-all-my-class-components)\n  * [What can I do with Hooks that I couldn't with classes?](#what-can-i-do-with-hooks-that-i-couldnt-with-classes)\n  * [How much of my React knowledge stays relevant?](#how-much-of-my-react-knowledge-stays-relevant)\n  * [Should I use Hooks, classes, or a mix of both?](#should-i-use-hooks-classes-or-a-mix-of-both)\n  * [Do Hooks cover all use cases for classes?](#do-hooks-cover-all-use-cases-for-classes)\n  * [Do Hooks replace render props and higher-order components?](#do-hooks-replace-render-props-and-higher-order-components)\n  * [What do Hooks mean for popular APIs like Redux connect() and React Router?](#what-do-hooks-mean-for-popular-apis-like-redux-connect-and-react-router)\n  * [Do Hooks work with static typing?](#do-hooks-work-with-static-typing)\n  * [How to test components that use Hooks?](#how-to-test-components-that-use-hooks)\n  * [What exactly do the lint rules enforce?](#what-exactly-do-the-lint-rules-enforce)\n* **[From Classes to Hooks](#from-classes-to-hooks)**\n  * [How do lifecycle methods correspond to Hooks?](#how-do-lifecycle-methods-correspond-to-hooks)\n  * [How can I do data fetching with Hooks?](#how-can-i-do-data-fetching-with-hooks)\n  * [Is there something like instance variables?](#is-there-something-like-instance-variables)\n  * [Should I use one or many state variables?](#should-i-use-one-or-many-state-variables)\n  * [Can I run an effect only on updates?](#can-i-run-an-effect-only-on-updates)\n  * [How to get the previous props or state?](#how-to-get-the-previous-props-or-state)\n  * [Why am I seeing stale props or state inside my function?](#why-am-i-seeing-stale-props-or-state-inside-my-function)\n  * [How do I implement getDerivedStateFromProps?](#how-do-i-implement-getderivedstatefromprops)\n  * [Is there something like forceUpdate?](#is-there-something-like-forceupdate)\n  * [Can I make a ref to a function component?](#can-i-make-a-ref-to-a-function-component)\n  * [How can I measure a DOM node?](#how-can-i-measure-a-dom-node)\n  * [What does const [thing, setThing] = useState() mean?](#what-does-const-thing-setthing--usestate-mean)\n* **[Performance Optimizations](#performance-optimizations)**\n  * [Can I skip an effect on updates?](#can-i-skip-an-effect-on-updates)\n  * [Is it safe to omit functions from the list of dependencies?](#is-it-safe-to-omit-functions-from-the-list-of-dependencies)\n  * [What can I do if my effect dependencies change too often?](#what-can-i-do-if-my-effect-dependencies-change-too-often)\n  * [How do I implement shouldComponentUpdate?](#how-do-i-implement-shouldcomponentupdate)\n  * [How to memoize calculations?](#how-to-memoize-calculations)\n  * [How to create expensive objects lazily?](#how-to-create-expensive-objects-lazily)\n  * [Are Hooks slow because of creating functions in render?](#are-hooks-slow-because-of-creating-functions-in-render)\n  * [How to avoid passing callbacks down?](#how-to-avoid-passing-callbacks-down)\n  * [How to read an often-changing value from useCallback?](#how-to-read-an-often-changing-value-from-usecallback)\n* **[Under the Hood](#under-the-hood)**\n  * [How does React associate Hook calls with components?](#how-does-react-associate-hook-calls-with-components)\n  * [What is the prior art for Hooks?](#what-is-the-prior-art-for-hooks)\n\n## Adoption Strategy {#adoption-strategy}\n\n### Which versions of React include Hooks? {#which-versions-of-react-include-hooks}\n\nStarting with 16.8.0, React includes a stable implementation of React Hooks for:\n\n* React DOM\n* React Native\n* React DOM Server\n* React Test Renderer\n* React Shallow Renderer\n\nNote that **to enable Hooks, all React packages need to be 16.8.0 or higher**. Hooks won't work if you forget to update, for example, React DOM.\n\n[React Native 0.59](https://reactnative.dev/blog/2019/03/12/releasing-react-native-059) and above support Hooks.\n\n### Do I need to rewrite all my class components? {#do-i-need-to-rewrite-all-my-class-components}\n\nNo. There are [no plans](/docs/hooks-intro.html#gradual-adoption-strategy) to remove classes from React -- we all need to keep shipping products and can't afford rewrites. We recommend trying Hooks in new code.\n\n### What can I do with Hooks that I couldn't with classes? {#what-can-i-do-with-hooks-that-i-couldnt-with-classes}\n\nHooks offer a powerful and expressive new way to reuse functionality between components. [\"Building Your Own Hooks\"](/docs/hooks-custom.html) provides a glimpse of what's possible. [This article](https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889) by a React core team member dives deeper into the new capabilities unlocked by Hooks.\n\n### How much of my React knowledge stays relevant? {#how-much-of-my-react-knowledge-stays-relevant}\n\nHooks are a more direct way to use the React features you already know -- such as state, lifecycle, context, and refs. They don't fundamentally change how React works, and your knowledge of components, props, and top-down data flow is just as relevant.\n\nHooks do have a learning curve of their own. If there's something missing in this documentation, [raise an issue](https://github.com/reactjs/reactjs.org/issues/new) and we'll try to help.\n\n### Should I use Hooks, classes, or a mix of both? {#should-i-use-hooks-classes-or-a-mix-of-both}\n\nWhen you're ready, we'd encourage you to start trying Hooks in new components you write. Make sure everyone on your team is on board with using them and familiar with this documentation. We don't recommend rewriting your existing classes to Hooks unless you planned to rewrite them anyway (e.g. to fix bugs).\n\nYou can't use Hooks *inside* a class component, but you can definitely mix classes and function components with Hooks in a single tree. Whether a component is a class or a function that uses Hooks is an implementation detail of that component. In the longer term, we expect Hooks to be the primary way people write React components.\n\n### Do Hooks cover all use cases for classes? {#do-hooks-cover-all-use-cases-for-classes}\n\nOur goal is for Hooks to cover all use cases for classes as soon as possible. There are no Hook equivalents to the uncommon `getSnapshotBeforeUpdate`, `getDerivedStateFromError` and `componentDidCatch` lifecycles yet, but we plan to add them soon.\n\nIt is an early time for Hooks, and some third-party libraries might not be compatible with Hooks at the moment.\n\n### Do Hooks replace render props and higher-order components? {#do-hooks-replace-render-props-and-higher-order-components}\n\nOften, render props and higher-order components render only a single child. We think Hooks are a simpler way to serve this use case. There is still a place for both patterns (for example, a virtual scroller component might have a `renderItem` prop, or a visual container component might have its own DOM structure). But in most cases, Hooks will be sufficient and can help reduce nesting in your tree.\n\n### What do Hooks mean for popular APIs like Redux `connect()` and React Router? {#what-do-hooks-mean-for-popular-apis-like-redux-connect-and-react-router}\n\nYou can continue to use the exact same APIs as you always have; they'll continue to work.\n\nReact Redux since v7.1.0 [supports Hooks API](https://react-redux.js.org/api/hooks) and exposes hooks like `useDispatch` or `useSelector`.\n\nReact Router [supports hooks](https://reacttraining.com/react-router/web/api/Hooks) since v5.1.\n\nOther libraries might support hooks in the future too.\n\n### Do Hooks work with static typing? {#do-hooks-work-with-static-typing}\n\nHooks were designed with static typing in mind. Because they're functions, they are easier to type correctly than patterns like higher-order components. The latest Flow and TypeScript React definitions include support for React Hooks.\n\nImportantly, custom Hooks give you the power to constrain React API if you'd like to type them more strictly in some way. React gives you the primitives, but you can combine them in different ways than what we provide out of the box.\n\n### How to test components that use Hooks? {#how-to-test-components-that-use-hooks}\n\nFrom React's point of view, a component using Hooks is just a regular component. If your testing solution doesn't rely on React internals, testing components with Hooks shouldn't be different from how you normally test components.\n\n\u003eNote\n\u003e\n\u003e[Testing Recipes](/docs/testing-recipes.html) include many examples that you can copy and paste.\n\nFor example, let's say we have this counter component:\n\n```js\nfunction Example() {\n  const [count, setCount] = useState(0);\n  useEffect(() =\u003e {\n    document.title = `You clicked ${count} times`;\n  });\n  return (\n    \u003cdiv\u003e\n      \u003cp\u003eYou clicked {count} times\u003c/p\u003e\n      \u003cbutton onClick={() =\u003e setCount(count + 1)}\u003e\n        Click me\n      \u003c/button\u003e\n    \u003c/div\u003e\n  );\n}\n```\n\nWe'll test it using React DOM. To make sure that the behavior matches what happens in the browser, we'll wrap the code rendering and updating it into [`ReactTestUtils.act()`](/docs/test-utils.html#act) calls:\n\n```js{3,20-22,29-31}\nimport React from 'react';\nimport ReactDOM from 'react-dom';\nimport { act } from 'react-dom/test-utils';\nimport Counter from './Counter';\n\nlet container;\n\nbeforeEach(() =\u003e {\n  container = document.createElement('div');\n  document.body.appendChild(container);\n});\n\nafterEach(() =\u003e {\n  document.body.removeChild(container);\n  container = null;\n});\n\nit('can render and update a counter', () =\u003e {\n  // Test first render and effect\n  act(() =\u003e {\n    ReactDOM.render(\u003cCounter /\u003e, container);\n  });\n  const button = container.querySelector('button');\n  const label = container.querySelector('p');\n  expect(label.textContent).toBe('You clicked 0 times');\n  expect(document.title).toBe('You clicked 0 times');\n\n  // Test second render and effect\n  act(() =\u003e {\n    button.dispatchEvent(new MouseEvent('click', {bubbles: true}));\n  });\n  expect(label.textContent).toBe('You clicked 1 times');\n  expect(document.title).toBe('You clicked 1 times');\n});\n```\n\nThe calls to `act()` will also flush the effects inside of them.\n\nIf you need to test a custom Hook, you can do so by creating a component in your test, and using your Hook from it. Then you can test the component you wrote.\n\nTo reduce the boilerplate, we recommend using [React Testing Library](https://testing-library.com/react) which is designed to encourage writing tests that use your components as the end users do.\n\nFor more information, check out [Testing Recipes](/docs/testing-recipes.html).\n\n### What exactly do the [lint rules](https://www.npmjs.com/package/eslint-plugin-react-hooks) enforce? {#what-exactly-do-the-lint-rules-enforce}\n\nWe provide an [ESLint plugin](https://www.npmjs.com/package/eslint-plugin-react-hooks) that enforces [rules of Hooks](/docs/hooks-rules.html) to avoid bugs. It assumes that any function starting with \"`use`\" and a capital letter right after it is a Hook. We recognize this heuristic isn't perfect and there may be some false positives, but without an ecosystem-wide convention there is just no way to make Hooks work well -- and longer names will discourage people from either adopting Hooks or following the convention.\n\nIn particular, the rule enforces that:\n\n* Calls to Hooks are either inside a `PascalCase` function (assumed to be a component) or another `useSomething` function (assumed to be a custom Hook).\n* Hooks are called in the same order on every render.\n\nThere are a few more heuristics, and they might change over time as we fine-tune the rule to balance finding bugs with avoiding false positives.\n\n## From Classes to Hooks {#from-classes-to-hooks}\n\n### How do lifecycle methods correspond to Hooks? {#how-do-lifecycle-methods-correspond-to-hooks}\n\n* `constructor`: Function components don't need a constructor. You can initialize the state in the [`useState`](/docs/hooks-reference.html#usestate) call. If computing the initial state is expensive, you can pass a function to `useState`.\n\n* `getDerivedStateFromProps`: Schedule an update [while rendering](#how-do-i-implement-getderivedstatefromprops) instead.\n\n* `shouldComponentUpdate`: See `React.memo` [below](#how-do-i-implement-shouldcomponentupdate).\n\n* `render`: This is the function component body itself.\n\n* `componentDidMount`, `componentDidUpdate`, `componentWillUnmount`: The [`useEffect` Hook](/docs/hooks-reference.html#useeffect) can express all combinations of these (including [less](#can-i-skip-an-effect-on-updates) [common](#can-i-run-an-effect-only-on-updates) cases).\n\n* `getSnapshotBeforeUpdate`, `componentDidCatch` and `getDerivedStateFromError`: There are no Hook equivalents for these methods yet, but they will be added soon.\n\n### How can I do data fetching with Hooks? {#how-can-i-do-data-fetching-with-hooks}\n\nHere is a [small demo](https://codesandbox.io/s/jvvkoo8pq3) to get you started. To learn more, check out [this article](https://www.robinwieruch.de/react-hooks-fetch-data/) about data fetching with Hooks.\n\n### Is there something like instance variables? {#is-there-something-like-instance-variables}\n\nYes! The [`useRef()`](/docs/hooks-reference.html#useref) Hook isn't just for DOM refs. The \"ref\" object is a generic container whose `current` property is mutable and can hold any value, similar to an instance property on a class.\n\nYou can write to it from inside `useEffect`:\n\n```js{2,8}\nfunction Timer() {\n  const intervalRef = useRef();\n\n  useEffect(() =\u003e {\n    const id = setInterval(() =\u003e {\n      // ...\n    });\n    intervalRef.current = id;\n    return () =\u003e {\n      clearInterval(intervalRef.current);\n    };\n  });\n\n  // ...\n}\n```\n\nIf we just wanted to set an interval, we wouldn't need the ref (`id` could be local to the effect), but it's useful if we want to clear the interval from an event handler:\n\n```js{3}\n  // ...\n  function handleCancelClick() {\n    clearInterval(intervalRef.current);\n  }\n  // ...\n```\n\nConceptually, you can think of refs as similar to instance variables in a class. Unless you're doing [lazy initialization](#how-to-create-expensive-objects-lazily), avoid setting refs during rendering -- this can lead to surprising behavior. Instead, typically you want to modify refs in event handlers and effects.\n\n### Should I use one or many state variables? {#should-i-use-one-or-many-state-variables}\n\nIf you're coming from classes, you might be tempted to always call `useState()` once and put all state into a single object. You can do it if you'd like. Here is an example of a component that follows the mouse movement. We keep its position and size in the local state:\n\n```js\nfunction Box() {\n  const [state, setState] = useState({ left: 0, top: 0, width: 100, height: 100 });\n  // ...\n}\n```\n\nNow let's say we want to write some logic that changes `left` and `top` when the user moves their mouse. Note how we have to merge these fields into the previous state object manually:\n\n```js{4,5}\n  // ...\n  useEffect(() =\u003e {\n    function handleWindowMouseMove(e) {\n      // Spreading \"...state\" ensures we don't \"lose\" width and height\n      setState(state =\u003e ({ ...state, left: e.pageX, top: e.pageY }));\n    }\n    // Note: this implementation is a bit simplified\n    window.addEventListener('mousemove', handleWindowMouseMove);\n    return () =\u003e window.removeEventListener('mousemove', handleWindowMouseMove);\n  }, []);\n  // ...\n```\n\nThis is because when we update a state variable, we *replace* its value. This is different from `this.setState` in a class, which *merges* the updated fields into the object.\n\nIf you miss automatic merging, you could write a custom `useLegacyState` Hook that merges object state updates. However, **we recommend to split state into multiple state variables based on which values tend to change together.**\n\nFor example, we could split our component state into `position` and `size` objects, and always replace the `position` with no need for merging:\n\n```js{2,7}\nfunction Box() {\n  const [position, setPosition] = useState({ left: 0, top: 0 });\n  const [size, setSize] = useState({ width: 100, height: 100 });\n\n  useEffect(() =\u003e {\n    function handleWindowMouseMove(e) {\n      setPosition({ left: e.pageX, top: e.pageY });\n    }\n    // ...\n```\n\nSeparating independent state variables also has another benefit. It makes it easy to later extract some related logic into a custom Hook, for example:\n\n```js{2,7}\nfunction Box() {\n  const position = useWindowPosition();\n  const [size, setSize] = useState({ width: 100, height: 100 });\n  // ...\n}\n\nfunction useWindowPosition() {\n  const [position, setPosition] = useState({ left: 0, top: 0 });\n  useEffect(() =\u003e {\n    // ...\n  }, []);\n  return position;\n}\n```\n\nNote how we were able to move the `useState` call for the `position` state variable and the related effect into a custom Hook without changing their code. If all state was in a single object, extracting it would be more difficult.\n\nBoth putting all state in a single `useState` call, and having a `useState` call per each field can work. Components tend to be most readable when you find a balance between these two extremes, and group related state into a few independent state variables. If the state logic becomes complex, we recommend [managing it with a reducer](/docs/hooks-reference.html#usereducer) or a custom Hook.\n\n### Can I run an effect only on updates? {#can-i-run-an-effect-only-on-updates}\n\nThis is a rare use case. If you need it, you can [use a mutable ref](#is-there-something-like-instance-variables) to manually store a boolean value corresponding to whether you are on the first or a subsequent render, then check that flag in your effect. (If you find yourself doing this often, you could create a custom Hook for it.)\n\n### How to get the previous props or state? {#how-to-get-the-previous-props-or-state}\n\nCurrently, you can do it manually [with a ref](#is-there-something-like-instance-variables):\n\n```js{6,8}\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  const prevCountRef = useRef();\n  useEffect(() =\u003e {\n    prevCountRef.current = count;\n  });\n  const prevCount = prevCountRef.current;\n\n  return \u003ch1\u003eNow: {count}, before: {prevCount}\u003c/h1\u003e;\n}\n```\n\nThis might be a bit convoluted but you can extract it into a custom Hook:\n\n```js{3,7}\nfunction Counter() {\n  const [count, setCount] = useState(0);\n  const prevCount = usePrevious(count);\n  return \u003ch1\u003eNow: {count}, before: {prevCount}\u003c/h1\u003e;\n}\n\nfunction usePrevious(value) {\n  const ref = useRef();\n  useEffect(() =\u003e {\n    ref.current = value;\n  });\n  return ref.current;\n}\n```\n\nNote how this would work for props, state, or any other calculated value.\n\n```js{5}\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  const calculation = count + 100;\n  const prevCalculation = usePrevious(calculation);\n  // ...\n```\n\nIt's possible that in the future React will provide a `usePrevious` Hook out of the box since it's a relatively common use case.\n\nSee also [the recommended pattern for derived state](#how-do-i-implement-getderivedstatefromprops).\n\n### Why am I seeing stale props or state inside my function? {#why-am-i-seeing-stale-props-or-state-inside-my-function}\n\nAny function inside a component, including event handlers and effects, \"sees\" the props and state from the render it was created in. For example, consider code like this:\n\n```js\nfunction Example() {\n  const [count, setCount] = useState(0);\n\n  function handleAlertClick() {\n    setTimeout(() =\u003e {\n      alert('You clicked on: ' + count);\n    }, 3000);\n  }\n\n  return (\n    \u003cdiv\u003e\n      \u003cp\u003eYou clicked {count} times\u003c/p\u003e\n      \u003cbutton onClick={() =\u003e setCount(count + 1)}\u003e\n        Click me\n      \u003c/button\u003e\n      \u003cbutton onClick={handleAlertClick}\u003e\n        Show alert\n      \u003c/button\u003e\n    \u003c/div\u003e\n  );\n}\n```\n\nIf you first click \"Show alert\" and then increment the counter, the alert will show the `count` variable **at the time you clicked the \"Show alert\" button**. This prevents bugs caused by the code assuming props and state don't change.\n\nIf you intentionally want to read the *latest* state from some asynchronous callback, you could keep it in [a ref](/docs/hooks-faq.html#is-there-something-like-instance-variables), mutate it, and read from it.\n\nFinally, another possible reason you're seeing stale props or state is if you use the \"dependency array\" optimization but didn't correctly specify all the dependencies. For example, if an effect specifies `[]` as the second argument but reads `someProp` inside, it will keep \"seeing\" the initial value of `someProp`. The solution is to either remove the dependency array, or to fix it. Here's [how you can deal with functions](#is-it-safe-to-omit-functions-from-the-list-of-dependencies), and here's [other common strategies](#what-can-i-do-if-my-effect-dependencies-change-too-often) to run effects less often without incorrectly skipping dependencies.\n\n\u003eNote\n\u003e\n\u003eWe provide an [`exhaustive-deps`](https://github.com/facebook/react/issues/14920) ESLint rule as a part of the [`eslint-plugin-react-hooks`](https://www.npmjs.com/package/eslint-plugin-react-hooks#installation) package. It warns when dependencies are specified incorrectly and suggests a fix.\n\n### How do I implement `getDerivedStateFromProps`? {#how-do-i-implement-getderivedstatefromprops}\n\nWhile you probably [don't need it](/blog/2018/06/07/you-probably-dont-need-derived-state.html), in rare cases that you do (such as implementing a `\u003cTransition\u003e` component), you can update the state right during rendering. React will re-run the component with updated state immediately after exiting the first render so it wouldn't be expensive.\n\nHere, we store the previous value of the `row` prop in a state variable so that we can compare:\n\n```js\nfunction ScrollView({row}) {\n  const [isScrollingDown, setIsScrollingDown] = useState(false);\n  const [prevRow, setPrevRow] = useState(null);\n\n  if (row !== prevRow) {\n    // Row changed since last render. Update isScrollingDown.\n    setIsScrollingDown(prevRow !== null \u0026\u0026 row \u003e prevRow);\n    setPrevRow(row);\n  }\n\n  return `Scrolling down: ${isScrollingDown}`;\n}\n```\n\nThis might look strange at first, but an update during rendering is exactly what `getDerivedStateFromProps` has always been like conceptually.\n\n### Is there something like forceUpdate? {#is-there-something-like-forceupdate}\n\nBoth `useState` and `useReducer` Hooks [bail out of updates](/docs/hooks-reference.html#bailing-out-of-a-state-update) if the next value is the same as the previous one. Mutating state in place and calling `setState` will not cause a re-render.\n\nNormally, you shouldn't mutate local state in React. However, as an escape hatch, you can use an incrementing counter to force a re-render even if the state has not changed:\n\n```js\n  const [ignored, forceUpdate] = useReducer(x =\u003e x + 1, 0);\n\n  function handleClick() {\n    forceUpdate();\n  }\n```\n\nTry to avoid this pattern if possible.\n\n### Can I make a ref to a function component? {#can-i-make-a-ref-to-a-function-component}\n\nWhile you shouldn't need this often, you may expose some imperative methods to a parent component with the [`useImperativeHandle`](/docs/hooks-reference.html#useimperativehandle) Hook.\n\n### How can I measure a DOM node? {#how-can-i-measure-a-dom-node}\n\nOne rudimentary way to measure the position or size of a DOM node is to use a [callback ref](/docs/refs-and-the-dom.html#callback-refs). React will call that callback whenever the ref gets attached to a different node. Here is a [small demo](https://codesandbox.io/s/l7m0v5x4v9):\n\n```js{4-8,12}\nfunction MeasureExample() {\n  const [height, setHeight] = useState(0);\n\n  const measuredRef = useCallback(node =\u003e {\n    if (node !== null) {\n      setHeight(node.getBoundingClientRect().height);\n    }\n  }, []);\n\n  return (\n    \u003c\u003e\n      \u003ch1 ref={measuredRef}\u003eHello, world\u003c/h1\u003e\n      \u003ch2\u003eThe above header is {Math.round(height)}px tall\u003c/h2\u003e\n    \u003c/\u003e\n  );\n}\n```\n\nWe didn't choose `useRef` in this example because an object ref doesn't notify us about *changes* to the current ref value. Using a callback ref ensures that [even if a child component displays the measured node later](https://codesandbox.io/s/818zzk8m78) (e.g. in response to a click), we still get notified about it in the parent component and can update the measurements.\n\nNote that we pass `[]` as a dependency array to `useCallback`. This ensures that our ref callback doesn't change between the re-renders, and so React won't call it unnecessarily.\n\nIn this example, the callback ref will be called only when the component mounts and unmounts, since the rendered `\u003ch1\u003e` component stays present throughout any rerenders. If you want to be notified any time a component resizes, you may want to use [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) or a third-party Hook built on it.\n\nIf you want, you can [extract this logic](https://codesandbox.io/s/m5o42082xy) into a reusable Hook:\n\n```js{2}\nfunction MeasureExample() {\n  const [rect, ref] = useClientRect();\n  return (\n    \u003c\u003e\n      \u003ch1 ref={ref}\u003eHello, world\u003c/h1\u003e\n      {rect !== null \u0026\u0026\n        \u003ch2\u003eThe above header is {Math.round(rect.height)}px tall\u003c/h2\u003e\n      }\n    \u003c/\u003e\n  );\n}\n\nfunction useClientRect() {\n  const [rect, setRect] = useState(null);\n  const ref = useCallback(node =\u003e {\n    if (node !== null) {\n      setRect(node.getBoundingClientRect());\n    }\n  }, []);\n  return [rect, ref];\n}\n```\n\n\n### What does `const [thing, setThing] = useState()` mean? {#what-does-const-thing-setthing--usestate-mean}\n\nIf you're not familiar with this syntax, check out the [explanation](/docs/hooks-state.html#tip-what-do-square-brackets-mean) in the State Hook documentation.\n\n\n## Performance Optimizations {#performance-optimizations}\n\n### Can I skip an effect on updates? {#can-i-skip-an-effect-on-updates}\n\nYes. See [conditionally firing an effect](/docs/hooks-reference.html#conditionally-firing-an-effect). Note that forgetting to handle updates often [introduces bugs](/docs/hooks-effect.html#explanation-why-effects-run-on-each-update), which is why this isn't the default behavior.\n\n### Is it safe to omit functions from the list of dependencies? {#is-it-safe-to-omit-functions-from-the-list-of-dependencies}\n\nGenerally speaking, no.\n\n```js{3,8}\nfunction Example({ someProp }) {\n  function doSomething() {\n    console.log(someProp);\n  }\n\n  useEffect(() =\u003e {\n    doSomething();\n  }, []); // 🔴 This is not safe (it calls `doSomething` which uses `someProp`)\n}\n```\n\nIt's difficult to remember which props or state are used by functions outside of the effect. This is why **usually you'll want to declare functions needed by an effect *inside* of it.** Then it's easy to see what values from the component scope that effect depends on:\n\n```js{4,8}\nfunction Example({ someProp }) {\n  useEffect(() =\u003e {\n    function doSomething() {\n      console.log(someProp);\n    }\n\n    doSomething();\n  }, [someProp]); // ✅ OK (our effect only uses `someProp`)\n}\n```\n\nIf after that we still don't use any values from the component scope, it's safe to specify `[]`:\n\n```js{7}\nuseEffect(() =\u003e {\n  function doSomething() {\n    console.log('hello');\n  }\n\n  doSomething();\n}, []); // ✅ OK in this example because we don't use *any* values from component scope\n```\n\nDepending on your use case, there are a few more options described below.\n\n\u003eNote\n\u003e\n\u003eWe provide the [`exhaustive-deps`](https://github.com/facebook/react/issues/14920) ESLint rule as a part of the [`eslint-plugin-react-hooks`](https://www.npmjs.com/package/eslint-plugin-react-hooks#installation) package. It helps you find components that don't handle updates consistently.\n\nLet's see why this matters.\n\nIf you specify a [list of dependencies](/docs/hooks-reference.html#conditionally-firing-an-effect) as the last argument to `useEffect`, `useLayoutEffect`, `useMemo`, `useCallback`, or `useImperativeHandle`, it must include all values that are used inside the callback and participate in the React data flow. That includes props, state, and anything derived from them.\n\nIt is **only** safe to omit a function from the dependency list if nothing in it (or the functions called by it) references props, state, or values derived from them. This example has a bug:\n\n```js{5,12}\nfunction ProductPage({ productId }) {\n  const [product, setProduct] = useState(null);\n\n  async function fetchProduct() {\n    const response = await fetch('http://myapi/product/' + productId); // Uses productId prop\n    const json = await response.json();\n    setProduct(json);\n  }\n\n  useEffect(() =\u003e {\n    fetchProduct();\n  }, []); // 🔴 Invalid because `fetchProduct` uses `productId`\n  // ...\n}\n```\n\n**The recommended fix is to move that function _inside_ of your effect**. That makes it easy to see which props or state your effect uses, and to ensure they're all declared:\n\n```js{5-10,13}\nfunction ProductPage({ productId }) {\n  const [product, setProduct] = useState(null);\n\n  useEffect(() =\u003e {\n    // By moving this function inside the effect, we can clearly see the values it uses.\n    async function fetchProduct() {\n      const response = await fetch('http://myapi/product/' + productId);\n      const json = await response.json();\n      setProduct(json);\n    }\n\n    fetchProduct();\n  }, [productId]); // ✅ Valid because our effect only uses productId\n  // ...\n}\n```\n\nThis also allows you to handle out-of-order responses with a local variable inside the effect:\n\n```js{2,6,10}\n  useEffect(() =\u003e {\n    let ignore = false;\n    async function fetchProduct() {\n      const response = await fetch('http://myapi/product/' + productId);\n      const json = await response.json();\n      if (!ignore) setProduct(json);\n    }\n\n    fetchProduct();\n    return () =\u003e { ignore = true };\n  }, [productId]);\n```\n\nWe moved the function inside the effect so it doesn't need to be in its dependency list.\n\n\u003eTip\n\u003e\n\u003eCheck out [this small demo](https://codesandbox.io/s/jvvkoo8pq3) and [this article](https://www.robinwieruch.de/react-hooks-fetch-data/) to learn more about data fetching with Hooks.\n\n**If for some reason you _can't_ move a function inside an effect, there are a few more options:**\n\n* **You can try moving that function outside of your component**. In that case, the function is guaranteed to not reference any props or state, and also doesn't need to be in the list of dependencies.\n* If the function you're calling is a pure computation and is safe to call while rendering, you may **call it outside of the effect instead,** and make the effect depend on the returned value.\n* As a last resort, you can **add a function to effect dependencies but _wrap its definition_** into the [`useCallback`](/docs/hooks-reference.html#usecallback) Hook. This ensures it doesn't change on every render unless *its own* dependencies also change:\n\n```js{2-5}\nfunction ProductPage({ productId }) {\n  // ✅ Wrap with useCallback to avoid change on every render\n  const fetchProduct = useCallback(() =\u003e {\n    // ... Does something with productId ...\n  }, [productId]); // ✅ All useCallback dependencies are specified\n\n  return \u003cProductDetails fetchProduct={fetchProduct} /\u003e;\n}\n\nfunction ProductDetails({ fetchProduct }) {\n  useEffect(() =\u003e {\n    fetchProduct();\n  }, [fetchProduct]); // ✅ All useEffect dependencies are specified\n  // ...\n}\n```\n\nNote that in the above example we **need** to keep the function in the dependencies list. This ensures that a change in the `productId` prop of `ProductPage` automatically triggers a refetch in the `ProductDetails` component.\n\n### What can I do if my effect dependencies change too often? {#what-can-i-do-if-my-effect-dependencies-change-too-often}\n\nSometimes, your effect may be using state that changes too often. You might be tempted to omit that state from a list of dependencies, but that usually leads to bugs:\n\n```js{6,9}\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() =\u003e {\n    const id = setInterval(() =\u003e {\n      setCount(count + 1); // This effect depends on the `count` state\n    }, 1000);\n    return () =\u003e clearInterval(id);\n  }, []); // 🔴 Bug: `count` is not specified as a dependency\n\n  return \u003ch1\u003e{count}\u003c/h1\u003e;\n}\n```\n\nThe empty set of dependencies, `[]`, means that the effect will only run once when the component mounts, and not on every re-render. The problem is that inside the `setInterval` callback, the value of `count` does not change, because we've created a closure with the value of `count` set to `0` as it was when the effect callback ran. Every second, this callback then calls `setCount(0 + 1)`, so the count never goes above 1.\n\nSpecifying `[count]` as a list of dependencies would fix the bug, but would cause the interval to be reset on every change. Effectively, each `setInterval` would get one chance to execute before being cleared (similar to a `setTimeout`.) That may not be desirable. To fix this, we can use the [functional update form of `setState`](/docs/hooks-reference.html#functional-updates). It lets us specify *how* the state needs to change without referencing the *current* state:\n\n```js{6,9}\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() =\u003e {\n    const id = setInterval(() =\u003e {\n      setCount(c =\u003e c + 1); // ✅ This doesn't depend on `count` variable outside\n    }, 1000);\n    return () =\u003e clearInterval(id);\n  }, []); // ✅ Our effect doesn't use any variables in the component scope\n\n  return \u003ch1\u003e{count}\u003c/h1\u003e;\n}\n```\n\n(The identity of the `setCount` function is guaranteed to be stable so it's safe to omit.)\n\nNow, the `setInterval` callback executes once a second, but each time the inner call to `setCount` can use an up-to-date value for `count` (called `c` in the callback here.)\n\nIn more complex cases (such as if one state depends on another state), try moving the state update logic outside the effect with the [`useReducer` Hook](/docs/hooks-reference.html#usereducer). [This article](https://adamrackis.dev/state-and-use-reducer/) offers an example of how you can do this. **The identity of the `dispatch` function from `useReducer` is always stable** — even if the reducer function is declared inside the component and reads its props.\n\nAs a last resort, if you want something like `this` in a class, you can [use a ref](/docs/hooks-faq.html#is-there-something-like-instance-variables) to hold a mutable variable. Then you can write and read to it. For example:\n\n```js{2-6,10-11,16}\nfunction Example(props) {\n  // Keep latest props in a ref.\n  const latestProps = useRef(props);\n  useEffect(() =\u003e {\n    latestProps.current = props;\n  });\n\n  useEffect(() =\u003e {\n    function tick() {\n      // Read latest props at any time\n      console.log(latestProps.current);\n    }\n\n    const id = setInterval(tick, 1000);\n    return () =\u003e clearInterval(id);\n  }, []); // This effect never re-runs\n}\n```\n\nOnly do this if you couldn't find a better alternative, as relying on mutation makes components less predictable. If there's a specific pattern that doesn't translate well, [file an issue](https://github.com/facebook/react/issues/new) with a runnable example code and we can try to help.\n\n### How do I implement `shouldComponentUpdate`? {#how-do-i-implement-shouldcomponentupdate}\n\nYou can wrap a function component with `React.memo` to shallowly compare its props:\n\n```js\nconst Button = React.memo((props) =\u003e {\n  // your component\n});\n```\n\nIt's not a Hook because it doesn't compose like Hooks do. `React.memo` is equivalent to `PureComponent`, but it only compares props. (You can also add a second argument to specify a custom comparison function that takes the old and new props. If it returns true, the update is skipped.)\n\n`React.memo` doesn't compare state because there is no single state object to compare. But you can make children pure too, or even [optimize individual children with `useMemo`](/docs/hooks-faq.html#how-to-memoize-calculations).\n\n### How to memoize calculations? {#how-to-memoize-calculations}\n\nThe [`useMemo`](/docs/hooks-reference.html#usememo) Hook lets you cache calculations between multiple renders by \"remembering\" the previous computation:\n\n```js\nconst memoizedValue = useMemo(() =\u003e computeExpensiveValue(a, b), [a, b]);\n```\n\nThis code calls `computeExpensiveValue(a, b)`. But if the dependencies `[a, b]` haven't changed since the last value, `useMemo` skips calling it a second time and simply reuses the last value it returned.\n\nRemember that the function passed to `useMemo` runs during rendering. Don't do anything there that you wouldn't normally do while rendering. For example, side effects belong in `useEffect`, not `useMemo`.\n\n**You may rely on `useMemo` as a performance optimization, not as a semantic guarantee.** In the future, React may choose to \"forget\" some previously memoized values and recalculate them on next render, e.g. to free memory for offscreen components. Write your code so that it still works without `useMemo` — and then add it to optimize performance. (For rare cases when a value must *never* be recomputed, you can [lazily initialize](#how-to-create-expensive-objects-lazily) a ref.)\n\nConveniently, `useMemo` also lets you skip an expensive re-render of a child:\n\n```js\nfunction Parent({ a, b }) {\n  // Only re-rendered if `a` changes:\n  const child1 = useMemo(() =\u003e \u003cChild1 a={a} /\u003e, [a]);\n  // Only re-rendered if `b` changes:\n  const child2 = useMemo(() =\u003e \u003cChild2 b={b} /\u003e, [b]);\n  return (\n    \u003c\u003e\n      {child1}\n      {child2}\n    \u003c/\u003e\n  )\n}\n```\n\nNote that this approach won't work in a loop because Hook calls [can't](/docs/hooks-rules.html) be placed inside loops. But you can extract a separate component for the list item, and call `useMemo` there.\n\n### How to create expensive objects lazily? {#how-to-create-expensive-objects-lazily}\n\n`useMemo` lets you [memoize an expensive calculation](#how-to-memoize-calculations) if the dependencies are the same. However, it only serves as a hint, and doesn't *guarantee* the computation won't re-run. But sometimes you need to be sure an object is only created once.\n\n**The first common use case is when creating the initial state is expensive:**\n\n```js\nfunction Table(props) {\n  // ⚠️ createRows() is called on every render\n  const [rows, setRows] = useState(createRows(props.count));\n  // ...\n}\n```\n\nTo avoid re-creating the ignored initial state, we can pass a **function** to `useState`:\n\n```js\nfunction Table(props) {\n  // ✅ createRows() is only called once\n  const [rows, setRows] = useState(() =\u003e createRows(props.count));\n  // ...\n}\n```\n\nReact will only call this function during the first render. See the [`useState` API reference](/docs/hooks-reference.html#usestate).\n\n**You might also occasionally want to avoid re-creating the `useRef()` initial value.** For example, maybe you want to ensure some imperative class instance only gets created once:\n\n```js\nfunction Image(props) {\n  // ⚠️ IntersectionObserver is created on every render\n  const ref = useRef(new IntersectionObserver(onIntersect));\n  // ...\n}\n```\n\n`useRef` **does not** accept a special function overload like `useState`. Instead, you can write your own function that creates and sets it lazily:\n\n```js\nfunction Image(props) {\n  const ref = useRef(null);\n\n  // ✅ IntersectionObserver is created lazily once\n  function getObserver() {\n    if (ref.current === null) {\n      ref.current = new IntersectionObserver(onIntersect);\n    }\n    return ref.current;\n  }\n\n  // When you need it, call getObserver()\n  // ...\n}\n```\n\nThis avoids creating an expensive object until it's truly needed for the first time. If you use Flow or TypeScript, you can also give `getObserver()` a non-nullable type for convenience.\n\n\n### Are Hooks slow because of creating functions in render? {#are-hooks-slow-because-of-creating-functions-in-render}\n\nNo. In modern browsers, the raw performance of closures compared to classes doesn't differ significantly except in extreme scenarios.\n\nIn addition, consider that the design of Hooks is more efficient in a couple ways:\n\n* Hooks avoid a lot of the overhead that classes require, like the cost of creating class instances and binding event handlers in the constructor.\n\n* **Idiomatic code using Hooks doesn't need the deep component tree nesting** that is prevalent in codebases that use higher-order components, render props, and context. With smaller component trees, React has less work to do.\n\nTraditionally, performance concerns around inline functions in React have been related to how passing new callbacks on each render breaks `shouldComponentUpdate` optimizations in child components. Hooks approach this problem from three sides.\n\n* The [`useCallback`](/docs/hooks-reference.html#usecallback) Hook lets you keep the same callback reference between re-renders so that `shouldComponentUpdate` continues to work:\n\n    ```js{2}\n    // Will not change unless `a` or `b` changes\n    const memoizedCallback = useCallback(() =\u003e {\n      doSomething(a, b);\n    }, [a, b]);\n    ```\n\n* The [`useMemo`](/docs/hooks-faq.html#how-to-memoize-calculations) Hook makes it easier to control when individual children update, reducing the need for pure components.\n\n* Finally, the [`useReducer`](/docs/hooks-reference.html#usereducer) Hook reduces the need to pass callbacks deeply, as explained below.\n\n### How to avoid passing callbacks down? {#how-to-avoid-passing-callbacks-down}\n\nWe've found that most people don't enjoy manually passing callbacks through every level of a component tree. Even though it is more explicit, it can feel like a lot of \"plumbing\".\n\nIn large component trees, an alternative we recommend is to pass down a `dispatch` function from [`useReducer`](/docs/hooks-reference.html#usereducer) via context:\n\n```js{4,5}\nconst TodosDispatch = React.createContext(null);\n\nfunction TodosApp() {\n  // Note: `dispatch` won't change between re-renders\n  const [todos, dispatch] = useReducer(todosReducer);\n\n  return (\n    \u003cTodosDispatch.Provider value={dispatch}\u003e\n      \u003cDeepTree todos={todos} /\u003e\n    \u003c/TodosDispatch.Provider\u003e\n  );\n}\n```\n\nAny child in the tree inside `TodosApp` can use the `dispatch` function to pass actions up to `TodosApp`:\n\n```js{2,3}\nfunction DeepChild(props) {\n  // If we want to perform an action, we can get dispatch from context.\n  const dispatch = useContext(TodosDispatch);\n\n  function handleClick() {\n    dispatch({ type: 'add', text: 'hello' });\n  }\n\n  return (\n    \u003cbutton onClick={handleClick}\u003eAdd todo\u003c/button\u003e\n  );\n}\n```\n\nThis is both more convenient from the maintenance perspective (no need to keep forwarding callbacks), and avoids the callback problem altogether. Passing `dispatch` down like this is the recommended pattern for deep updates.\n\nNote that you can still choose whether to pass the application *state* down as props (more explicit) or as context (more convenient for very deep updates). If you use context to pass down the state too, use two different context types -- the `dispatch` context never changes, so components that read it don't need to rerender unless they also need the application state.\n\n### How to read an often-changing value from `useCallback`? {#how-to-read-an-often-changing-value-from-usecallback}\n\n\u003eNote\n\u003e\n\u003eWe recommend to [pass `dispatch` down in context](#how-to-avoid-passing-callbacks-down) rather than individual callbacks in props. The approach below is only mentioned here for completeness and as an escape hatch.\n\u003e\n\u003eAlso note that this pattern might cause problems in the [concurrent mode](/blog/2018/03/27/update-on-async-rendering.html). We plan to provide more ergonomic alternatives in the future, but the safest solution right now is to always invalidate the callback if some value it depends on changes.\n\nIn some rare cases you might need to memoize a callback with [`useCallback`](/docs/hooks-reference.html#usecallback) but the memoization doesn't work very well because the inner function has to be re-created too often. If the function you're memoizing is an event handler and isn't used during rendering, you can use [ref as an instance variable](#is-there-something-like-instance-variables), and save the last committed value into it manually:\n\n```js{6,10}\nfunction Form() {\n  const [text, updateText] = useState('');\n  const textRef = useRef();\n\n  useEffect(() =\u003e {\n    textRef.current = text; // Write it to the ref\n  });\n\n  const handleSubmit = useCallback(() =\u003e {\n    const currentText = textRef.current; // Read it from the ref\n    alert(currentText);\n  }, [textRef]); // Don't recreate handleSubmit like [text] would do\n\n  return (\n    \u003c\u003e\n      \u003cinput value={text} onChange={e =\u003e updateText(e.target.value)} /\u003e\n      \u003cExpensiveTree onSubmit={handleSubmit} /\u003e\n    \u003c/\u003e\n  );\n}\n```\n\nThis is a rather convoluted pattern but it shows that you can do this escape hatch optimization if you need it. It's more bearable if you extract it to a custom Hook:\n\n```js{4,16}\nfunction Form() {\n  const [text, updateText] = useState('');\n  // Will be memoized even if `text` changes:\n  const handleSubmit = useEventCallback(() =\u003e {\n    alert(text);\n  }, [text]);\n\n  return (\n    \u003c\u003e\n      \u003cinput value={text} onChange={e =\u003e updateText(e.target.value)} /\u003e\n      \u003cExpensiveTree onSubmit={handleSubmit} /\u003e\n    \u003c/\u003e\n  );\n}\n\nfunction useEventCallback(fn, dependencies) {\n  const ref = useRef(() =\u003e {\n    throw new Error('Cannot call an event handler while rendering.');\n  });\n\n  useEffect(() =\u003e {\n    ref.current = fn;\n  }, [fn, ...dependencies]);\n\n  return useCallback(() =\u003e {\n    const fn = ref.current;\n    return fn();\n  }, [ref]);\n}\n```\n\nIn either case, we **don't recommend this pattern** and only show it here for completeness. Instead, it is preferable to [avoid passing callbacks deep down](#how-to-avoid-passing-callbacks-down).\n\n\n## Under the Hood {#under-the-hood}\n\n### How does React associate Hook calls with components? {#how-does-react-associate-hook-calls-with-components}\n\nReact keeps track of the currently rendering component. Thanks to the [Rules of Hooks](/docs/hooks-rules.html), we know that Hooks are only called from React components (or custom Hooks -- which are also only called from React components).\n\nThere is an internal list of \"memory cells\" associated with each component. They're just JavaScript objects where we can put some data. When you call a Hook like `useState()`, it reads the current cell (or initializes it during the first render), and then moves the pointer to the next one. This is how multiple `useState()` calls each get independent local state.\n\n### What is the prior art for Hooks? {#what-is-the-prior-art-for-hooks}\n\nHooks synthesize ideas from several different sources:\n\n* Our old experiments with functional APIs in the [react-future](https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State) repository.\n* React community's experiments with render prop APIs, including [Ryan Florence](https://github.com/ryanflorence)'s [Reactions Component](https://github.com/reactions/component).\n* [Dominic Gannaway](https://github.com/trueadm)'s [`adopt` keyword](https://gist.github.com/trueadm/17beb64288e30192f3aa29cad0218067) proposal as a sugar syntax for render props.\n* State variables and state cells in [DisplayScript](http://displayscript.org/introduction.html).\n* [Reducer components](https://reasonml.github.io/reason-react/docs/en/state-actions-reducer.html) in ReasonReact.\n* [Subscriptions](http://reactivex.io/rxjs/class/es6/Subscription.js~Subscription.html) in Rx.\n* [Algebraic effects](https://github.com/ocamllabs/ocaml-effects-tutorial#2-effectful-computations-in-a-pure-setting) in Multicore OCaml.\n\n[Sebastian Markbåge](https://github.com/sebmarkbage) came up with the original design for Hooks, later refined by [Andrew Clark](https://github.com/acdlite), [Sophie Alpert](https://github.com/sophiebits), [Dominic Gannaway](https://github.com/trueadm), and other members of the React team.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_hooks-faq.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

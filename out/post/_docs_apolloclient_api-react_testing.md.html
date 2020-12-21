@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Testing
+description: Apollo Client React testing API</p>
+<hr>
+<h2>Installation</h2>
+<p>Apollo Client &gt;= 3 includes React testing utilities out of the box. You don't need to install any additional packages.</p>
+<h2><code>MockedProvider</code></h2>
+<pre><code class="language-js">import { MockedProvider } from &quot;@apollo/client/testing&quot;;
+</code></pre>
+<p>The <code>MockedProvider</code> is a test-utility that allows you to create a mocked version of the <a href="./hooks/#the-apolloprovider-component"><code>ApolloProvider</code></a> that doesn't send out network requests to your API, but rather allows you to specify the exact response payload for a given request.</p>
+<p>The <code>&lt;MockedProvider /&gt;</code> component takes the following props:</p>
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>mocks?</td><td>ReadonlyArray<MockedResponse></td><td>An array containing a request object and the corresponding response.</td></tr>
+<tr><td>addTypename?</td><td>boolean</td><td>A boolean indicating whether or not <code>__typename</code> are injected into the documents sent to graphql. This <strong>defaults to true</strong>.</td></tr>
+<tr><td>defaultOptions?</td><td>DefaultOptions</td><td>An object containing options to pass directly to the <code>ApolloClient</code> instance.</td></tr>
+<tr><td>cache?</td><td>ApolloCache<TSerializedCache></td><td>A custom cache object to be used in your test. Defaults to <code>InMemoryCache</code>. Useful when you need to define a custom <code>dataIdFromObject</code> function for automatic cache updates.</td></tr>
+<tr><td>resolvers?</td><td>Resolvers</td><td>Apollo Client local resolvers</td></tr>
+<tr><td>childProps?</td><td>object</td><td>Props that should be passed down to the child</td></tr>
+</tbody>
+</table>
+<p>Here is an example <code>mocks</code> prop shape:</p>
+<pre><code class="language-js">const mocks = [
+  {
+    request: {
+      query: SOME_QUERY,
+      variables: { first: 4 }
+    },
+    result: {
+      data: {
+        dog: {
+          name: &quot;Douglas&quot;
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: SOME_QUERY,
+      variables: { first: 8}
+    },
+    error: new Error(&quot;Something went wrong&quot;)
+  }
+]
+</code></pre>
+<p>The above shows that if the request <code>SOME_QUERY</code> is fired with variables <code>{ first: 4 }</code> that it results in the data in the <code>result</code> object.</p>
+<p>If <code>SOME_QUERY</code> is fired with variables <code>{ first: 8 }</code> then it results in an <code>error</code>.</p>
+<h3>Example</h3>
+<pre><code class="language-js">it(&quot;runs the mocked query&quot;, () =&gt; {
+  render(
+    &lt;MockedProvider mocks={mocks}&gt;
+      &lt;MyQueryComponent /&gt;
+    &lt;/MockedProvider&gt;
+  )
+
+  // Run assertions on &lt;MyQueryComponent/&gt;
+});
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Testing\ndescription: Apollo Client React testing API\n---\n\n## Installation\n\nApollo Client \u003e= 3 includes React testing utilities out of the box. You don't need to install any additional packages.\n\n## `MockedProvider`\n\n```js\nimport { MockedProvider } from \"@apollo/client/testing\";\n```\n\nThe `MockedProvider` is a test-utility that allows you to create a mocked version of the [`ApolloProvider`](./hooks/#the-apolloprovider-component) that doesn't send out network requests to your API, but rather allows you to specify the exact response payload for a given request.\n\nThe `\u003cMockedProvider /\u003e` component takes the following props:\n\n| Prop | Type | Description |\n| - | - | - |\n| mocks? | ReadonlyArray\u003cMockedResponse\u003e | An array containing a request object and the corresponding response. |\n| addTypename? | boolean | A boolean indicating whether or not `__typename` are injected into the documents sent to graphql. This **defaults to true**. |\n| defaultOptions? | DefaultOptions | An object containing options to pass directly to the `ApolloClient` instance. |\n| cache? | ApolloCache\u003cTSerializedCache\u003e | A custom cache object to be used in your test. Defaults to `InMemoryCache`. Useful when you need to define a custom `dataIdFromObject` function for automatic cache updates. |\n| resolvers? | Resolvers | Apollo Client local resolvers |\n| childProps? | object | Props that should be passed down to the child |\n\nHere is an example `mocks` prop shape:\n\n```js\nconst mocks = [\n  {\n    request: {\n      query: SOME_QUERY,\n      variables: { first: 4 }\n    },\n    result: {\n      data: {\n        dog: {\n          name: \"Douglas\"\n        }\n      }\n    }\n  },\n  {\n    request: {\n      query: SOME_QUERY,\n      variables: { first: 8}\n    },\n    error: new Error(\"Something went wrong\")\n  }\n]\n```\n\nThe above shows that if the request `SOME_QUERY` is fired with variables `{ first: 4 }` that it results in the data in the `result` object.\n\nIf `SOME_QUERY` is fired with variables `{ first: 8 }` then it results in an `error`.\n\n### Example\n\n```js\nit(\"runs the mocked query\", () =\u003e {\n  render(\n    \u003cMockedProvider mocks={mocks}\u003e\n      \u003cMyQueryComponent /\u003e\n    \u003c/MockedProvider\u003e\n  )\n\n  // Run assertions on \u003cMyQueryComponent/\u003e\n});\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_api-react_testing.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

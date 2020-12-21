@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Docker
+subSection: deployment
+[meta]-->
+<h1>Docker</h1>
+<p>Keystone files need to be built with <code>keystone build</code> before running in production mode.</p>
+<p>Keystone can be easily built as a Docker container image, suitable for deploying on Kubernetes or other environments.</p>
+<p>Recommended guides:</p>
+<ul>
+<li><a href="https://docs.docker.com/get-started/">Get Started with Docker</a></li>
+<li><a href="https://blog.docker.com/2019/07/intro-guide-to-dockerfile-best-practices/">Intro Guide to Dockerfile Best Practices</a></li>
+<li><a href="https://docs.docker.com/engine/reference/builder/">Dockerfile Reference</a></li>
+</ul>
+<p>You'll need to add a <a href="https://docs.docker.com/engine/reference/builder/#dockerignore-file"><code>.dockerignore</code></a> file to the root of your Keystone project (or wherever the image is built from) to avoid including unwanted files in the image. Here's an example of what it might look like:</p>
+<pre><code class="language-shell title=.dockerignore showLanguage=false">.git/
+docs/
+dist/
+.env.secret
+</code></pre>
+<p>If you're already familiar with Heroku or Pivotal Cloudfoundry, you might find <a href="https://buildpacks.io/">Cloud Native Buildpacks</a> a simple way to build Docker images.</p>
+<p>The following is an example of production-ready Dockerfile for a Keystone app built with <code>yarn build</code> and started with <code>yarn start</code>:</p>
+<pre><code class="language-dockerfile title=Dockerfile showLanguage=false"># https://docs.docker.com/samples/library/node/
+ARG NODE_VERSION=12.10.0
+# https://github.com/Yelp/dumb-init/releases
+ARG DUMB_INIT_VERSION=1.2.2
+
+# Build container
+FROM node:${NODE_VERSION}-alpine AS build
+ARG DUMB_INIT_VERSION
+
+WORKDIR /home/node
+
+RUN apk add --no-cache build-base python2 yarn &amp;&amp; \
+    wget -O dumb-init -q https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_amd64 &amp;&amp; \
+    chmod +x dumb-init
+ADD . /home/node
+RUN yarn install &amp;&amp; yarn build &amp;&amp; yarn cache clean
+
+# Runtime container
+FROM node:${NODE_VERSION}-alpine
+
+WORKDIR /home/node
+
+COPY --from=build /home/node /home/node
+
+EXPOSE 3000
+CMD [&quot;./dumb-init&quot;, &quot;yarn&quot;, &quot;start&quot;]
+</code></pre>
+<p>When using Docker for deployment, you'll also need a registry to serve your images. This can be <a href="https://hub.docker.com/">the official Docker Hub</a>, a registry in your cloud provider, a third-party hosted registry, or a <a href="https://github.com/docker/distribution">self-hosted private registry</a>.</p>
+<p>If you have <code>.dockerignore</code> and <code>Dockerfile</code> files in the root of your Keystone project, and you're set up with a registry, you can build and push your image like this:</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false"># Build on local machine
+docker build -t my-registry.example.com/my-cool-keystone-app:v1.0 .
+# Push to registry server
+docker push my-registry.example.com/my-cool-keystone-app:v1.0
+</code></pre>
+<p>You can test running your image locally (no need to push) with a command like this (assuming your server runs on port 3000):</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">docker run --rm -p 127.0.0.1:3000:3000 my-registry.example.com/my-cool-keystone-app:v1.0
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Docker\nsubSection: deployment\n[meta]--\u003e\n\n# Docker\n\nKeystone files need to be built with `keystone build` before running in production mode.\n\nKeystone can be easily built as a Docker container image, suitable for deploying on Kubernetes or other environments.\n\nRecommended guides:\n\n- [Get Started with Docker](https://docs.docker.com/get-started/)\n- [Intro Guide to Dockerfile Best Practices](https://blog.docker.com/2019/07/intro-guide-to-dockerfile-best-practices/)\n- [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)\n\nYou'll need to add a [`.dockerignore`](https://docs.docker.com/engine/reference/builder/#dockerignore-file) file to the root of your Keystone project (or wherever the image is built from) to avoid including unwanted files in the image. Here's an example of what it might look like:\n\n```shell title=.dockerignore showLanguage=false\n.git/\ndocs/\ndist/\n.env.secret\n```\n\nIf you're already familiar with Heroku or Pivotal Cloudfoundry, you might find [Cloud Native Buildpacks](https://buildpacks.io/) a simple way to build Docker images.\n\nThe following is an example of production-ready Dockerfile for a Keystone app built with `yarn build` and started with `yarn start`:\n\n```dockerfile title=Dockerfile showLanguage=false\n# https://docs.docker.com/samples/library/node/\nARG NODE_VERSION=12.10.0\n# https://github.com/Yelp/dumb-init/releases\nARG DUMB_INIT_VERSION=1.2.2\n\n# Build container\nFROM node:${NODE_VERSION}-alpine AS build\nARG DUMB_INIT_VERSION\n\nWORKDIR /home/node\n\nRUN apk add --no-cache build-base python2 yarn \u0026\u0026 \\\n    wget -O dumb-init -q https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_amd64 \u0026\u0026 \\\n    chmod +x dumb-init\nADD . /home/node\nRUN yarn install \u0026\u0026 yarn build \u0026\u0026 yarn cache clean\n\n# Runtime container\nFROM node:${NODE_VERSION}-alpine\n\nWORKDIR /home/node\n\nCOPY --from=build /home/node /home/node\n\nEXPOSE 3000\nCMD [\"./dumb-init\", \"yarn\", \"start\"]\n```\n\nWhen using Docker for deployment, you'll also need a registry to serve your images. This can be [the official Docker Hub](https://hub.docker.com/), a registry in your cloud provider, a third-party hosted registry, or a [self-hosted private registry](https://github.com/docker/distribution).\n\nIf you have `.dockerignore` and `Dockerfile` files in the root of your Keystone project, and you're set up with a registry, you can build and push your image like this:\n\n```shell allowCopy=false showLanguage=false\n# Build on local machine\ndocker build -t my-registry.example.com/my-cool-keystone-app:v1.0 .\n# Push to registry server\ndocker push my-registry.example.com/my-cool-keystone-app:v1.0\n```\n\nYou can test running your image locally (no need to push) with a command like this (assuming your server runs on port 3000):\n\n```shell allowCopy=false showLanguage=false\ndocker run --rm -p 127.0.0.1:3000:3000 my-registry.example.com/my-cool-keystone-app:v1.0\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_deployment.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

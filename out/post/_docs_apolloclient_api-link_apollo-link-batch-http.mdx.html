@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: HTTP Batch Link
+description: Batch multiple operations into a single HTTP request</p>
+<hr>
+<h2>Overview</h2>
+<p><code>@apollo/client/link/batch-http</code> is a terminating link that combines multiple GraphQL
+operations into a single HTTP request. This link batches individual
+operations together into an array that is sent to a single GraphQL endpoint.</p>
+<pre><code class="language-js">import { BatchHttpLink } from &quot;@apollo/client/link/batch-http&quot;;
+
+const link = new BatchHttpLink({ uri: &quot;/graphql&quot; });
+</code></pre>
+<h2>Options</h2>
+<p>The batch HTTP link accepts a configuration object that can be used to customize the behavior
+of the link. There are two different categories of options: http and batch.</p>
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>uri</code></td><td>The URI key is a string endpoint -- will default to &quot;/graphql&quot; if not specified</td></tr>
+<tr><td><code>includeExtensions</code></td><td>Allow passing the extensions field to your graphql server, defaults to false</td></tr>
+<tr><td><code>fetch</code></td><td>A <code>fetch</code> compatible API for making a request</td></tr>
+<tr><td><code>headers</code></td><td>An object representing values to be sent as headers on the request</td></tr>
+<tr><td><code>credentials</code></td><td>A string representing the credentials policy you want for the fetch call</td></tr>
+<tr><td><code>fetchOptions</code></td><td>Any overrides of the fetch options argument to pass to the fetch call. Note that you cannot use batching with the GET HTTP method.</td></tr>
+</tbody>
+</table>
+<p>The batching options indicate how operations are batched together, the size of batches, and the maximum time a batch will wait before automatically being sent over the network.</p>
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>batchMax</code></td><td>A max number of items to batch, defaults at 10</td></tr>
+<tr><td><code>batchInterval</code></td><td>The interval at which to batch (in ms), defaults to 10</td></tr>
+<tr><td><code>batchKey</code></td><td>A function that accepts an operation and returns a string key, which uniquely names the batch the operation belongs to, defaults to returning the same string</td></tr>
+</tbody>
+</table>
+<h2>Fetch polyfill</h2>
+<p>The batch HTTP link relies on having <code>fetch</code> present in your runtime environment. If you are running on react-native, or modern browsers, this should not be a problem. If you are targeting an environment without <code>fetch</code> such as older browsers or the server however, you will need to pass your own <code>fetch</code> to the link through its options. We recommend using <a href="https://www.npmjs.com/package/cross-fetch"><code>cross-fetch</code></a> for older browsers and Node.</p>
+<h2>Context</h2>
+<p>The batch HTTP link currently uses the context in two different ways, per batch and per query. The context fields below are used per batch and taken from the first operation in the batch.</p>
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>headers</code></td><td>An object representing values to be sent as headers on the request</td></tr>
+<tr><td><code>credentials</code></td><td>A string representing the credentials policy you want for the fetch call</td></tr>
+<tr><td><code>uri</code></td><td>A string of the endpoint you want to fetch from</td></tr>
+<tr><td><code>fetchOptions</code></td><td>Any overrides of the fetch options argument to pass to the fetch call</td></tr>
+<tr><td><code>response</code></td><td>This is the raw response from the fetch request after it is made</td></tr>
+</tbody>
+</table>
+<p>For each query, the <code>http</code> field is used to modify each individual query in the batch, such as persisted queries (see below).</p>
+<h3>Persisted queries</h3>
+<p>The batch HTTP link supports an advanced GraphQL feature called persisted queries. This allows you to not send the stringified query over the wire, but instead send some kind of identifier for the query. To support this you need to attach the id somewhere in the extensions field, and pass the following options to the context:</p>
+<pre><code class="language-js">operation.setContext({
+  http: {
+    includeExtensions: true,
+    includeQuery: false,
+  }
+})
+</code></pre>
+<p>The context <code>http</code> object currently supports two keys:</p>
+<ul>
+<li><code>includeExtensions</code>: Send the extensions object for this request.</li>
+<li><code>includeQuery</code>: Don't send the <code>query</code> field for this request.</li>
+</ul>
+<p>One way to use persisted queries is with <a href="https://github.com/apollographql/apollo-link-persisted-queries">apollo-link-persisted-queries</a> and <a href="https://www.apollographql.com/docs/apollo-server/performance/apq/">Apollo Server</a>.</p>
+<h2>Custom fetching</h2>
+<p>You can use the <code>fetch</code> option when creating an <code>HttpLink</code>, to do a lot of custom networking. This is useful if you want to modify the request based on calculated headers or calculate the uri based on the operation.</p>
+<h3>Custom auth</h3>
+<pre><code class="language-js">const customFetch = (uri, options) =&gt; {
+  const { header } = Hawk.client.header(
+    &quot;http://example.com:8000/resource/1?b=1&amp;a=2&quot;,
+    &quot;POST&quot;,
+    { credentials: credentials, ext: &quot;some-app-data&quot; }
+  );
+  options.headers.Authorization = header;
+  return fetch(uri, options);
+};
+
+const link = new BatchHttpLink({ fetch: customFetch });
+</code></pre>
+<h3>Dynamic URI</h3>
+<pre><code class="language-js">const customFetch = (uri, options) =&gt; {
+  const operationNames =
+    JSON.parse(options.body).map(operation =&gt; operation.operationName);
+  return fetch(`${uri}/graph/graphql?opname=${operationNames}`, options);
+};
+
+const link = new BatchHttpLink({ fetch: customFetch });
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: HTTP Batch Link\ndescription: Batch multiple operations into a single HTTP request\n---\n\n## Overview\n\n`@apollo/client/link/batch-http` is a terminating link that combines multiple GraphQL\noperations into a single HTTP request. This link batches individual\noperations together into an array that is sent to a single GraphQL endpoint.\n\n```js\nimport { BatchHttpLink } from \"@apollo/client/link/batch-http\";\n\nconst link = new BatchHttpLink({ uri: \"/graphql\" });\n```\n\n## Options\n\nThe batch HTTP link accepts a configuration object that can be used to customize the behavior\nof the link. There are two different categories of options: http and batch.\n\n| Option | Description |\n| - | - |\n| `uri` | The URI key is a string endpoint -- will default to \"/graphql\" if not specified |\n| `includeExtensions` | Allow passing the extensions field to your graphql server, defaults to false |\n| `fetch` | A `fetch` compatible API for making a request |\n| `headers` | An object representing values to be sent as headers on the request |\n| `credentials` | A string representing the credentials policy you want for the fetch call |\n| `fetchOptions` | Any overrides of the fetch options argument to pass to the fetch call. Note that you cannot use batching with the GET HTTP method. |\n\nThe batching options indicate how operations are batched together, the size of batches, and the maximum time a batch will wait before automatically being sent over the network.\n\n| Option | Description |\n| - | - |\n| `batchMax` | A max number of items to batch, defaults at 10 |\n| `batchInterval` | The interval at which to batch (in ms), defaults to 10 |\n| `batchKey` | A function that accepts an operation and returns a string key, which uniquely names the batch the operation belongs to, defaults to returning the same string |\n\n## Fetch polyfill\n\nThe batch HTTP link relies on having `fetch` present in your runtime environment. If you are running on react-native, or modern browsers, this should not be a problem. If you are targeting an environment without `fetch` such as older browsers or the server however, you will need to pass your own `fetch` to the link through its options. We recommend using [`cross-fetch`](https://www.npmjs.com/package/cross-fetch) for older browsers and Node.\n\n## Context\n\nThe batch HTTP link currently uses the context in two different ways, per batch and per query. The context fields below are used per batch and taken from the first operation in the batch.\n\n| Option | Description |\n| - | - |\n| `headers` | An object representing values to be sent as headers on the request |\n| `credentials` | A string representing the credentials policy you want for the fetch call |\n| `uri` | A string of the endpoint you want to fetch from |\n| `fetchOptions` | Any overrides of the fetch options argument to pass to the fetch call |\n| `response` | This is the raw response from the fetch request after it is made |\n\nFor each query, the `http` field is used to modify each individual query in the batch, such as persisted queries (see below).\n\n### Persisted queries\n\nThe batch HTTP link supports an advanced GraphQL feature called persisted queries. This allows you to not send the stringified query over the wire, but instead send some kind of identifier for the query. To support this you need to attach the id somewhere in the extensions field, and pass the following options to the context:\n\n```js\noperation.setContext({\n  http: {\n    includeExtensions: true,\n    includeQuery: false,\n  }\n})\n```\n\nThe context `http` object currently supports two keys:\n\n* `includeExtensions`: Send the extensions object for this request.\n* `includeQuery`: Don't send the `query` field for this request.\n\nOne way to use persisted queries is with [apollo-link-persisted-queries](https://github.com/apollographql/apollo-link-persisted-queries) and [Apollo Server](https://www.apollographql.com/docs/apollo-server/performance/apq/).\n\n## Custom fetching\n\nYou can use the `fetch` option when creating an `HttpLink`, to do a lot of custom networking. This is useful if you want to modify the request based on calculated headers or calculate the uri based on the operation.\n\n### Custom auth\n\n```js\nconst customFetch = (uri, options) =\u003e {\n  const { header } = Hawk.client.header(\n    \"http://example.com:8000/resource/1?b=1\u0026a=2\",\n    \"POST\",\n    { credentials: credentials, ext: \"some-app-data\" }\n  );\n  options.headers.Authorization = header;\n  return fetch(uri, options);\n};\n\nconst link = new BatchHttpLink({ fetch: customFetch });\n```\n\n### Dynamic URI\n\n```js\nconst customFetch = (uri, options) =\u003e {\n  const operationNames =\n    JSON.parse(options.body).map(operation =\u003e operation.operationName);\n  return fetch(`${uri}/graph/graphql?opname=${operationNames}`, options);\n};\n\nconst link = new BatchHttpLink({ fetch: customFetch });\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_api-link_apollo-link-batch-http.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

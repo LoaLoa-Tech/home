@@ -1,0 +1,212 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<h2>description: Next.js supports including CSS files as Global CSS or CSS Modules, using <code>styled-jsx</code> for CSS-in-JS, or any other CSS-in-JS solution! Learn more here.</h2>
+<h1>Built-In CSS Support</h1>
+<p><details open>
+<summary><b>Examples</b></summary></p>
+  <ul>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/basic-css">Basic CSS Example</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss">With Tailwind CSS</a></li>
+  </ul>
+</details>
+<p>Next.js allows you to import CSS files from a JavaScript file.
+This is possible because Next.js extends the concept of <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import"><code>import</code></a> beyond JavaScript.</p>
+<h2>Adding a Global Stylesheet</h2>
+<p>To add a stylesheet to your application, import the CSS file within <code>pages/_app.js</code>.</p>
+<p>For example, consider the following stylesheet named <code>styles.css</code>:</p>
+<pre><code class="language-css">body {
+  font-family: 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', 'Helvetica',
+    'Arial', sans-serif;
+  padding: 20px 20px 60px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+</code></pre>
+<p>Create a <a href="/docs/advanced-features/custom-app.md"><code>pages/_app.js</code> file</a> if not already present.
+Then, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import"><code>import</code></a> the <code>styles.css</code> file.</p>
+<pre><code class="language-jsx">import '../styles.css'
+
+// This default export is required in a new `pages/_app.js` file.
+export default function MyApp({ Component, pageProps }) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<p>These styles (<code>styles.css</code>) will apply to all pages and components in your application.
+Due to the global nature of stylesheets, and to avoid conflicts, you may <strong>only import them inside <a href="/docs/advanced-features/custom-app.md"><code>pages/_app.js</code></a></strong>.</p>
+<p>In development, expressing stylesheets this way allows your styles to be hot reloaded as you edit them—meaning you can keep application state.</p>
+<p>In production, all CSS files will be automatically concatenated into a single minified <code>.css</code> file.</p>
+<h3>Import styles from <code>node_modules</code></h3>
+<p>Since Next.js <strong>9.5.4</strong>, importing a CSS file from <code>node_modules</code> is permitted anywhere in your application.</p>
+<p>For global stylesheets, like <code>bootstrap</code> or <code>nprogress</code>, you should import the file inside <code>pages/_app.js</code>.
+For example:</p>
+<pre><code class="language-jsx">// pages/_app.js
+import 'bootstrap/dist/css/bootstrap.css'
+
+export default function MyApp({ Component, pageProps }) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<p>For importing CSS required by a third party component, you can do so in your component. For example:</p>
+<pre><code class="language-tsx">// components/ExampleDialog.js
+import { useState } from 'react'
+import { Dialog } from '@reach/dialog'
+import '@reach/dialog/styles.css'
+
+function ExampleDialog(props) {
+  const [showDialog, setShowDialog] = useState(false)
+  const open = () =&gt; setShowDialog(true)
+  const close = () =&gt; setShowDialog(false)
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={open}&gt;Open Dialog&lt;/button&gt;
+      &lt;Dialog isOpen={showDialog} onDismiss={close}&gt;
+        &lt;button className=&quot;close-button&quot; onClick={close}&gt;
+          &lt;VisuallyHidden&gt;Close&lt;/VisuallyHidden&gt;
+          &lt;span aria-hidden&gt;×&lt;/span&gt;
+        &lt;/button&gt;
+        &lt;p&gt;Hello there. I am a dialog&lt;/p&gt;
+      &lt;/Dialog&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2>Adding Component-Level CSS</h2>
+<p>Next.js supports <a href="https://github.com/css-modules/css-modules">CSS Modules</a> using the <code>[name].module.css</code> file naming convention.</p>
+<p>CSS Modules locally scope CSS by automatically creating a unique class name.
+This allows you to use the same CSS class name in different files without worrying about collisions.</p>
+<p>This behavior makes CSS Modules the ideal way to include component-level CSS.
+CSS Module files <strong>can be imported anywhere in your application</strong>.</p>
+<p>For example, consider a reusable <code>Button</code> component in the <code>components/</code> folder:</p>
+<p>First, create <code>components/Button.module.css</code> with the following content:</p>
+<pre><code class="language-css">/*
+You do not need to worry about .error {} colliding with any other `.css` or
+`.module.css` files!
+*/
+.error {
+  color: white;
+  background-color: red;
+}
+</code></pre>
+<p>Then, create <code>components/Button.js</code>, importing and using the above CSS file:</p>
+<pre><code class="language-jsx">import styles from './Button.module.css'
+
+export function Button() {
+  return (
+    &lt;button
+      type=&quot;button&quot;
+      // Note how the &quot;error&quot; class is accessed as a property on the imported
+      // `styles` object.
+      className={styles.error}
+    &gt;
+      Destroy
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+<p>CSS Modules are an <em>optional feature</em> and are <strong>only enabled for files with the <code>.module.css</code> extension</strong>.
+Regular <code>&lt;link&gt;</code> stylesheets and global CSS files are still supported.</p>
+<p>In production, all CSS Module files will be automatically concatenated into <strong>many minified and code-split</strong> <code>.css</code> files.
+These <code>.css</code> files represent hot execution paths in your application, ensuring the minimal amount of CSS is loaded for your application to paint.</p>
+<h2>Sass Support</h2>
+<p>Next.js allows you to import Sass using both the <code>.scss</code> and <code>.sass</code> extensions.
+You can use component-level Sass via CSS Modules and the <code>.module.scss</code> or <code>.module.sass</code> extension.</p>
+<p>Before you can use Next.js' built-in Sass support, be sure to install <a href="https://github.com/sass/sass"><code>sass</code></a>:</p>
+<pre><code class="language-bash">npm install sass
+</code></pre>
+<p>Sass support has the same benefits and restrictions as the built-in CSS support detailed above.</p>
+<blockquote>
+<p><strong>Note</strong>: Sass supports <a href="https://sass-lang.com/documentation/syntax">two different syntaxes</a>, each with their own extension.
+The <code>.scss</code> extension requires you use the <a href="https://sass-lang.com/documentation/syntax#scss">SCSS syntax</a>,
+while the <code>.sass</code> extension requires you use the <a href="https://sass-lang.com/documentation/syntax#the-indented-syntax">Indented Syntax (&quot;Sass&quot;)</a>.</p>
+<p>If you're not sure which to choose, start with the <code>.scss</code> extension which is a superset of CSS, and doesn't require you learn the
+Indented Syntax (&quot;Sass&quot;).</p>
+</blockquote>
+<h3>Customizing Sass Options</h3>
+<p>If you want to configure the Sass compiler you can do so by using <code>sassOptions</code> in <code>next.config.js</code>.</p>
+<p>For example to add <code>includePaths</code>:</p>
+<pre><code class="language-js">const path = require('path')
+
+module.exports = {
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'styles')],
+  },
+}
+</code></pre>
+<h2>Less and Stylus Support</h2>
+<p>To support importing <code>.less</code> or <code>.styl</code> files you can use the following plugins:</p>
+<ul>
+<li><a href="https://github.com/vercel/next-plugins/tree/master/packages/next-less">@zeit/next-less</a></li>
+<li><a href="https://github.com/vercel/next-plugins/tree/master/packages/next-stylus">@zeit/next-stylus</a></li>
+</ul>
+<p>If using the less plugin, don't forget to add a dependency on less as well, otherwise you'll see an error like:</p>
+<pre><code class="language-bash">Error: Cannot find module 'less'
+</code></pre>
+<h2>CSS-in-JS</h2>
+<p><details>
+<summary><b>Examples</b></summary></p>
+  <ul>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-styled-jsx">Styled JSX</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-styled-components">Styled Components</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-emotion">Emotion</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss-emotion">Tailwind CSS + Emotion</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-styletron">Styletron</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-glamor">Glamor</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-cxs">Cxs</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-aphrodite">Aphrodite</a></li>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-fela">Fela</a></li>
+  </ul>
+</details>
+<p>It's possible to use any existing CSS-in-JS solution.
+The simplest one is inline styles:</p>
+<pre><code class="language-jsx">function HiThere() {
+  return &lt;p style={{ color: 'red' }}&gt;hi there&lt;/p&gt;
+}
+
+export default HiThere
+</code></pre>
+<p>We bundle <a href="https://github.com/vercel/styled-jsx">styled-jsx</a> to provide support for isolated scoped CSS.
+The aim is to support &quot;shadow CSS&quot; similar to Web Components, which unfortunately <a href="https://github.com/w3c/webcomponents/issues/71">do not support server-rendering and are JS-only</a>.</p>
+<p>See the above examples for other popular CSS-in-JS solutions (like Styled Components).</p>
+<p>A component using <code>styled-jsx</code> looks like this:</p>
+<pre><code class="language-jsx">function HelloWorld() {
+  return (
+    &lt;div&gt;
+      Hello world
+      &lt;p&gt;scoped!&lt;/p&gt;
+      &lt;style jsx&gt;{`
+        p {
+          color: blue;
+        }
+        div {
+          background: red;
+        }
+        @media (max-width: 600px) {
+          div {
+            background: blue;
+          }
+        }
+      `}&lt;/style&gt;
+      &lt;style global jsx&gt;{`
+        body {
+          background: black;
+        }
+      `}&lt;/style&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default HelloWorld
+</code></pre>
+<p>Please see the <a href="https://github.com/vercel/styled-jsx">styled-jsx documentation</a> for more examples.</p>
+<h2>FAQ</h2>
+<h3>Does it work with JavaScript disabled?</h3>
+<p>Yes, if you disable JavaScript the CSS will still be loaded in the production build (<code>next start</code>). During development, we require JavaScript to be enabled to provide the best developer experience with <a href="https://nextjs.org/blog/next-9-4#fast-refresh">Fast Refresh</a>.</p>
+<h2>Related</h2>
+<p>For more information on what to do next, we recommend the following sections:</p>
+<div class="card">
+  <a href="/docs/advanced-features/customizing-postcss-config.md">
+    <b>Customizing PostCSS Config:</b>
+    <small>Extend the PostCSS config and plugins added by Next.js with your own.</small>
+  </a>
+</div>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ndescription: Next.js supports including CSS files as Global CSS or CSS Modules, using `styled-jsx` for CSS-in-JS, or any other CSS-in-JS solution! Learn more here.\n---\n\n# Built-In CSS Support\n\n\u003cdetails open\u003e\n  \u003csummary\u003e\u003cb\u003eExamples\u003c/b\u003e\u003c/summary\u003e\n  \u003cul\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/basic-css\"\u003eBasic CSS Example\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss\"\u003eWith Tailwind CSS\u003c/a\u003e\u003c/li\u003e\n  \u003c/ul\u003e\n\u003c/details\u003e\n\nNext.js allows you to import CSS files from a JavaScript file.\nThis is possible because Next.js extends the concept of [`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) beyond JavaScript.\n\n## Adding a Global Stylesheet\n\nTo add a stylesheet to your application, import the CSS file within `pages/_app.js`.\n\nFor example, consider the following stylesheet named `styles.css`:\n\n```css\nbody {\n  font-family: 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', 'Helvetica',\n    'Arial', sans-serif;\n  padding: 20px 20px 60px;\n  max-width: 680px;\n  margin: 0 auto;\n}\n```\n\nCreate a [`pages/_app.js` file](/docs/advanced-features/custom-app.md) if not already present.\nThen, [`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) the `styles.css` file.\n\n```jsx\nimport '../styles.css'\n\n// This default export is required in a new `pages/_app.js` file.\nexport default function MyApp({ Component, pageProps }) {\n  return \u003cComponent {...pageProps} /\u003e\n}\n```\n\nThese styles (`styles.css`) will apply to all pages and components in your application.\nDue to the global nature of stylesheets, and to avoid conflicts, you may **only import them inside [`pages/_app.js`](/docs/advanced-features/custom-app.md)**.\n\nIn development, expressing stylesheets this way allows your styles to be hot reloaded as you edit them—meaning you can keep application state.\n\nIn production, all CSS files will be automatically concatenated into a single minified `.css` file.\n\n### Import styles from `node_modules`\n\nSince Next.js **9.5.4**, importing a CSS file from `node_modules` is permitted anywhere in your application.\n\nFor global stylesheets, like `bootstrap` or `nprogress`, you should import the file inside `pages/_app.js`.\nFor example:\n\n```jsx\n// pages/_app.js\nimport 'bootstrap/dist/css/bootstrap.css'\n\nexport default function MyApp({ Component, pageProps }) {\n  return \u003cComponent {...pageProps} /\u003e\n}\n```\n\nFor importing CSS required by a third party component, you can do so in your component. For example:\n\n```tsx\n// components/ExampleDialog.js\nimport { useState } from 'react'\nimport { Dialog } from '@reach/dialog'\nimport '@reach/dialog/styles.css'\n\nfunction ExampleDialog(props) {\n  const [showDialog, setShowDialog] = useState(false)\n  const open = () =\u003e setShowDialog(true)\n  const close = () =\u003e setShowDialog(false)\n\n  return (\n    \u003cdiv\u003e\n      \u003cbutton onClick={open}\u003eOpen Dialog\u003c/button\u003e\n      \u003cDialog isOpen={showDialog} onDismiss={close}\u003e\n        \u003cbutton className=\"close-button\" onClick={close}\u003e\n          \u003cVisuallyHidden\u003eClose\u003c/VisuallyHidden\u003e\n          \u003cspan aria-hidden\u003e×\u003c/span\u003e\n        \u003c/button\u003e\n        \u003cp\u003eHello there. I am a dialog\u003c/p\u003e\n      \u003c/Dialog\u003e\n    \u003c/div\u003e\n  )\n}\n```\n\n## Adding Component-Level CSS\n\nNext.js supports [CSS Modules](https://github.com/css-modules/css-modules) using the `[name].module.css` file naming convention.\n\nCSS Modules locally scope CSS by automatically creating a unique class name.\nThis allows you to use the same CSS class name in different files without worrying about collisions.\n\nThis behavior makes CSS Modules the ideal way to include component-level CSS.\nCSS Module files **can be imported anywhere in your application**.\n\nFor example, consider a reusable `Button` component in the `components/` folder:\n\nFirst, create `components/Button.module.css` with the following content:\n\n```css\n/*\nYou do not need to worry about .error {} colliding with any other `.css` or\n`.module.css` files!\n*/\n.error {\n  color: white;\n  background-color: red;\n}\n```\n\nThen, create `components/Button.js`, importing and using the above CSS file:\n\n```jsx\nimport styles from './Button.module.css'\n\nexport function Button() {\n  return (\n    \u003cbutton\n      type=\"button\"\n      // Note how the \"error\" class is accessed as a property on the imported\n      // `styles` object.\n      className={styles.error}\n    \u003e\n      Destroy\n    \u003c/button\u003e\n  )\n}\n```\n\nCSS Modules are an _optional feature_ and are **only enabled for files with the `.module.css` extension**.\nRegular `\u003clink\u003e` stylesheets and global CSS files are still supported.\n\nIn production, all CSS Module files will be automatically concatenated into **many minified and code-split** `.css` files.\nThese `.css` files represent hot execution paths in your application, ensuring the minimal amount of CSS is loaded for your application to paint.\n\n## Sass Support\n\nNext.js allows you to import Sass using both the `.scss` and `.sass` extensions.\nYou can use component-level Sass via CSS Modules and the `.module.scss` or `.module.sass` extension.\n\nBefore you can use Next.js' built-in Sass support, be sure to install [`sass`](https://github.com/sass/sass):\n\n```bash\nnpm install sass\n```\n\nSass support has the same benefits and restrictions as the built-in CSS support detailed above.\n\n\u003e **Note**: Sass supports [two different syntaxes](https://sass-lang.com/documentation/syntax), each with their own extension.\n\u003e The `.scss` extension requires you use the [SCSS syntax](https://sass-lang.com/documentation/syntax#scss),\n\u003e while the `.sass` extension requires you use the [Indented Syntax (\"Sass\")](https://sass-lang.com/documentation/syntax#the-indented-syntax).\n\u003e\n\u003e If you're not sure which to choose, start with the `.scss` extension which is a superset of CSS, and doesn't require you learn the\n\u003e Indented Syntax (\"Sass\").\n\n### Customizing Sass Options\n\nIf you want to configure the Sass compiler you can do so by using `sassOptions` in `next.config.js`.\n\nFor example to add `includePaths`:\n\n```js\nconst path = require('path')\n\nmodule.exports = {\n  sassOptions: {\n    includePaths: [path.join(__dirname, 'styles')],\n  },\n}\n```\n\n## Less and Stylus Support\n\nTo support importing `.less` or `.styl` files you can use the following plugins:\n\n- [@zeit/next-less](https://github.com/vercel/next-plugins/tree/master/packages/next-less)\n- [@zeit/next-stylus](https://github.com/vercel/next-plugins/tree/master/packages/next-stylus)\n\nIf using the less plugin, don't forget to add a dependency on less as well, otherwise you'll see an error like:\n\n```bash\nError: Cannot find module 'less'\n```\n\n## CSS-in-JS\n\n\u003cdetails\u003e\n  \u003csummary\u003e\u003cb\u003eExamples\u003c/b\u003e\u003c/summary\u003e\n  \u003cul\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-styled-jsx\"\u003eStyled JSX\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-styled-components\"\u003eStyled Components\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-emotion\"\u003eEmotion\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss-emotion\"\u003eTailwind CSS + Emotion\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-styletron\"\u003eStyletron\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-glamor\"\u003eGlamor\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-cxs\"\u003eCxs\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-aphrodite\"\u003eAphrodite\u003c/a\u003e\u003c/li\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-fela\"\u003eFela\u003c/a\u003e\u003c/li\u003e\n  \u003c/ul\u003e\n\u003c/details\u003e\n\nIt's possible to use any existing CSS-in-JS solution.\nThe simplest one is inline styles:\n\n```jsx\nfunction HiThere() {\n  return \u003cp style={{ color: 'red' }}\u003ehi there\u003c/p\u003e\n}\n\nexport default HiThere\n```\n\nWe bundle [styled-jsx](https://github.com/vercel/styled-jsx) to provide support for isolated scoped CSS.\nThe aim is to support \"shadow CSS\" similar to Web Components, which unfortunately [do not support server-rendering and are JS-only](https://github.com/w3c/webcomponents/issues/71).\n\nSee the above examples for other popular CSS-in-JS solutions (like Styled Components).\n\nA component using `styled-jsx` looks like this:\n\n```jsx\nfunction HelloWorld() {\n  return (\n    \u003cdiv\u003e\n      Hello world\n      \u003cp\u003escoped!\u003c/p\u003e\n      \u003cstyle jsx\u003e{`\n        p {\n          color: blue;\n        }\n        div {\n          background: red;\n        }\n        @media (max-width: 600px) {\n          div {\n            background: blue;\n          }\n        }\n      `}\u003c/style\u003e\n      \u003cstyle global jsx\u003e{`\n        body {\n          background: black;\n        }\n      `}\u003c/style\u003e\n    \u003c/div\u003e\n  )\n}\n\nexport default HelloWorld\n```\n\nPlease see the [styled-jsx documentation](https://github.com/vercel/styled-jsx) for more examples.\n\n## FAQ\n\n### Does it work with JavaScript disabled?\n\nYes, if you disable JavaScript the CSS will still be loaded in the production build (`next start`). During development, we require JavaScript to be enabled to provide the best developer experience with [Fast Refresh](https://nextjs.org/blog/next-9-4#fast-refresh).\n\n## Related\n\nFor more information on what to do next, we recommend the following sections:\n\n\u003cdiv class=\"card\"\u003e\n  \u003ca href=\"/docs/advanced-features/customizing-postcss-config.md\"\u003e\n    \u003cb\u003eCustomizing PostCSS Config:\u003c/b\u003e\n    \u003csmall\u003eExtend the PostCSS config and plugins added by Next.js with your own.\u003c/small\u003e\n  \u003c/a\u003e\n\u003c/div\u003e\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_next_basic-features_built-in-css-support.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

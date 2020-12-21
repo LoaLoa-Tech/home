@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: hooks-rules
+title: Rules of Hooks
+permalink: docs/hooks-rules.html
+next: hooks-custom.html
+prev: hooks-effect.html</p>
+<hr>
+<p><em>Hooks</em> are a new addition in React 16.8. They let you use state and other React features without writing a class.</p>
+<p>Hooks are JavaScript functions, but you need to follow two rules when using them. We provide a <a href="https://www.npmjs.com/package/eslint-plugin-react-hooks">linter plugin</a> to enforce these rules automatically:</p>
+<h3>Only Call Hooks at the Top Level {#only-call-hooks-at-the-top-level}</h3>
+<p><strong>Don't call Hooks inside loops, conditions, or nested functions.</strong> Instead, always use Hooks at the top level of your React function. By following this rule, you ensure that Hooks are called in the same order each time a component renders. That's what allows React to correctly preserve the state of Hooks between multiple <code>useState</code> and <code>useEffect</code> calls. (If you're curious, we'll explain this in depth <a href="#explanation">below</a>.)</p>
+<h3>Only Call Hooks from React Functions {#only-call-hooks-from-react-functions}</h3>
+<p><strong>Don't call Hooks from regular JavaScript functions.</strong> Instead, you can:</p>
+<ul>
+<li>✅ Call Hooks from React function components.</li>
+<li>✅ Call Hooks from custom Hooks (we'll learn about them <a href="/docs/hooks-custom.html">on the next page</a>).</li>
+</ul>
+<p>By following this rule, you ensure that all stateful logic in a component is clearly visible from its source code.</p>
+<h2>ESLint Plugin {#eslint-plugin}</h2>
+<p>We released an ESLint plugin called <a href="https://www.npmjs.com/package/eslint-plugin-react-hooks"><code>eslint-plugin-react-hooks</code></a> that enforces these two rules. You can add this plugin to your project if you'd like to try it:</p>
+<p>This plugin is included by default in <a href="/docs/create-a-new-react-app.html#create-react-app">Create React App</a>.</p>
+<pre><code class="language-bash">npm install eslint-plugin-react-hooks --save-dev
+</code></pre>
+<pre><code class="language-js">// Your ESLint configuration
+{
+  &quot;plugins&quot;: [
+    // ...
+    &quot;react-hooks&quot;
+  ],
+  &quot;rules&quot;: {
+    // ...
+    &quot;react-hooks/rules-of-hooks&quot;: &quot;error&quot;, // Checks rules of Hooks
+    &quot;react-hooks/exhaustive-deps&quot;: &quot;warn&quot; // Checks effect dependencies
+  }
+}
+</code></pre>
+<p><strong>You can skip to the next page explaining how to write <a href="/docs/hooks-custom.html">your own Hooks</a> now.</strong> On this page, we'll continue by explaining the reasoning behind these rules.</p>
+<h2>Explanation {#explanation}</h2>
+<p>As we <a href="/docs/hooks-state.html#tip-using-multiple-state-variables">learned earlier</a>, we can use multiple State or Effect Hooks in a single component:</p>
+<pre><code class="language-js">function Form() {
+  // 1. Use the name state variable
+  const [name, setName] = useState('Mary');
+
+  // 2. Use an effect for persisting the form
+  useEffect(function persistForm() {
+    localStorage.setItem('formData', name);
+  });
+
+  // 3. Use the surname state variable
+  const [surname, setSurname] = useState('Poppins');
+
+  // 4. Use an effect for updating the title
+  useEffect(function updateTitle() {
+    document.title = name + ' ' + surname;
+  });
+
+  // ...
+}
+</code></pre>
+<p>So how does React know which state corresponds to which <code>useState</code> call? The answer is that <strong>React relies on the order in which Hooks are called</strong>. Our example works because the order of the Hook calls is the same on every render:</p>
+<pre><code class="language-js">// ------------
+// First render
+// ------------
+useState('Mary')           // 1. Initialize the name state variable with 'Mary'
+useEffect(persistForm)     // 2. Add an effect for persisting the form
+useState('Poppins')        // 3. Initialize the surname state variable with 'Poppins'
+useEffect(updateTitle)     // 4. Add an effect for updating the title
+
+// -------------
+// Second render
+// -------------
+useState('Mary')           // 1. Read the name state variable (argument is ignored)
+useEffect(persistForm)     // 2. Replace the effect for persisting the form
+useState('Poppins')        // 3. Read the surname state variable (argument is ignored)
+useEffect(updateTitle)     // 4. Replace the effect for updating the title
+
+// ...
+</code></pre>
+<p>As long as the order of the Hook calls is the same between renders, React can associate some local state with each of them. But what happens if we put a Hook call (for example, the <code>persistForm</code> effect) inside a condition?</p>
+<pre><code class="language-js">  // 🔴 We're breaking the first rule by using a Hook in a condition
+  if (name !== '') {
+    useEffect(function persistForm() {
+      localStorage.setItem('formData', name);
+    });
+  }
+</code></pre>
+<p>The <code>name !== ''</code> condition is <code>true</code> on the first render, so we run this Hook. However, on the next render the user might clear the form, making the condition <code>false</code>. Now that we skip this Hook during rendering, the order of the Hook calls becomes different:</p>
+<pre><code class="language-js">useState('Mary')           // 1. Read the name state variable (argument is ignored)
+// useEffect(persistForm)  // 🔴 This Hook was skipped!
+useState('Poppins')        // 🔴 2 (but was 3). Fail to read the surname state variable
+useEffect(updateTitle)     // 🔴 3 (but was 4). Fail to replace the effect
+</code></pre>
+<p>React wouldn't know what to return for the second <code>useState</code> Hook call. React expected that the second Hook call in this component corresponds to the <code>persistForm</code> effect, just like during the previous render, but it doesn't anymore. From that point, every next Hook call after the one we skipped would also shift by one, leading to bugs.</p>
+<p><strong>This is why Hooks must be called on the top level of our components.</strong> If we want to run an effect conditionally, we can put that condition <em>inside</em> our Hook:</p>
+<pre><code class="language-js">  useEffect(function persistForm() {
+    // 👍 We're not breaking the first rule anymore
+    if (name !== '') {
+      localStorage.setItem('formData', name);
+    }
+  });
+</code></pre>
+<p><strong>Note that you don't need to worry about this problem if you use the <a href="https://www.npmjs.com/package/eslint-plugin-react-hooks">provided lint rule</a>.</strong> But now you also know <em>why</em> Hooks work this way, and which issues the rule is preventing.</p>
+<h2>Next Steps {#next-steps}</h2>
+<p>Finally, we're ready to learn about <a href="/docs/hooks-custom.html">writing your own Hooks</a>! Custom Hooks let you combine Hooks provided by React into your own abstractions, and reuse common stateful logic between different components.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: hooks-rules\ntitle: Rules of Hooks\npermalink: docs/hooks-rules.html\nnext: hooks-custom.html\nprev: hooks-effect.html\n---\n\n*Hooks* are a new addition in React 16.8. They let you use state and other React features without writing a class.\n\nHooks are JavaScript functions, but you need to follow two rules when using them. We provide a [linter plugin](https://www.npmjs.com/package/eslint-plugin-react-hooks) to enforce these rules automatically:\n\n### Only Call Hooks at the Top Level {#only-call-hooks-at-the-top-level}\n\n**Don't call Hooks inside loops, conditions, or nested functions.** Instead, always use Hooks at the top level of your React function. By following this rule, you ensure that Hooks are called in the same order each time a component renders. That's what allows React to correctly preserve the state of Hooks between multiple `useState` and `useEffect` calls. (If you're curious, we'll explain this in depth [below](#explanation).)\n\n### Only Call Hooks from React Functions {#only-call-hooks-from-react-functions}\n\n**Don't call Hooks from regular JavaScript functions.** Instead, you can:\n\n* ✅ Call Hooks from React function components.\n* ✅ Call Hooks from custom Hooks (we'll learn about them [on the next page](/docs/hooks-custom.html)).\n\nBy following this rule, you ensure that all stateful logic in a component is clearly visible from its source code.\n\n## ESLint Plugin {#eslint-plugin}\n\nWe released an ESLint plugin called [`eslint-plugin-react-hooks`](https://www.npmjs.com/package/eslint-plugin-react-hooks) that enforces these two rules. You can add this plugin to your project if you'd like to try it:\n\nThis plugin is included by default in [Create React App](/docs/create-a-new-react-app.html#create-react-app).\n\n```bash\nnpm install eslint-plugin-react-hooks --save-dev\n```\n\n```js\n// Your ESLint configuration\n{\n  \"plugins\": [\n    // ...\n    \"react-hooks\"\n  ],\n  \"rules\": {\n    // ...\n    \"react-hooks/rules-of-hooks\": \"error\", // Checks rules of Hooks\n    \"react-hooks/exhaustive-deps\": \"warn\" // Checks effect dependencies\n  }\n}\n```\n\n**You can skip to the next page explaining how to write [your own Hooks](/docs/hooks-custom.html) now.** On this page, we'll continue by explaining the reasoning behind these rules.\n\n## Explanation {#explanation}\n\nAs we [learned earlier](/docs/hooks-state.html#tip-using-multiple-state-variables), we can use multiple State or Effect Hooks in a single component:\n\n```js\nfunction Form() {\n  // 1. Use the name state variable\n  const [name, setName] = useState('Mary');\n\n  // 2. Use an effect for persisting the form\n  useEffect(function persistForm() {\n    localStorage.setItem('formData', name);\n  });\n\n  // 3. Use the surname state variable\n  const [surname, setSurname] = useState('Poppins');\n\n  // 4. Use an effect for updating the title\n  useEffect(function updateTitle() {\n    document.title = name + ' ' + surname;\n  });\n\n  // ...\n}\n```\n\nSo how does React know which state corresponds to which `useState` call? The answer is that **React relies on the order in which Hooks are called**. Our example works because the order of the Hook calls is the same on every render:\n\n```js\n// ------------\n// First render\n// ------------\nuseState('Mary')           // 1. Initialize the name state variable with 'Mary'\nuseEffect(persistForm)     // 2. Add an effect for persisting the form\nuseState('Poppins')        // 3. Initialize the surname state variable with 'Poppins'\nuseEffect(updateTitle)     // 4. Add an effect for updating the title\n\n// -------------\n// Second render\n// -------------\nuseState('Mary')           // 1. Read the name state variable (argument is ignored)\nuseEffect(persistForm)     // 2. Replace the effect for persisting the form\nuseState('Poppins')        // 3. Read the surname state variable (argument is ignored)\nuseEffect(updateTitle)     // 4. Replace the effect for updating the title\n\n// ...\n```\n\nAs long as the order of the Hook calls is the same between renders, React can associate some local state with each of them. But what happens if we put a Hook call (for example, the `persistForm` effect) inside a condition?\n\n```js\n  // 🔴 We're breaking the first rule by using a Hook in a condition\n  if (name !== '') {\n    useEffect(function persistForm() {\n      localStorage.setItem('formData', name);\n    });\n  }\n```\n\nThe `name !== ''` condition is `true` on the first render, so we run this Hook. However, on the next render the user might clear the form, making the condition `false`. Now that we skip this Hook during rendering, the order of the Hook calls becomes different:\n\n```js\nuseState('Mary')           // 1. Read the name state variable (argument is ignored)\n// useEffect(persistForm)  // 🔴 This Hook was skipped!\nuseState('Poppins')        // 🔴 2 (but was 3). Fail to read the surname state variable\nuseEffect(updateTitle)     // 🔴 3 (but was 4). Fail to replace the effect\n```\n\nReact wouldn't know what to return for the second `useState` Hook call. React expected that the second Hook call in this component corresponds to the `persistForm` effect, just like during the previous render, but it doesn't anymore. From that point, every next Hook call after the one we skipped would also shift by one, leading to bugs.\n\n**This is why Hooks must be called on the top level of our components.** If we want to run an effect conditionally, we can put that condition *inside* our Hook:\n\n```js\n  useEffect(function persistForm() {\n    // 👍 We're not breaking the first rule anymore\n    if (name !== '') {\n      localStorage.setItem('formData', name);\n    }\n  });\n```\n\n**Note that you don't need to worry about this problem if you use the [provided lint rule](https://www.npmjs.com/package/eslint-plugin-react-hooks).** But now you also know *why* Hooks work this way, and which issues the rule is preventing.\n\n## Next Steps {#next-steps}\n\nFinally, we're ready to learn about [writing your own Hooks](/docs/hooks-custom.html)! Custom Hooks let you combine Hooks provided by React into your own abstractions, and reuse common stateful logic between different components.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_hooks-rules.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

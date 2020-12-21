@@ -1,0 +1,229 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Advanced HTTP networking
+description: Take full network control with Apollo Link</p>
+<hr>
+<p>The <strong>Apollo Link</strong> library gives you fine-grained control of HTTP requests that are sent by Apollo Client. You can also use it to replace Apollo Client's networking layer with something completely custom, such as a WebSocket transport or mocked server data.</p>
+<p>When using Apollo Link, you define network behavior as a collection of <strong>link</strong> objects that execute in sequence to control the flow of data. By default, Apollo Client uses Apollo Link's <code>HttpLink</code> to send GraphQL queries over HTTP.</p>
+<p>Apollo Link includes installable, premade links that support a variety of use cases. You can also create your own custom links.</p>
+<h2>Customizing request logic</h2>
+<p>The following example demonstrates adding a custom link to Apollo Client. This link adds an <code>Authorization</code> header to every HTTP request before the <code>HttpLink</code> sends it:</p>
+<pre><code class="language-js">import { ApolloClient, HttpLink, ApolloLink, InMemoryCache, concat } from '@apollo/client';
+
+const httpLink = new HttpLink({ uri: '/graphql' });
+
+const authMiddleware = new ApolloLink((operation, forward) =&gt; {
+  // add the authorization to the headers
+  operation.setContext({
+    headers: {
+      authorization: localStorage.getItem('token') || null,
+    }
+  });
+
+  return forward(operation);
+})
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: concat(authMiddleware, httpLink),
+});
+</code></pre>
+<p>This next example demonstrates providing multiple custom links in an array:</p>
+<pre><code class="language-js">import { ApolloClient, HttpLink, ApolloLink, InMemoryCache, from } from '@apollo/client';
+
+const httpLink = new HttpLink({ uri: '/graphql' });
+
+const authMiddleware = new ApolloLink((operation, forward) =&gt; {
+  // add the authorization to the headers
+  operation.setContext(({ headers = {} }) =&gt; ({
+    headers: {
+      ...headers,
+      authorization: localStorage.getItem('token') || null,
+    }
+  }));
+
+  return forward(operation);
+})
+
+const activityMiddleware = new ApolloLink((operation, forward) =&gt; {
+  // add the recent-activity custom header to the headers
+  operation.setContext(({ headers = {} }) =&gt; ({
+    headers: {
+      ...headers,
+      'recent-activity': localStorage.getItem('lastOnlineTime') || null,
+    }
+  }));
+
+  return forward(operation);
+})
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: from([
+    authMiddleware,
+    activityMiddleware,
+    httpLink
+  ]),
+});
+</code></pre>
+<p>In the example above, the <code>authMiddleware</code> link sets each request's <code>Authorization</code> header, and the <code>activityMiddleware</code> then sets each request's <code>Recent-Activity</code> header. Finally, the <code>HttpLink</code> sends the modified request.</p>
+<h2>Customizing response logic</h2>
+<p>You can use Apollo Link to customize Apollo Client's behavior whenever it receives a response from a request.</p>
+<p>The following example demonstrates using <a href="../api/link/apollo-link-error/"><code>@apollo/client/link/error</code></a> to handle network errors that are included in a response:</p>
+<pre><code class="language-js">import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
+import { onError } from '@apollo/client/link/error';
+
+import { logout } from './logout';
+
+const httpLink = new HttpLink({ uri: '/graphql' });
+
+const logoutLink = onError(({ networkError }) =&gt; {
+  if (networkError.statusCode === 401) logout();
+})
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: logoutLink.concat(httpLink),
+});
+</code></pre>
+<p>In this example, the user is logged out of the application if the server returns a <code>401</code> code (unauthorized).</p>
+<h3>Modifying response data</h3>
+<p>You can create a custom link that adds, edits, or removes fields from <code>response.data</code>. To do so, you call <code>map</code> on the result of the link's <code>forward(operation)</code> call. In the <code>map</code> function, make any desired changes to <code>response.data</code> and then return it:</p>
+<pre><code class="language-js">import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from '@apollo/client';
+
+const httpLink = new HttpLink({ uri: '/graphql' });
+
+const addDateLink = new ApolloLink((operation, forward) =&gt; {
+  return forward(operation).map(response =&gt; {
+    response.data.date = new Date();
+    return response;
+  });
+});
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: addDateLink.concat(httpLink),
+});
+</code></pre>
+<p>In the above example, <code>addDateLink</code> adds a <code>date</code> field to the top level of each response.</p>
+<p>Note that <code>forward(operation).map(func)</code> <em>doesn't</em> support asynchronous execution of the <code>func</code> mapping function. If you need to make asynchronous modifications, use the <code>asyncMap</code> function from <code>@apollo/client/utilities</code>, like so:</p>
+<pre><code class="language-js">import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  ApolloLink
+} from &quot;@apollo/client&quot;;
+import { asyncMap } from &quot;@apollo/client/utilities&quot;;
+
+import { usdToEur } from './currency';
+
+const httpLink = new HttpLink({ uri: '/graphql' });
+
+const usdToEurLink = new ApolloLink((operation, forward) =&gt; {
+  return asyncMap(forward(operation), async (response) =&gt; {
+    let data = response.data;
+    if (data.price &amp;&amp; data.currency === &quot;USD&quot;) {
+      data.price = await usdToEur(data.price);
+      data.currency = &quot;EUR&quot;;
+    }
+    return response;
+  });
+});
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: usdToEurLink.concat(httpLink)
+});
+</code></pre>
+<p>In the example above, <code>usdToEurLink</code> uses <code>asyncMap</code> to convert the response object's <code>price</code> field from USD to EUR using an external API.</p>
+<p>While this technique can be useful for modifying <em>existing</em> fields (or adding additional objects to lists within <code>data</code>), adding <em>new</em> fields to <code>data</code> won't work in most cases, because the operation document cannot be safely modified within the <code>ApolloLink</code> request pipeline.</p>
+<h2>The <code>HttpLink</code> object</h2>
+<p>Apollo Client uses <code>HttpLink</code> to send GraphQL operations to a server over HTTP. The link supports both POST and GET requests, and it can modify HTTP options on a per-query basis. This comes in handy when implementing authentication, persisted queries, dynamic URIs, and other granular updates.</p>
+<blockquote>
+<p>If your client doesn't have complex HTTP requirements, you probably don't need to create a custom instance of <code>HttpLink</code>. For details, see <a href="./basic-http-networking/">Basic HTTP networking</a>.</p>
+</blockquote>
+<h3>Usage</h3>
+<pre><code class="language-js">import { HttpLink } from &quot;@apollo/client&quot;;
+
+const link = new HttpLink({ uri: &quot;/graphql&quot; });
+</code></pre>
+<h3>Constructor options</h3>
+<p>The <code>HttpLink</code> constructor accepts the following options:</p>
+<table>
+<thead>
+<tr><th>Options</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>uri</code></td><td>A string endpoint or function that resolves to the GraphQL server you want to execute operations against. (default: <code>/graphql</code>)</td></tr>
+<tr><td><code>includeExtensions</code></td><td>If <code>true</code>, you can pass an <code>extensions</code> field to your GraphQL server. (default: <code>false</code>)</td></tr>
+<tr><td><code>fetch</code></td><td>A <code>fetch</code>-compatible API for making a request. See <a href="#providing-a-fetch-replacement-for-certain-environments">Providing a <code>fetch</code> replacement for certain environments</a>.</td></tr>
+<tr><td><code>headers</code></td><td>An object containing header names and values to include in each request.</td></tr>
+<tr><td><code>credentials</code></td><td>A string representing the credentials policy to use for the <code>fetch</code> call. (valid values: <code>omit</code>, <code>include</code>, <code>same-origin</code>)</td></tr>
+<tr><td><code>fetchOptions</code></td><td>Include this to override the values of certain options that are provided to the <code>fetch</code> call.</td></tr>
+<tr><td><code>useGETForQueries</code></td><td>If <code>true</code>, <code>HttpLink</code> uses <code>GET</code> requests instead of <code>POST</code> requests to execute query operations (but not mutation operations). (default: <code>false</code>)</td></tr>
+</tbody>
+</table>
+<h4>Providing a <code>fetch</code> replacement for certain environments</h4>
+<p><code>HttpLink</code> requires that <code>fetch</code> is present in your runtime environment. This is the case for React Native and most modern browsers. If you're targeting an environment that <em>doesn't</em> include <code>fetch</code> (such as older browsers or the server), you need to pass your own <code>fetch</code> to <code>HttpLink</code> via its <a href="#constructor-options">constructor options</a>. We recommend using <a href="https://www.npmjs.com/package/cross-fetch"><code>cross-fetch</code></a> for older browsers and Node.</p>
+<h3>Overriding options</h3>
+<p>You can override most <code>HttpLink</code> constructor options on an operation-by-operation basis by modifying the <code>context</code> object for the operation. For example, you can set the <code>headers</code> field on the <code>context</code> to pass custom headers for a particular operation. The <code>context</code> also supports the <code>credentials</code> field for defining credentials policy, <code>uri</code> for changing the endpoint dynamically, and <code>fetchOptions</code> to allow generic fetch overrides (i.e., <code>method: &quot;GET&quot;</code>).</p>
+<p>Note that if you set <code>fetchOptions.method</code> to <code>GET</code>, <code>HttpLink</code> follows the <a href="http://graphql.org/learn/serving-over-http/#get-request">standard GraphQL HTTP GET encoding</a>. The query, variables, operation name, and extensions are passed as query parameters instead of in the HTTP request body (because there isn't one). If you to continue to send mutations as non-idempotent <code>POST</code> requests, set the top-level <code>useGETForQueries</code> option to <code>true</code> instead of setting <code>fetchOptions.method</code> to <code>GET</code>.</p>
+<p><code>HttpLink</code> also attaches the response from the <code>fetch</code> operation to the context as <code>response</code>, so you can access it in another link.</p>
+<p>Context options:</p>
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>headers</code></td><td>An object containing header names and values to include in each request.</td></tr>
+<tr><td><code>credentials</code></td><td>A string representing the credentials policy to use for the <code>fetch</code> call. (valid values: <code>omit</code>, <code>include</code>, <code>same-origin</code>)</td></tr>
+<tr><td><code>uri</code></td><td>A string endpoint or function that resolves to the GraphQL server you want to execute operations against.</td></tr>
+<tr><td><code>fetchOptions</code></td><td>Any overrides of the fetch options argument to pass to the <code>fetch</code> call.</td></tr>
+<tr><td><code>response</code></td><td>The raw response from the <code>fetch</code> request after it is made.</td></tr>
+<tr><td><code>http</code></td><td>An object that lets you control fine-grained aspects of <code>HttpLink</code> itself, such as persisted queries (see below).</td></tr>
+</tbody>
+</table>
+<p>The following example shows how to use the <code>context</code> to pass a special header for a single query:</p>
+<pre><code class="language-js">import { ApolloClient, InMemoryCache } from &quot;@apollo/client&quot;;
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  uri: &quot;/graphql&quot;
+});
+
+client.query({
+  query: MY_QUERY,
+  context: {
+    // example of setting the headers with context per operation
+    headers: {
+      special: &quot;Special header value&quot;
+    }
+  }
+});
+</code></pre>
+<h3>Custom fetching</h3>
+<p><code>HttpLink</code>'s <code>fetch</code> option can be used to wire in custom networking. This is useful if you want to modify the request based on calculated headers, or calculate the URI based on an operation. For example:</p>
+<p><strong>Custom auth:</strong></p>
+<pre><code class="language-js">const customFetch = (uri, options) =&gt; {
+  const { header } = Hawk.client.header(
+    &quot;http://example.com:8000/resource/1?b=1&amp;a=2&quot;,
+    &quot;POST&quot;,
+    { credentials: credentials, ext: &quot;some-app-data&quot; }
+  );
+  options.headers.Authorization = header;
+  return fetch(uri, options);
+};
+
+const link = new HttpLink({ fetch: customFetch });
+</code></pre>
+<p><strong>Dynamic URI:</strong></p>
+<pre><code class="language-js">const customFetch = (uri, options) =&gt; {
+  const { operationName } = JSON.parse(options.body);
+  return fetch(`${uri}/graph/graphql?opname=${operationName}`, options);
+};
+
+const link = new HttpLink({ fetch: customFetch });
+</code></pre>
+<h2>Using other links</h2>
+<p>Apollo Link includes many links for specialized use cases, such as the <code>WebSocketLink</code> for communicating over WebSocket and the <code>BatchHttpLink</code> for combining multiple GraphQL operations in a single HTTP request.</p>
+<p>To learn more about what's available, see the <a href="../api/link/introduction/">Apollo Link API documentation</a>.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Advanced HTTP networking\ndescription: Take full network control with Apollo Link\n---\n\nThe **Apollo Link** library gives you fine-grained control of HTTP requests that are sent by Apollo Client. You can also use it to replace Apollo Client's networking layer with something completely custom, such as a WebSocket transport or mocked server data.\n\nWhen using Apollo Link, you define network behavior as a collection of **link** objects that execute in sequence to control the flow of data. By default, Apollo Client uses Apollo Link's `HttpLink` to send GraphQL queries over HTTP.\n\nApollo Link includes installable, premade links that support a variety of use cases. You can also create your own custom links.\n\n## Customizing request logic\n\nThe following example demonstrates adding a custom link to Apollo Client. This link adds an `Authorization` header to every HTTP request before the `HttpLink` sends it:\n\n```js\nimport { ApolloClient, HttpLink, ApolloLink, InMemoryCache, concat } from '@apollo/client';\n\nconst httpLink = new HttpLink({ uri: '/graphql' });\n\nconst authMiddleware = new ApolloLink((operation, forward) =\u003e {\n  // add the authorization to the headers\n  operation.setContext({\n    headers: {\n      authorization: localStorage.getItem('token') || null,\n    }\n  });\n\n  return forward(operation);\n})\n\nconst client = new ApolloClient({\n  cache: new InMemoryCache(),\n  link: concat(authMiddleware, httpLink),\n});\n```\n\nThis next example demonstrates providing multiple custom links in an array:\n\n```js\nimport { ApolloClient, HttpLink, ApolloLink, InMemoryCache, from } from '@apollo/client';\n\nconst httpLink = new HttpLink({ uri: '/graphql' });\n\nconst authMiddleware = new ApolloLink((operation, forward) =\u003e {\n  // add the authorization to the headers\n  operation.setContext(({ headers = {} }) =\u003e ({\n    headers: {\n      ...headers,\n      authorization: localStorage.getItem('token') || null,\n    }\n  }));\n\n  return forward(operation);\n})\n\nconst activityMiddleware = new ApolloLink((operation, forward) =\u003e {\n  // add the recent-activity custom header to the headers\n  operation.setContext(({ headers = {} }) =\u003e ({\n    headers: {\n      ...headers,\n      'recent-activity': localStorage.getItem('lastOnlineTime') || null,\n    }\n  }));\n\n  return forward(operation);\n})\n\nconst client = new ApolloClient({\n  cache: new InMemoryCache(),\n  link: from([\n    authMiddleware,\n    activityMiddleware,\n    httpLink\n  ]),\n});\n```\n\nIn the example above, the `authMiddleware` link sets each request's `Authorization` header, and the `activityMiddleware` then sets each request's `Recent-Activity` header. Finally, the `HttpLink` sends the modified request.\n\n## Customizing response logic\n\nYou can use Apollo Link to customize Apollo Client's behavior whenever it receives a response from a request.\n\nThe following example demonstrates using [`@apollo/client/link/error`](../api/link/apollo-link-error/) to handle network errors that are included in a response:\n\n```js\nimport { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';\nimport { onError } from '@apollo/client/link/error';\n\nimport { logout } from './logout';\n\nconst httpLink = new HttpLink({ uri: '/graphql' });\n\nconst logoutLink = onError(({ networkError }) =\u003e {\n  if (networkError.statusCode === 401) logout();\n})\n\nconst client = new ApolloClient({\n  cache: new InMemoryCache(),\n  link: logoutLink.concat(httpLink),\n});\n```\n\nIn this example, the user is logged out of the application if the server returns a `401` code (unauthorized).\n\n### Modifying response data\n\nYou can create a custom link that adds, edits, or removes fields from `response.data`. To do so, you call `map` on the result of the link's `forward(operation)` call. In the `map` function, make any desired changes to `response.data` and then return it:\n\n```js\nimport { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from '@apollo/client';\n\nconst httpLink = new HttpLink({ uri: '/graphql' });\n\nconst addDateLink = new ApolloLink((operation, forward) =\u003e {\n  return forward(operation).map(response =\u003e {\n    response.data.date = new Date();\n    return response;\n  });\n});\n\nconst client = new ApolloClient({\n  cache: new InMemoryCache(),\n  link: addDateLink.concat(httpLink),\n});\n```\n\nIn the above example, `addDateLink` adds a `date` field to the top level of each response.\n\nNote that `forward(operation).map(func)` _doesn't_ support asynchronous execution of the `func` mapping function. If you need to make asynchronous modifications, use the `asyncMap` function from `@apollo/client/utilities`, like so:\n\n```js\nimport {\n  ApolloClient,\n  InMemoryCache,\n  HttpLink,\n  ApolloLink\n} from \"@apollo/client\";\nimport { asyncMap } from \"@apollo/client/utilities\";\n\nimport { usdToEur } from './currency';\n\nconst httpLink = new HttpLink({ uri: '/graphql' });\n\nconst usdToEurLink = new ApolloLink((operation, forward) =\u003e {\n  return asyncMap(forward(operation), async (response) =\u003e {\n    let data = response.data;\n    if (data.price \u0026\u0026 data.currency === \"USD\") {\n      data.price = await usdToEur(data.price);\n      data.currency = \"EUR\";\n    }\n    return response;\n  });\n});\n\nconst client = new ApolloClient({\n  cache: new InMemoryCache(),\n  link: usdToEurLink.concat(httpLink)\n});\n```\n\nIn the example above, `usdToEurLink` uses `asyncMap` to convert the response object's `price` field from USD to EUR using an external API.\n\nWhile this technique can be useful for modifying _existing_ fields (or adding additional objects to lists within `data`), adding _new_ fields to `data` won't work in most cases, because the operation document cannot be safely modified within the `ApolloLink` request pipeline.\n\n## The `HttpLink` object\n\nApollo Client uses `HttpLink` to send GraphQL operations to a server over HTTP. The link supports both POST and GET requests, and it can modify HTTP options on a per-query basis. This comes in handy when implementing authentication, persisted queries, dynamic URIs, and other granular updates.\n\n\u003e If your client doesn't have complex HTTP requirements, you probably don't need to create a custom instance of `HttpLink`. For details, see [Basic HTTP networking](./basic-http-networking/).\n\n### Usage\n\n```js\nimport { HttpLink } from \"@apollo/client\";\n\nconst link = new HttpLink({ uri: \"/graphql\" });\n```\n\n### Constructor options\n\nThe `HttpLink` constructor accepts the following options:\n\n| Options | Description |\n| - | - |\n| `uri` | A string endpoint or function that resolves to the GraphQL server you want to execute operations against. (default: `/graphql`)|\n| `includeExtensions` | If `true`, you can pass an `extensions` field to your GraphQL server. (default: `false`) |\n| `fetch` | A `fetch`-compatible API for making a request. See [Providing a `fetch` replacement for certain environments](#providing-a-fetch-replacement-for-certain-environments). |\n| `headers` | An object containing header names and values to include in each request. |\n| `credentials` | A string representing the credentials policy to use for the `fetch` call. (valid values: `omit`, `include`, `same-origin`) |\n| `fetchOptions` | Include this to override the values of certain options that are provided to the `fetch` call. |\n| `useGETForQueries` | If `true`, `HttpLink` uses `GET` requests instead of `POST` requests to execute query operations (but not mutation operations). (default: `false`) |\n\n#### Providing a `fetch` replacement for certain environments\n\n`HttpLink` requires that `fetch` is present in your runtime environment. This is the case for React Native and most modern browsers. If you're targeting an environment that _doesn't_ include `fetch` (such as older browsers or the server), you need to pass your own `fetch` to `HttpLink` via its [constructor options](#constructor-options). We recommend using [`cross-fetch`](https://www.npmjs.com/package/cross-fetch) for older browsers and Node.\n\n### Overriding options\n\nYou can override most `HttpLink` constructor options on an operation-by-operation basis by modifying the `context` object for the operation. For example, you can set the `headers` field on the `context` to pass custom headers for a particular operation. The `context` also supports the `credentials` field for defining credentials policy, `uri` for changing the endpoint dynamically, and `fetchOptions` to allow generic fetch overrides (i.e., `method: \"GET\"`).\n\nNote that if you set `fetchOptions.method` to `GET`, `HttpLink` follows the [standard GraphQL HTTP GET encoding](http://graphql.org/learn/serving-over-http/#get-request). The query, variables, operation name, and extensions are passed as query parameters instead of in the HTTP request body (because there isn't one). If you to continue to send mutations as non-idempotent `POST` requests, set the top-level `useGETForQueries` option to `true` instead of setting `fetchOptions.method` to `GET`.\n\n`HttpLink` also attaches the response from the `fetch` operation to the context as `response`, so you can access it in another link.\n\nContext options:\n\n| Option | Description |\n| - | - |\n| `headers` | An object containing header names and values to include in each request. |\n| `credentials` | A string representing the credentials policy to use for the `fetch` call. (valid values: `omit`, `include`, `same-origin`) |\n| `uri` | A string endpoint or function that resolves to the GraphQL server you want to execute operations against. |\n| `fetchOptions` | Any overrides of the fetch options argument to pass to the `fetch` call. |\n| `response` | The raw response from the `fetch` request after it is made. |\n| `http` | An object that lets you control fine-grained aspects of `HttpLink` itself, such as persisted queries (see below). |\n\nThe following example shows how to use the `context` to pass a special header for a single query:\n\n```js\nimport { ApolloClient, InMemoryCache } from \"@apollo/client\";\n\nconst client = new ApolloClient({\n  cache: new InMemoryCache(),\n  uri: \"/graphql\"\n});\n\nclient.query({\n  query: MY_QUERY,\n  context: {\n    // example of setting the headers with context per operation\n    headers: {\n      special: \"Special header value\"\n    }\n  }\n});\n```\n\n### Custom fetching\n\n`HttpLink`'s `fetch` option can be used to wire in custom networking. This is useful if you want to modify the request based on calculated headers, or calculate the URI based on an operation. For example:\n\n**Custom auth:**\n\n```js\nconst customFetch = (uri, options) =\u003e {\n  const { header } = Hawk.client.header(\n    \"http://example.com:8000/resource/1?b=1\u0026a=2\",\n    \"POST\",\n    { credentials: credentials, ext: \"some-app-data\" }\n  );\n  options.headers.Authorization = header;\n  return fetch(uri, options);\n};\n\nconst link = new HttpLink({ fetch: customFetch });\n```\n\n**Dynamic URI:**\n\n```js\nconst customFetch = (uri, options) =\u003e {\n  const { operationName } = JSON.parse(options.body);\n  return fetch(`${uri}/graph/graphql?opname=${operationName}`, options);\n};\n\nconst link = new HttpLink({ fetch: customFetch });\n```\n\n## Using other links\n\nApollo Link includes many links for specialized use cases, such as the `WebSocketLink` for communicating over WebSocket and the `BatchHttpLink` for combining multiple GraphQL operations in a single HTTP request.\n\nTo learn more about what's available, see the [Apollo Link API documentation](../api/link/introduction/).\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_networking_advanced-http-networking.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

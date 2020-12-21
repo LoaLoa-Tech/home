@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: handling-events
+title: Handling Events
+permalink: docs/handling-events.html
+prev: state-and-lifecycle.html
+next: conditional-rendering.html
+redirect_from:</p>
+<ul>
+<li>&quot;docs/events-ko-KR.html&quot;</li>
+</ul>
+<hr>
+<p>Handling events with React elements is very similar to handling events on DOM elements. There are some syntax differences:</p>
+<ul>
+<li>React events are named using camelCase, rather than lowercase.</li>
+<li>With JSX you pass a function as the event handler, rather than a string.</li>
+</ul>
+<p>For example, the HTML:</p>
+<pre><code class="language-html">&lt;button onclick=&quot;activateLasers()&quot;&gt;
+  Activate Lasers
+&lt;/button&gt;
+</code></pre>
+<p>is slightly different in React:</p>
+<pre><code class="language-js{1}">&lt;button onClick={activateLasers}&gt;
+  Activate Lasers
+&lt;/button&gt;
+</code></pre>
+<p>Another difference is that you cannot return <code>false</code> to prevent default behavior in React. You must call <code>preventDefault</code> explicitly. For example, with plain HTML, to prevent the default link behavior of opening a new page, you can write:</p>
+<pre><code class="language-html">&lt;a href=&quot;#&quot; onclick=&quot;console.log('The link was clicked.'); return false&quot;&gt;
+  Click me
+&lt;/a&gt;
+</code></pre>
+<p>In React, this could instead be:</p>
+<pre><code class="language-js{2-5,8}">function ActionLink() {
+  function handleClick(e) {
+    e.preventDefault();
+    console.log('The link was clicked.');
+  }
+
+  return (
+    &lt;a href=&quot;#&quot; onClick={handleClick}&gt;
+      Click me
+    &lt;/a&gt;
+  );
+}
+</code></pre>
+<p>Here, <code>e</code> is a synthetic event. React defines these synthetic events according to the <a href="https://www.w3.org/TR/DOM-Level-3-Events/">W3C spec</a>, so you don't need to worry about cross-browser compatibility. React events do not work exactly the same as native events. See the <a href="/docs/events.html"><code>SyntheticEvent</code></a> reference guide to learn more.</p>
+<p>When using React, you generally don't need to call <code>addEventListener</code> to add listeners to a DOM element after it is created. Instead, just provide a listener when the element is initially rendered.</p>
+<p>When you define a component using an <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Classes">ES6 class</a>, a common pattern is for an event handler to be a method on the class. For example, this <code>Toggle</code> component renders a button that lets the user toggle between &quot;ON&quot; and &quot;OFF&quot; states:</p>
+<pre><code class="language-js{6,7,10-14,18}">class Toggle extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {isToggleOn: true};
+
+    // This binding is necessary to make `this` work in the callback
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.setState(state =&gt; ({
+      isToggleOn: !state.isToggleOn
+    }));
+  }
+
+  render() {
+    return (
+      &lt;button onClick={this.handleClick}&gt;
+        {this.state.isToggleOn ? 'ON' : 'OFF'}
+      &lt;/button&gt;
+    );
+  }
+}
+
+ReactDOM.render(
+  &lt;Toggle /&gt;,
+  document.getElementById('root')
+);
+</code></pre>
+<p><a href="https://codepen.io/gaearon/pen/xEmzGg?editors=0010"><strong>Try it on CodePen</strong></a></p>
+<p>You have to be careful about the meaning of <code>this</code> in JSX callbacks. In JavaScript, class methods are not <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_objects/Function/bind">bound</a> by default. If you forget to bind <code>this.handleClick</code> and pass it to <code>onClick</code>, <code>this</code> will be <code>undefined</code> when the function is actually called.</p>
+<p>This is not React-specific behavior; it is a part of <a href="https://www.smashingmagazine.com/2014/01/understanding-javascript-function-prototype-bind/">how functions work in JavaScript</a>. Generally, if you refer to a method without <code>()</code> after it, such as <code>onClick={this.handleClick}</code>, you should bind that method.</p>
+<p>If calling <code>bind</code> annoys you, there are two ways you can get around this. If you are using the experimental <a href="https://babeljs.io/docs/plugins/transform-class-properties/">public class fields syntax</a>, you can use class fields to correctly bind callbacks:</p>
+<pre><code class="language-js{2-6}">class LoggingButton extends React.Component {
+  // This syntax ensures `this` is bound within handleClick.
+  // Warning: this is *experimental* syntax.
+  handleClick = () =&gt; {
+    console.log('this is:', this);
+  }
+
+  render() {
+    return (
+      &lt;button onClick={this.handleClick}&gt;
+        Click me
+      &lt;/button&gt;
+    );
+  }
+}
+</code></pre>
+<p>This syntax is enabled by default in <a href="https://github.com/facebookincubator/create-react-app">Create React App</a>.</p>
+<p>If you aren't using class fields syntax, you can use an <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions">arrow function</a> in the callback:</p>
+<pre><code class="language-js{7-9}">class LoggingButton extends React.Component {
+  handleClick() {
+    console.log('this is:', this);
+  }
+
+  render() {
+    // This syntax ensures `this` is bound within handleClick
+    return (
+      &lt;button onClick={() =&gt; this.handleClick()}&gt;
+        Click me
+      &lt;/button&gt;
+    );
+  }
+}
+</code></pre>
+<p>The problem with this syntax is that a different callback is created each time the <code>LoggingButton</code> renders. In most cases, this is fine. However, if this callback is passed as a prop to lower components, those components might do an extra re-rendering. We generally recommend binding in the constructor or using the class fields syntax, to avoid this sort of performance problem.</p>
+<h2>Passing Arguments to Event Handlers {#passing-arguments-to-event-handlers}</h2>
+<p>Inside a loop, it is common to want to pass an extra parameter to an event handler. For example, if <code>id</code> is the row ID, either of the following would work:</p>
+<pre><code class="language-js">&lt;button onClick={(e) =&gt; this.deleteRow(id, e)}&gt;Delete Row&lt;/button&gt;
+&lt;button onClick={this.deleteRow.bind(this, id)}&gt;Delete Row&lt;/button&gt;
+</code></pre>
+<p>The above two lines are equivalent, and use <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions">arrow functions</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind"><code>Function.prototype.bind</code></a> respectively.</p>
+<p>In both cases, the <code>e</code> argument representing the React event will be passed as a second argument after the ID. With an arrow function, we have to pass it explicitly, but with <code>bind</code> any further arguments are automatically forwarded.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: handling-events\ntitle: Handling Events\npermalink: docs/handling-events.html\nprev: state-and-lifecycle.html\nnext: conditional-rendering.html\nredirect_from:\n  - \"docs/events-ko-KR.html\"\n---\n\nHandling events with React elements is very similar to handling events on DOM elements. There are some syntax differences:\n\n* React events are named using camelCase, rather than lowercase.\n* With JSX you pass a function as the event handler, rather than a string.\n\nFor example, the HTML:\n\n```html\n\u003cbutton onclick=\"activateLasers()\"\u003e\n  Activate Lasers\n\u003c/button\u003e\n```\n\nis slightly different in React:\n\n```js{1}\n\u003cbutton onClick={activateLasers}\u003e\n  Activate Lasers\n\u003c/button\u003e\n```\n\nAnother difference is that you cannot return `false` to prevent default behavior in React. You must call `preventDefault` explicitly. For example, with plain HTML, to prevent the default link behavior of opening a new page, you can write:\n\n```html\n\u003ca href=\"#\" onclick=\"console.log('The link was clicked.'); return false\"\u003e\n  Click me\n\u003c/a\u003e\n```\n\nIn React, this could instead be:\n\n```js{2-5,8}\nfunction ActionLink() {\n  function handleClick(e) {\n    e.preventDefault();\n    console.log('The link was clicked.');\n  }\n\n  return (\n    \u003ca href=\"#\" onClick={handleClick}\u003e\n      Click me\n    \u003c/a\u003e\n  );\n}\n```\n\nHere, `e` is a synthetic event. React defines these synthetic events according to the [W3C spec](https://www.w3.org/TR/DOM-Level-3-Events/), so you don't need to worry about cross-browser compatibility. React events do not work exactly the same as native events. See the [`SyntheticEvent`](/docs/events.html) reference guide to learn more.\n\nWhen using React, you generally don't need to call `addEventListener` to add listeners to a DOM element after it is created. Instead, just provide a listener when the element is initially rendered.\n\nWhen you define a component using an [ES6 class](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Classes), a common pattern is for an event handler to be a method on the class. For example, this `Toggle` component renders a button that lets the user toggle between \"ON\" and \"OFF\" states:\n\n```js{6,7,10-14,18}\nclass Toggle extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = {isToggleOn: true};\n\n    // This binding is necessary to make `this` work in the callback\n    this.handleClick = this.handleClick.bind(this);\n  }\n\n  handleClick() {\n    this.setState(state =\u003e ({\n      isToggleOn: !state.isToggleOn\n    }));\n  }\n\n  render() {\n    return (\n      \u003cbutton onClick={this.handleClick}\u003e\n        {this.state.isToggleOn ? 'ON' : 'OFF'}\n      \u003c/button\u003e\n    );\n  }\n}\n\nReactDOM.render(\n  \u003cToggle /\u003e,\n  document.getElementById('root')\n);\n```\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/xEmzGg?editors=0010)\n\nYou have to be careful about the meaning of `this` in JSX callbacks. In JavaScript, class methods are not [bound](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_objects/Function/bind) by default. If you forget to bind `this.handleClick` and pass it to `onClick`, `this` will be `undefined` when the function is actually called.\n\nThis is not React-specific behavior; it is a part of [how functions work in JavaScript](https://www.smashingmagazine.com/2014/01/understanding-javascript-function-prototype-bind/). Generally, if you refer to a method without `()` after it, such as `onClick={this.handleClick}`, you should bind that method.\n\nIf calling `bind` annoys you, there are two ways you can get around this. If you are using the experimental [public class fields syntax](https://babeljs.io/docs/plugins/transform-class-properties/), you can use class fields to correctly bind callbacks:\n\n```js{2-6}\nclass LoggingButton extends React.Component {\n  // This syntax ensures `this` is bound within handleClick.\n  // Warning: this is *experimental* syntax.\n  handleClick = () =\u003e {\n    console.log('this is:', this);\n  }\n\n  render() {\n    return (\n      \u003cbutton onClick={this.handleClick}\u003e\n        Click me\n      \u003c/button\u003e\n    );\n  }\n}\n```\n\nThis syntax is enabled by default in [Create React App](https://github.com/facebookincubator/create-react-app).\n\nIf you aren't using class fields syntax, you can use an [arrow function](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions) in the callback:\n\n```js{7-9}\nclass LoggingButton extends React.Component {\n  handleClick() {\n    console.log('this is:', this);\n  }\n\n  render() {\n    // This syntax ensures `this` is bound within handleClick\n    return (\n      \u003cbutton onClick={() =\u003e this.handleClick()}\u003e\n        Click me\n      \u003c/button\u003e\n    );\n  }\n}\n```\n\nThe problem with this syntax is that a different callback is created each time the `LoggingButton` renders. In most cases, this is fine. However, if this callback is passed as a prop to lower components, those components might do an extra re-rendering. We generally recommend binding in the constructor or using the class fields syntax, to avoid this sort of performance problem.\n\n## Passing Arguments to Event Handlers {#passing-arguments-to-event-handlers}\n\nInside a loop, it is common to want to pass an extra parameter to an event handler. For example, if `id` is the row ID, either of the following would work:\n\n```js\n\u003cbutton onClick={(e) =\u003e this.deleteRow(id, e)}\u003eDelete Row\u003c/button\u003e\n\u003cbutton onClick={this.deleteRow.bind(this, id)}\u003eDelete Row\u003c/button\u003e\n```\n\nThe above two lines are equivalent, and use [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions) and [`Function.prototype.bind`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind) respectively.\n\nIn both cases, the `e` argument representing the React event will be passed as a second argument after the ID. With an arrow function, we have to pass it explicitly, but with `bind` any further arguments are automatically forwarded.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_handling-events.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Retry Link
+description: Attempt an operation multiple times if it fails due to network or server errors.</p>
+<hr>
+<h2>Overview</h2>
+<p><code>@apollo/client/link/retry</code> can be used to retry an operation a certain amount of times. This comes in handy when dealing with unreliable communication situations, where you would rather wait longer than explicitly fail an operation. <code>@apollo/client/link/retry</code> provides exponential backoff, and jitters delays between attempts by default. It does not (currently) handle retries for GraphQL errors in the response, only for network errors.</p>
+<p>An example use case is to hold on to a request while a network connection is offline, and retry until it comes back online.</p>
+<pre><code class="language-js">import { RetryLink } from &quot;@apollo/client/link/retry&quot;;
+
+const link = new RetryLink();
+</code></pre>
+<h2>Options</h2>
+<p>The standard retry strategy provides exponential backoff with jittering, and takes the following options, grouped into <code>delay</code> and <code>attempt</code> strategies:</p>
+<h3>options.delay</h3>
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>delay.initial</code></td><td>The number of milliseconds to wait before attempting the first retry.</td></tr>
+<tr><td><code>delay.max</code></td><td>The maximum number of milliseconds that the link should wait for any retry.</td></tr>
+<tr><td><code>delay.jitter</code></td><td>Whether delays between attempts should be randomized.</td></tr>
+</tbody>
+</table>
+<h3>options.attempts</h3>
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>attempts.max</code></td><td>The max number of times to try a single operation before giving up.</td></tr>
+<tr><td><code>attempts.retryIf</code></td><td>A predicate function that can determine whether a particular response should be retried.</td></tr>
+</tbody>
+</table>
+<h3>Default configuration</h3>
+<p>The default configuration is equivalent to:</p>
+<pre><code class="language-ts">new RetryLink({
+  delay: {
+    initial: 300,
+    max: Infinity,
+    jitter: true
+  },
+  attempts: {
+    max: 5,
+    retryIf: (error, _operation) =&gt; !!error
+  }
+});
+</code></pre>
+<h2>Avoiding thundering herd</h2>
+<p>Starting with <code>initialDelay</code>, the delay of each subsequent retry is increased exponentially, meaning it's multiplied by 2 each time. For example, if <code>initialDelay</code> is 100, additional retries will occur after delays of 200, 400, 800, etc.</p>
+<p>With the <code>jitter</code> option enabled, delays are randomized anywhere between 0ms (instant), and 2x the configured delay. This way you get the same result on average, but with random delays.</p>
+<p>These two features are combined to help alleviate <a href="https://en.wikipedia.org/wiki/Thundering_herd_problem">the thundering herd problem</a>, by distributing load during major outages. Without these strategies, when your server comes back up it will be hit by all of your clients at once, possibly causing it to go down again.</p>
+<h2>Custom strategies</h2>
+<p>Instead of the options object, you may pass a function for <code>delay</code> and/or <code>attempts</code>, which implement custom strategies for each. In both cases the function is given the same arguments (<code>count</code>, <code>operation</code>, <code>error</code>).</p>
+<p>The <code>attempts</code> function should return a boolean indicating whether the response should be retried. If yes, the <code>delay</code> function is then called, and should return the number of milliseconds to delay by.</p>
+<pre><code class="language-js">import { RetryLink } from &quot;@apollo/client/link/retry&quot;;
+
+const link = new RetryLink({
+  attempts: (count, operation, error) =&gt; {
+    return !!error &amp;&amp; operation.operationName != 'specialCase';
+  },
+  delay: (count, operation, error) =&gt; {
+    return count * 1000 * Math.random();
+  },
+});
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Retry Link\ndescription: Attempt an operation multiple times if it fails due to network or server errors.\n---\n\n## Overview\n\n`@apollo/client/link/retry` can be used to retry an operation a certain amount of times. This comes in handy when dealing with unreliable communication situations, where you would rather wait longer than explicitly fail an operation. `@apollo/client/link/retry` provides exponential backoff, and jitters delays between attempts by default. It does not (currently) handle retries for GraphQL errors in the response, only for network errors.\n\nAn example use case is to hold on to a request while a network connection is offline, and retry until it comes back online.\n\n```js\nimport { RetryLink } from \"@apollo/client/link/retry\";\n\nconst link = new RetryLink();\n```\n\n## Options\n\nThe standard retry strategy provides exponential backoff with jittering, and takes the following options, grouped into `delay` and `attempt` strategies:\n\n### options.delay\n\n| Option | Description |\n| - | - |\n| `delay.initial` | The number of milliseconds to wait before attempting the first retry. |\n| `delay.max` | The maximum number of milliseconds that the link should wait for any retry. |\n| `delay.jitter` | Whether delays between attempts should be randomized. |\n\n### options.attempts\n\n| Option | Description |\n| - | - |\n| `attempts.max` | The max number of times to try a single operation before giving up. |\n| `attempts.retryIf` | A predicate function that can determine whether a particular response should be retried. |\n\n### Default configuration\n\nThe default configuration is equivalent to:\n\n```ts\nnew RetryLink({\n  delay: {\n    initial: 300,\n    max: Infinity,\n    jitter: true\n  },\n  attempts: {\n    max: 5,\n    retryIf: (error, _operation) =\u003e !!error\n  }\n});\n```\n\n## Avoiding thundering herd\n\nStarting with `initialDelay`, the delay of each subsequent retry is increased exponentially, meaning it's multiplied by 2 each time. For example, if `initialDelay` is 100, additional retries will occur after delays of 200, 400, 800, etc.\n\nWith the `jitter` option enabled, delays are randomized anywhere between 0ms (instant), and 2x the configured delay. This way you get the same result on average, but with random delays.\n\nThese two features are combined to help alleviate [the thundering herd problem](https://en.wikipedia.org/wiki/Thundering_herd_problem), by distributing load during major outages. Without these strategies, when your server comes back up it will be hit by all of your clients at once, possibly causing it to go down again.\n\n## Custom strategies\n\nInstead of the options object, you may pass a function for `delay` and/or `attempts`, which implement custom strategies for each. In both cases the function is given the same arguments (`count`, `operation`, `error`).\n\nThe `attempts` function should return a boolean indicating whether the response should be retried. If yes, the `delay` function is then called, and should return the number of milliseconds to delay by.\n\n```js\nimport { RetryLink } from \"@apollo/client/link/retry\";\n\nconst link = new RetryLink({\n  attempts: (count, operation, error) =\u003e {\n    return !!error \u0026\u0026 operation.operationName != 'specialCase';\n  },\n  delay: (count, operation, error) =\u003e {\n    return count * 1000 * Math.random();\n  },\n});\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_api-link_apollo-link-retry.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

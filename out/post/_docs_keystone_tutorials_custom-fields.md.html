@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: tutorials
+title: Custom fields
+order: 5
+[meta]-->
+<h1>Custom Field: <code>Stars</code></h1>
+<p>In this tutorial we will be creating a simple custom Field Type for star ratings ⭐️ ⭐️ ⭐️ ⭐️ ⭐️!</p>
+<p>For this component, our data requirements are simple, we need to store an Integer that represents the number of stars. We can extend the built-in Integer type to leverage its implementation and provide only custom behaviour and UI components where necessary.</p>
+<h2>Defining The Field Type</h2>
+<p>This is what our custom field's directory will look like once we're finished:</p>
+<pre><code class="language-sh">.
+└── Stars
+    ├── index.js
+    ├── Implementation.js
+    └── views
+        ├── Cell.js
+        ├── Field.js
+        ├── Filter.js
+        ├── Stars.js
+        ├── star-empty.svg
+        └── star-full.svg
+</code></pre>
+<p>Custom fields should have an <code>index.js</code> file which exports a field definition. The field definition pulls together all the parts that make up a field including front-end and back-end code.</p>
+<p>For our Stars field it looks something like this:</p>
+<pre><code class="language-js">const { Stars, MongoIntegerInterface, KnexIntegerInterface } = require('./Implementation');
+
+const { Integer } = require('@keystonejs/fields');
+
+module.exports = {
+  type: 'Stars',
+  implementation: Stars,
+  adapters: {
+    mongoose: MongoIntegerInterface,
+    knex: KnexIntegerInterface,
+  },
+  views: {
+    Controller: Integer.views.Controller,
+    Field: require.resolve('./views/Field'),
+    Filter: Integer.views.Filter,
+    Cell: require.resolve('./views/Cell'),
+  },
+};
+</code></pre>
+<p>The <code>implementation</code> and <code>adapters</code> reference back-end code used by Keystone, and everything under <code>views</code>, references front-end code used in either the Admin UI or GraphQL apps.</p>
+<p>You may have realised now that front-end and back-end code cannot be bundled together in the same file. That's why we use <code>require.resolve</code> to provide a string value rather than importing front-end code. The string value is a reference to the location of the files. Keystone has a special build step that compiles front-end code for field types.</p>
+<p>Note: If you want to package field types for use outside your own project, there are additional step involved, however these are outside the scope of this tutorial.</p>
+<h2>Implementation</h2>
+<p>Let's start by looking at <code>Implementation.js</code>.</p>
+<pre><code class="language-js">const { Integer } = require('@keystonejs/fields');
+
+class Stars extends Integer.implementation {
+  extendAdminMeta(meta) {
+    return { ...meta, starCount: this.config.starCount || 5 };
+  }
+}
+
+module.exports = {
+  Stars,
+  MongoIntegerInterface: Integer.adapters.mongoose,
+  KnexIntegerInterface: Integer.adapters.knex,
+};
+</code></pre>
+<p>It's convention with existing field types to export the field implementation class, together with the adapter interfaces.</p>
+<p>Adapters provide an interface between our field and the database. Here we define how a queries and mutations should be translated into SQL or MongoDB actions. Again, as our implementation for the Stars is going to be the same as the Integer field type, we can just re-export the adapters for the Integer field type.</p>
+<p>We're not changing anything about how the data is stored, so for now we're just going to going to re-export the adapters for the <code>Integer</code> field.</p>
+<p>The implementation class is used in the Keystone back-end. It defines a number of things. Firstly, the GraphQL interface including types, queries and resolvers; secondly, field properties such as if a field is orderable; and finally, what data Keystone should pass to the Admin UI.</p>
+<p>For our Stars field, the only thing we want to change from the <code>Integer</code> implementation is to add configuration option for the number of stars. Because of this we can <code>extend</code> the <code>Integer</code> implementation class and override the method <code>extendAdminMeta</code>.</p>
+<h3>Views</h3>
+<p>Now that we've got the back-end interface in place let's look at the UI components.</p>
+<p>This normally starts with the controller. The controller defines how front-end features work, including: filtering, default values, serialization of data, label resolvers and some GraphQl options. In our example filtering, default values and controller aspect will all be the same as the <code>Integer</code> field. So once again, we're just going to reference the Integer controller.</p>
+<p><strong>Note</strong>: <code>Integer.views.Controller</code> will also resolve to a path within the <code>node_modules</code> folder and will also be bundled by Keystone at build time.</p>
+<p>The rest of the views relate to React components rendered in the Admin UI. We can start by creating a generic <code>&lt;Stars&gt;</code> component that will render a number of stars, either solid or outlined, depending on the count and value props. So, a 3 stars out of 5 rating would look like this:</p>
+<pre><code class="language-jsx">  &lt;Stars count={5} value={3}&gt;
+</code></pre>
+<p>You can find an example of this component in the <a href="https://github.com/keystonejs/keystone/tree/master/examples/custom-fields/fields/Stars/views/Stars.js">custom-fields demo project</a>.</p>
+<p>Once we have a component for star ratings we can use this in Keystone.</p>
+<h4>Cell</h4>
+<p>The cell component is rendered in a table that shows a list of items the in Keystone Admin UI. We're going to use the star component we made. Our cell component is going to make use of the data, which will be the integer value, and the <code>starCount</code> field config option we added in the Implementation.js file. You can interact with the cell so we don't provide any <code>onChange</code> prop to the component.</p>
+<pre><code class="language-jsx title=/views/Cell.js">/** @jsx jsx */
+
+import { jsx } from '@emotion/core';
+import Stars from './Stars';
+
+export default function StarsCell({ field, data }) {
+  const { starCount } = field.config;
+  return &lt;Stars count={starCount} value={data} /&gt;;
+}
+</code></pre>
+<h2>Field</h2>
+<p>The field component provides the main interface used when creating or editing list items in Keystone. To get a consistent look, we're going to import some wrapping components from <code>@arch-ui/fields</code>, that's Keystone's UI library. This will render the labels and provided consistent spacing. Other than this we simply delegate the <code>onChange</code> event to the <code>Stars</code> so that values can be updated when a user clicks on the stars.</p>
+<pre><code class="language-jsx">/** @jsx jsx */
+
+import { jsx } from '@emotion/core';
+import { FieldContainer, FieldLabel, FieldInput } from '@arch-ui/fields';
+import Stars from './Stars';
+
+const StarsField = ({ field, value, errors, onChange }) =&gt; (
+  &lt;FieldContainer&gt;
+    &lt;FieldLabel htmlFor={`ks-input-${field.path}`} field={field} errors={errors} /&gt;
+    &lt;FieldInput&gt;
+      &lt;Stars count={field.config.starCount} value={value} onChange={onChange} /&gt;
+    &lt;/FieldInput&gt;
+  &lt;/FieldContainer&gt;
+);
+export default StarsField;
+</code></pre>
+<p>That's it, we now have a basic custom field.</p>
+<h2>Next Steps</h2>
+<p>Take a look at this example and others in the <a href="https://github.com/keystonejs/keystone/tree/master/examples/custom-fields/">custom-fields demo project</a> in the Keystone repository.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: tutorials\ntitle: Custom fields\norder: 5\n[meta]--\u003e\n\n# Custom Field: `Stars`\n\nIn this tutorial we will be creating a simple custom Field Type for star ratings ⭐️ ⭐️ ⭐️ ⭐️ ⭐️!\n\nFor this component, our data requirements are simple, we need to store an Integer that represents the number of stars. We can extend the built-in Integer type to leverage its implementation and provide only custom behaviour and UI components where necessary.\n\n## Defining The Field Type\n\nThis is what our custom field's directory will look like once we're finished:\n\n```sh\n.\n└── Stars\n    ├── index.js\n    ├── Implementation.js\n    └── views\n        ├── Cell.js\n        ├── Field.js\n        ├── Filter.js\n        ├── Stars.js\n        ├── star-empty.svg\n        └── star-full.svg\n```\n\nCustom fields should have an `index.js` file which exports a field definition. The field definition pulls together all the parts that make up a field including front-end and back-end code.\n\nFor our Stars field it looks something like this:\n\n```js\nconst { Stars, MongoIntegerInterface, KnexIntegerInterface } = require('./Implementation');\n\nconst { Integer } = require('@keystonejs/fields');\n\nmodule.exports = {\n  type: 'Stars',\n  implementation: Stars,\n  adapters: {\n    mongoose: MongoIntegerInterface,\n    knex: KnexIntegerInterface,\n  },\n  views: {\n    Controller: Integer.views.Controller,\n    Field: require.resolve('./views/Field'),\n    Filter: Integer.views.Filter,\n    Cell: require.resolve('./views/Cell'),\n  },\n};\n```\n\nThe `implementation` and `adapters` reference back-end code used by Keystone, and everything under `views`, references front-end code used in either the Admin UI or GraphQL apps.\n\nYou may have realised now that front-end and back-end code cannot be bundled together in the same file. That's why we use `require.resolve` to provide a string value rather than importing front-end code. The string value is a reference to the location of the files. Keystone has a special build step that compiles front-end code for field types.\n\nNote: If you want to package field types for use outside your own project, there are additional step involved, however these are outside the scope of this tutorial.\n\n## Implementation\n\nLet's start by looking at `Implementation.js`.\n\n```js\nconst { Integer } = require('@keystonejs/fields');\n\nclass Stars extends Integer.implementation {\n  extendAdminMeta(meta) {\n    return { ...meta, starCount: this.config.starCount || 5 };\n  }\n}\n\nmodule.exports = {\n  Stars,\n  MongoIntegerInterface: Integer.adapters.mongoose,\n  KnexIntegerInterface: Integer.adapters.knex,\n};\n```\n\nIt's convention with existing field types to export the field implementation class, together with the adapter interfaces.\n\nAdapters provide an interface between our field and the database. Here we define how a queries and mutations should be translated into SQL or MongoDB actions. Again, as our implementation for the Stars is going to be the same as the Integer field type, we can just re-export the adapters for the Integer field type.\n\nWe're not changing anything about how the data is stored, so for now we're just going to going to re-export the adapters for the `Integer` field.\n\nThe implementation class is used in the Keystone back-end. It defines a number of things. Firstly, the GraphQL interface including types, queries and resolvers; secondly, field properties such as if a field is orderable; and finally, what data Keystone should pass to the Admin UI.\n\nFor our Stars field, the only thing we want to change from the `Integer` implementation is to add configuration option for the number of stars. Because of this we can `extend` the `Integer` implementation class and override the method `extendAdminMeta`.\n\n### Views\n\nNow that we've got the back-end interface in place let's look at the UI components.\n\nThis normally starts with the controller. The controller defines how front-end features work, including: filtering, default values, serialization of data, label resolvers and some GraphQl options. In our example filtering, default values and controller aspect will all be the same as the `Integer` field. So once again, we're just going to reference the Integer controller.\n\n**Note**: `Integer.views.Controller` will also resolve to a path within the `node_modules` folder and will also be bundled by Keystone at build time.\n\nThe rest of the views relate to React components rendered in the Admin UI. We can start by creating a generic `\u003cStars\u003e` component that will render a number of stars, either solid or outlined, depending on the count and value props. So, a 3 stars out of 5 rating would look like this:\n\n```jsx\n  \u003cStars count={5} value={3}\u003e\n```\n\nYou can find an example of this component in the [custom-fields demo project](https://github.com/keystonejs/keystone/tree/master/examples/custom-fields/fields/Stars/views/Stars.js).\n\nOnce we have a component for star ratings we can use this in Keystone.\n\n#### Cell\n\nThe cell component is rendered in a table that shows a list of items the in Keystone Admin UI. We're going to use the star component we made. Our cell component is going to make use of the data, which will be the integer value, and the `starCount` field config option we added in the Implementation.js file. You can interact with the cell so we don't provide any `onChange` prop to the component.\n\n```jsx title=/views/Cell.js\n/** @jsx jsx */\n\nimport { jsx } from '@emotion/core';\nimport Stars from './Stars';\n\nexport default function StarsCell({ field, data }) {\n  const { starCount } = field.config;\n  return \u003cStars count={starCount} value={data} /\u003e;\n}\n```\n\n## Field\n\nThe field component provides the main interface used when creating or editing list items in Keystone. To get a consistent look, we're going to import some wrapping components from `@arch-ui/fields`, that's Keystone's UI library. This will render the labels and provided consistent spacing. Other than this we simply delegate the `onChange` event to the `Stars` so that values can be updated when a user clicks on the stars.\n\n```jsx\n/** @jsx jsx */\n\nimport { jsx } from '@emotion/core';\nimport { FieldContainer, FieldLabel, FieldInput } from '@arch-ui/fields';\nimport Stars from './Stars';\n\nconst StarsField = ({ field, value, errors, onChange }) =\u003e (\n  \u003cFieldContainer\u003e\n    \u003cFieldLabel htmlFor={`ks-input-${field.path}`} field={field} errors={errors} /\u003e\n    \u003cFieldInput\u003e\n      \u003cStars count={field.config.starCount} value={value} onChange={onChange} /\u003e\n    \u003c/FieldInput\u003e\n  \u003c/FieldContainer\u003e\n);\nexport default StarsField;\n```\n\nThat's it, we now have a basic custom field.\n\n## Next Steps\n\nTake a look at this example and others in the [custom-fields demo project](https://github.com/keystonejs/keystone/tree/master/examples/custom-fields/) in the Keystone repository.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_tutorials_custom-fields.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

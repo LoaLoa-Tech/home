@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Keystone apps
+[meta]-->
+<h1>Keystone apps</h1>
+<p>A Keystone instance acts as a function of your schema which
+creates a GraphQL API for querying and an Admin UI for managing your data:</p>
+<pre><code class="language-javascript allowCopy=false showLanguage=false">schema =&gt; ({ GraphQL, AdminUI });
+</code></pre>
+<h2>Introduction</h2>
+<p>Here, <code>GraphQL</code> and <code>AdminUI</code> are referred to as <strong>Apps</strong>.</p>
+<p>A Keystone <strong>App</strong> has two primary purposes</p>
+<ol>
+<li>Prepare an <code>express</code>-compatible middleware for handling incoming http requests</li>
+<li>Provide a <code>build()</code> method to create a static production build for this app</li>
+</ol>
+<p>At a minimum a Keystone application requires one app, the <a href="/packages/app-graphql/README.md">GraphQL API</a>:</p>
+<pre><code class="language-javascript title=index.js">const { GraphQLApp } = require('@keystonejs/app-graphql');
+const { Keystone } = require('@keystonejs/keystone');
+
+const keystone = new Keystone();
+
+module.exports = {
+  keystone,
+  apps: [new GraphQLApp()],
+};
+</code></pre>
+<p>Most of the time the <code>GraphQLApp</code> will be paired with an <code>AdminUIApp</code> which
+provides the functionality of the Keystone Admin UI:</p>
+<pre><code class="language-diff title=index.js allowCopy=false showLanguage=false"> const { GraphQLApp } = require('@keystonejs/app-graphql');
+ const { Keystone } = require('@keystonejs/keystone');
++const { AdminUIApp } = require('@keystonejs/app-admin-ui');
+
+ const keystone = new Keystone();
+
+ module.exports = {
+   keystone,
+   apps: [
+     new GraphQLApp(),
++    new AdminUIApp(),
+   ]
+ }
+</code></pre>
+<p>In both cases, the <code>keystone dev</code> and <code>keystone start</code> commands will consume the
+exported <code>.apps</code> array, making their middleware available in the order the apps
+are specified.</p>
+<p>If you're using a <a href="/docs/guides/custom-server.md">Custom Server</a>, it will be your
+responsibility to ensure each app's middleware is correctly injected into any
+http server you setup.</p>
+<p>Other interesting Keystone compatible Apps are:</p>
+<ul>
+<li><a href="/packages/app-static/README.md">Static App</a> for serving static files.</li>
+<li><a href="/packages/app-next/README.md">Next.js App</a> for serving a Next.js App on the same server as the API</li>
+</ul>
+<h2>Custom apps</h2>
+<p>If you need to provide your own custom middleware for your system you can create a custom app and include it in your exported <code>apps</code>.</p>
+<!-- prettier-ignore-start -->
+<pre><code class="language-javascript title=index.js">class CustomApp {
+  prepareMiddleware({ keystone, dev, distDir }) {
+    const middleware = express();
+    return middleware;
+  }
+}
+
+module.exports = {
+  keystone,
+  apps: [
+    new GraphQLApp(),
+    new AdminUIApp(),
+    new CustomApp(),
+  ],
+};
+</code></pre>
+<!-- prettier-ignore-end -->
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Keystone apps\n[meta]--\u003e\n\n# Keystone apps\n\nA Keystone instance acts as a function of your schema which\ncreates a GraphQL API for querying and an Admin UI for managing your data:\n\n```javascript allowCopy=false showLanguage=false\nschema =\u003e ({ GraphQL, AdminUI });\n```\n\n## Introduction\n\nHere, `GraphQL` and `AdminUI` are referred to as **Apps**.\n\nA Keystone **App** has two primary purposes\n\n1. Prepare an `express`-compatible middleware for handling incoming http requests\n2. Provide a `build()` method to create a static production build for this app\n\nAt a minimum a Keystone application requires one app, the [GraphQL API](/packages/app-graphql/README.md):\n\n```javascript title=index.js\nconst { GraphQLApp } = require('@keystonejs/app-graphql');\nconst { Keystone } = require('@keystonejs/keystone');\n\nconst keystone = new Keystone();\n\nmodule.exports = {\n  keystone,\n  apps: [new GraphQLApp()],\n};\n```\n\nMost of the time the `GraphQLApp` will be paired with an `AdminUIApp` which\nprovides the functionality of the Keystone Admin UI:\n\n```diff title=index.js allowCopy=false showLanguage=false\n const { GraphQLApp } = require('@keystonejs/app-graphql');\n const { Keystone } = require('@keystonejs/keystone');\n+const { AdminUIApp } = require('@keystonejs/app-admin-ui');\n\n const keystone = new Keystone();\n\n module.exports = {\n   keystone,\n   apps: [\n     new GraphQLApp(),\n+    new AdminUIApp(),\n   ]\n }\n```\n\nIn both cases, the `keystone dev` and `keystone start` commands will consume the\nexported `.apps` array, making their middleware available in the order the apps\nare specified.\n\nIf you're using a [Custom Server](/docs/guides/custom-server.md), it will be your\nresponsibility to ensure each app's middleware is correctly injected into any\nhttp server you setup.\n\nOther interesting Keystone compatible Apps are:\n\n- [Static App](/packages/app-static/README.md) for serving static files.\n- [Next.js App](/packages/app-next/README.md) for serving a Next.js App on the same server as the API\n\n## Custom apps\n\nIf you need to provide your own custom middleware for your system you can create a custom app and include it in your exported `apps`.\n\n\u003c!-- prettier-ignore-start --\u003e\n\n```javascript title=index.js\nclass CustomApp {\n  prepareMiddleware({ keystone, dev, distDir }) {\n    const middleware = express();\n    return middleware;\n  }\n}\n\nmodule.exports = {\n  keystone,\n  apps: [\n    new GraphQLApp(),\n    new AdminUIApp(),\n    new CustomApp(),\n  ],\n};\n```\n\n\u003c!-- prettier-ignore-end --\u003e\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_apps.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

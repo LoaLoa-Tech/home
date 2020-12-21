@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Error Link
+description: Handle and inspect errors in your GraphQL network stack.</p>
+<hr>
+<h2>Overview</h2>
+<p>Use this link to perform some custom logic when a GraphQL or network error happens:</p>
+<pre><code class="language-js">import { onError } from &quot;@apollo/client/link/error&quot;;
+
+const link = onError(({ graphQLErrors, networkError }) =&gt; {
+  if (graphQLErrors)
+    graphQLErrors.map(({ message, locations, path }) =&gt;
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+  if (networkError) console.log(`[Network error]: ${networkError}`);
+});
+</code></pre>
+<h2>Callback</h2>
+<p>The Error link takes a function that is called in the event of an error. This function is called with an object containing the following keys:</p>
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>operation</code></td><td>The Operation that errored</td></tr>
+<tr><td><code>response</code></td><td>The result returned from lower down in the link chain</td></tr>
+<tr><td><code>graphQLErrors</code></td><td>An array of errors from the GraphQL endpoint</td></tr>
+<tr><td><code>networkError</code></td><td>Any error during the link execution or server response, that wasn't delivered as part of the <code>errors</code> field in the GraphQL result</td></tr>
+<tr><td><code>forward</code></td><td>A reference to the next link in the chain. Calling <code>return forward(operation)</code> in the callback will retry the request, returning a new observable for the upstream link to subscribe to.</td></tr>
+</tbody>
+</table>
+<p>Returns: <code>Observable&lt;FetchResult&gt; | void</code> The error callback can optionally return an observable from calling <code>forward(operation)</code> if it wants to retry the request. It should not return anything else.</p>
+<h2>Error categorization</h2>
+<p>An error is passed as a <code>networkError</code> if a link further down the chain called the <code>error</code> callback on the observable. In most cases, <code>graphQLErrors</code> is the <code>errors</code> field of the result from the last <code>next</code> call.</p>
+<p>A <code>networkError</code> can contain additional fields, such as a GraphQL object in the case of a failing HTTP status code. In this situation, <code>graphQLErrors</code> is an alias for <code>networkError.result.errors</code> if the property exists.</p>
+<h2>Retrying failed requests</h2>
+<p>An error handler might want to do more than just logging errors. You can check for a certain failure condition or error code, and retry the request if rectifying the error is possible. For example, when using some form of token based authentication, there is a need to handle re-authentication when the token expires. Here is an example of how to do this using <code>forward()</code>:</p>
+<pre><code class="language-js">onError(({ graphQLErrors, networkError, operation, forward }) =&gt; {
+  if (graphQLErrors) {
+    for (let err of graphQLErrors) {
+      switch (err.extensions.code) {
+        case 'UNAUTHENTICATED':
+          // error code is set to UNAUTHENTICATED
+          // when AuthenticationError thrown in resolver
+
+          // modify the operation context with a new token
+          const oldHeaders = operation.getContext().headers;
+          operation.setContext({
+            headers: {
+              ...oldHeaders,
+              authorization: getNewToken(),
+            },
+          });
+          // retry the request, returning the new observable
+          return forward(operation);
+      }
+    }
+  }
+  if (networkError) {
+    console.log(`[Network error]: ${networkError}`);
+    // if you would also like to retry automatically on
+    // network errors, we recommend that you use
+    // @apollo/client/link/retry
+  }
+});
+</code></pre>
+<p>Here is a diagram of the request flow:
+<img src="../../assets/link/error-request-flow.png" alt="Diagram of request flow after retrying in error links"></p>
+<p>One caveat is that the errors in the new response, from retrying the request, do not get passed into the error handler again. This helps avoid being trapped in an endless request loop when you call <code>forward()</code> in your error handler.</p>
+<h2>Ignoring errors</h2>
+<p>If you want to conditionally ignore errors, you can set <code>response.errors = null;</code> within the error handler:</p>
+<pre><code class="language-js">onError(({ response, operation }) =&gt; {
+  if (operation.operationName === &quot;IgnoreErrorsQuery&quot;) {
+    response.errors = null;
+  }
+});
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Error Link\ndescription: Handle and inspect errors in your GraphQL network stack.\n---\n\n## Overview\n\nUse this link to perform some custom logic when a GraphQL or network error happens:\n\n```js\nimport { onError } from \"@apollo/client/link/error\";\n\nconst link = onError(({ graphQLErrors, networkError }) =\u003e {\n  if (graphQLErrors)\n    graphQLErrors.map(({ message, locations, path }) =\u003e\n      console.log(\n        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`\n      )\n    );\n  if (networkError) console.log(`[Network error]: ${networkError}`);\n});\n```\n\n## Callback\n\nThe Error link takes a function that is called in the event of an error. This function is called with an object containing the following keys:\n\n| Option | Description |\n| - | - |\n| `operation` | The Operation that errored |\n| `response` | The result returned from lower down in the link chain |\n| `graphQLErrors` | An array of errors from the GraphQL endpoint |\n| `networkError` | Any error during the link execution or server response, that wasn't delivered as part of the `errors` field in the GraphQL result |\n| `forward` | A reference to the next link in the chain. Calling `return forward(operation)` in the callback will retry the request, returning a new observable for the upstream link to subscribe to. |\n\nReturns: `Observable\u003cFetchResult\u003e | void` The error callback can optionally return an observable from calling `forward(operation)` if it wants to retry the request. It should not return anything else.\n\n## Error categorization\n\nAn error is passed as a `networkError` if a link further down the chain called the `error` callback on the observable. In most cases, `graphQLErrors` is the `errors` field of the result from the last `next` call.\n\nA `networkError` can contain additional fields, such as a GraphQL object in the case of a failing HTTP status code. In this situation, `graphQLErrors` is an alias for `networkError.result.errors` if the property exists.\n\n## Retrying failed requests\n\nAn error handler might want to do more than just logging errors. You can check for a certain failure condition or error code, and retry the request if rectifying the error is possible. For example, when using some form of token based authentication, there is a need to handle re-authentication when the token expires. Here is an example of how to do this using `forward()`:\n\n```js\nonError(({ graphQLErrors, networkError, operation, forward }) =\u003e {\n  if (graphQLErrors) {\n    for (let err of graphQLErrors) {\n      switch (err.extensions.code) {\n        case 'UNAUTHENTICATED':\n          // error code is set to UNAUTHENTICATED\n          // when AuthenticationError thrown in resolver\n\n          // modify the operation context with a new token\n          const oldHeaders = operation.getContext().headers;\n          operation.setContext({\n            headers: {\n              ...oldHeaders,\n              authorization: getNewToken(),\n            },\n          });\n          // retry the request, returning the new observable\n          return forward(operation);\n      }\n    }\n  }\n  if (networkError) {\n    console.log(`[Network error]: ${networkError}`);\n    // if you would also like to retry automatically on\n    // network errors, we recommend that you use\n    // @apollo/client/link/retry\n  }\n});\n```\n\nHere is a diagram of the request flow:\n![Diagram of request flow after retrying in error links](../../assets/link/error-request-flow.png)\n\nOne caveat is that the errors in the new response, from retrying the request, do not get passed into the error handler again. This helps avoid being trapped in an endless request loop when you call `forward()` in your error handler.\n\n## Ignoring errors\n\nIf you want to conditionally ignore errors, you can set `response.errors = null;` within the error handler:\n\n```js\nonError(({ response, operation }) =\u003e {\n  if (operation.operationName === \"IgnoreErrorsQuery\") {\n    response.errors = null;\n  }\n});\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_api-link_apollo-link-error.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

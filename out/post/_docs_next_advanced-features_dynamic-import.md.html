@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<h2>description: Dynamically import JavaScript modules and React Components and split your code into manageable chunks.</h2>
+<h1>Dynamic Import</h1>
+<p><details open>
+<summary><b>Examples</b></summary></p>
+  <ul>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-dynamic-import">Dynamic Import</a></li>
+  </ul>
+</details>
+<p>Next.js supports ES2020 <a href="https://github.com/tc39/proposal-dynamic-import">dynamic <code>import()</code></a> for JavaScript. With it you can import JavaScript modules dynamically and work with them. They also work with SSR.</p>
+<p>In the following example, we implement fuzzy search using <code>fuse.js</code> and only load the module dynamically in the browser after the user types in the search input:</p>
+<pre><code class="language-jsx">import { useState } from 'react'
+
+const names = ['Tim', 'Joe', 'Bel', 'Max', 'Lee']
+
+export default function Page() {
+  const [results, setResults] = useState()
+
+  return (
+    &lt;div&gt;
+      &lt;input
+        type=&quot;text&quot;
+        placeholder=&quot;Search&quot;
+        onChange={async (e) =&gt; {
+          const { value } = e.currentTarget
+          // Dynamically load fuse.js
+          const Fuse = (await import('fuse.js')).default
+          const fuse = new Fuse(names)
+
+          setResults(fuse.search(value))
+        }}
+      /&gt;
+      &lt;pre&gt;Results: {JSON.stringify(results, null, 2)}&lt;/pre&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>You can think of dynamic imports as another way to split your code into manageable chunks.</p>
+<p>React components can also be imported using dynamic imports, but in this case we use it in conjunction with <code>next/dynamic</code> to make sure it works just like any other React Component. Check out the sections below for more details on how it works.</p>
+<h2>Basic usage</h2>
+<p>In the following example, the module <code>../components/hello</code> will be dynamically loaded by the page:</p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const DynamicComponent = dynamic(() =&gt; import('../components/hello'))
+
+function Home() {
+  return (
+    &lt;div&gt;
+      &lt;Header /&gt;
+      &lt;DynamicComponent /&gt;
+      &lt;p&gt;HOME PAGE is here!&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default Home
+</code></pre>
+<p><code>DynamicComponent</code> will be the default component returned by <code>../components/hello</code>. It works like a regular React Component, and you can pass props to it as you normally would.</p>
+<blockquote>
+<p><strong>Note</strong>: <code>import()</code> needs to be explicitly written without template strings. Furthermore the <code>import()</code> has to be inside the <code>dynamic()</code> call for Next.js to be able to match webpack bundles / module ids to the specific <code>dynamic()</code> call and preload them before rendering. <code>dynamic()</code> can't be used inside of React rendering as it needs to be marked in the top level of the module for preloading to work, similar to <code>React.lazy</code>.</p>
+</blockquote>
+<h2>With named exports</h2>
+<p>If the dynamic component is not the default export, you can use a named export too. Consider the module <code>../components/hello.js</code> which has a named export <code>Hello</code>:</p>
+<pre><code class="language-jsx">export function Hello() {
+  return &lt;p&gt;Hello!&lt;/p&gt;
+}
+</code></pre>
+<p>To dynamically import the <code>Hello</code> component, you can return it from the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> returned by <a href="https://github.com/tc39/proposal-dynamic-import#example"><code>import()</code></a>, like so:</p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const DynamicComponent = dynamic(() =&gt;
+  import('../components/hello').then((mod) =&gt; mod.Hello)
+)
+
+function Home() {
+  return (
+    &lt;div&gt;
+      &lt;Header /&gt;
+      &lt;DynamicComponent /&gt;
+      &lt;p&gt;HOME PAGE is here!&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default Home
+</code></pre>
+<h2>With custom loading component</h2>
+<p>An optional <code>loading</code> component can be added to render a loading state while the dynamic component is being loaded. For example:</p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const DynamicComponentWithCustomLoading = dynamic(
+  () =&gt; import('../components/hello'),
+  { loading: () =&gt; &lt;p&gt;...&lt;/p&gt; }
+)
+
+function Home() {
+  return (
+    &lt;div&gt;
+      &lt;Header /&gt;
+      &lt;DynamicComponentWithCustomLoading /&gt;
+      &lt;p&gt;HOME PAGE is here!&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default Home
+</code></pre>
+<h2>With no SSR</h2>
+<p>You may not always want to include a module on server-side. For example, when the module includes a library that only works in the browser.</p>
+<p>Take a look at the following example:</p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const DynamicComponentWithNoSSR = dynamic(
+  () =&gt; import('../components/hello3'),
+  { ssr: false }
+)
+
+function Home() {
+  return (
+    &lt;div&gt;
+      &lt;Header /&gt;
+      &lt;DynamicComponentWithNoSSR /&gt;
+      &lt;p&gt;HOME PAGE is here!&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default Home
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ndescription: Dynamically import JavaScript modules and React Components and split your code into manageable chunks.\n---\n\n# Dynamic Import\n\n\u003cdetails open\u003e\n  \u003csummary\u003e\u003cb\u003eExamples\u003c/b\u003e\u003c/summary\u003e\n  \u003cul\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/with-dynamic-import\"\u003eDynamic Import\u003c/a\u003e\u003c/li\u003e\n  \u003c/ul\u003e\n\u003c/details\u003e\n\nNext.js supports ES2020 [dynamic `import()`](https://github.com/tc39/proposal-dynamic-import) for JavaScript. With it you can import JavaScript modules dynamically and work with them. They also work with SSR.\n\nIn the following example, we implement fuzzy search using `fuse.js` and only load the module dynamically in the browser after the user types in the search input:\n\n```jsx\nimport { useState } from 'react'\n\nconst names = ['Tim', 'Joe', 'Bel', 'Max', 'Lee']\n\nexport default function Page() {\n  const [results, setResults] = useState()\n\n  return (\n    \u003cdiv\u003e\n      \u003cinput\n        type=\"text\"\n        placeholder=\"Search\"\n        onChange={async (e) =\u003e {\n          const { value } = e.currentTarget\n          // Dynamically load fuse.js\n          const Fuse = (await import('fuse.js')).default\n          const fuse = new Fuse(names)\n\n          setResults(fuse.search(value))\n        }}\n      /\u003e\n      \u003cpre\u003eResults: {JSON.stringify(results, null, 2)}\u003c/pre\u003e\n    \u003c/div\u003e\n  )\n}\n```\n\nYou can think of dynamic imports as another way to split your code into manageable chunks.\n\nReact components can also be imported using dynamic imports, but in this case we use it in conjunction with `next/dynamic` to make sure it works just like any other React Component. Check out the sections below for more details on how it works.\n\n## Basic usage\n\nIn the following example, the module `../components/hello` will be dynamically loaded by the page:\n\n```jsx\nimport dynamic from 'next/dynamic'\n\nconst DynamicComponent = dynamic(() =\u003e import('../components/hello'))\n\nfunction Home() {\n  return (\n    \u003cdiv\u003e\n      \u003cHeader /\u003e\n      \u003cDynamicComponent /\u003e\n      \u003cp\u003eHOME PAGE is here!\u003c/p\u003e\n    \u003c/div\u003e\n  )\n}\n\nexport default Home\n```\n\n`DynamicComponent` will be the default component returned by `../components/hello`. It works like a regular React Component, and you can pass props to it as you normally would.\n\n\u003e **Note**: `import()` needs to be explicitly written without template strings. Furthermore the `import()` has to be inside the `dynamic()` call for Next.js to be able to match webpack bundles / module ids to the specific `dynamic()` call and preload them before rendering. `dynamic()` can't be used inside of React rendering as it needs to be marked in the top level of the module for preloading to work, similar to `React.lazy`.\n\n## With named exports\n\nIf the dynamic component is not the default export, you can use a named export too. Consider the module `../components/hello.js` which has a named export `Hello`:\n\n```jsx\nexport function Hello() {\n  return \u003cp\u003eHello!\u003c/p\u003e\n}\n```\n\nTo dynamically import the `Hello` component, you can return it from the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) returned by [`import()`](https://github.com/tc39/proposal-dynamic-import#example), like so:\n\n```jsx\nimport dynamic from 'next/dynamic'\n\nconst DynamicComponent = dynamic(() =\u003e\n  import('../components/hello').then((mod) =\u003e mod.Hello)\n)\n\nfunction Home() {\n  return (\n    \u003cdiv\u003e\n      \u003cHeader /\u003e\n      \u003cDynamicComponent /\u003e\n      \u003cp\u003eHOME PAGE is here!\u003c/p\u003e\n    \u003c/div\u003e\n  )\n}\n\nexport default Home\n```\n\n## With custom loading component\n\nAn optional `loading` component can be added to render a loading state while the dynamic component is being loaded. For example:\n\n```jsx\nimport dynamic from 'next/dynamic'\n\nconst DynamicComponentWithCustomLoading = dynamic(\n  () =\u003e import('../components/hello'),\n  { loading: () =\u003e \u003cp\u003e...\u003c/p\u003e }\n)\n\nfunction Home() {\n  return (\n    \u003cdiv\u003e\n      \u003cHeader /\u003e\n      \u003cDynamicComponentWithCustomLoading /\u003e\n      \u003cp\u003eHOME PAGE is here!\u003c/p\u003e\n    \u003c/div\u003e\n  )\n}\n\nexport default Home\n```\n\n## With no SSR\n\nYou may not always want to include a module on server-side. For example, when the module includes a library that only works in the browser.\n\nTake a look at the following example:\n\n```jsx\nimport dynamic from 'next/dynamic'\n\nconst DynamicComponentWithNoSSR = dynamic(\n  () =\u003e import('../components/hello3'),\n  { ssr: false }\n)\n\nfunction Home() {\n  return (\n    \u003cdiv\u003e\n      \u003cHeader /\u003e\n      \u003cDynamicComponentWithNoSSR /\u003e\n      \u003cp\u003eHOME PAGE is here!\u003c/p\u003e\n    \u003c/div\u003e\n  )\n}\n\nexport default Home\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_next_advanced-features_dynamic-import.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

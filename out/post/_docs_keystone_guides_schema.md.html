@@ -1,0 +1,714 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Data modelling
+[meta]-->
+<h1>Data modelling</h1>
+<p>A schema definition (<em>often abbreviated to &quot;schema&quot;</em>) is defined by:</p>
+<ul>
+<li>a set of <strong>Lists</strong></li>
+<li>containing one or more <strong>Fields</strong></li>
+<li>which each have a <strong>Type</strong></li>
+</ul>
+<!-- TODO: Link to glossary -->
+<!-- TODO: Make this a component that can be imported somehow -->
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text },
+  },
+});
+</code></pre>
+<blockquote>
+<p>Create a <strong>List</strong> called <code>Todo</code>, containing a single <strong>Field</strong> <code>task</code>, with a <strong>Type</strong> of <code>Text</code></p>
+</blockquote>
+<h2>Lists</h2>
+<p>You can create as many lists as your project needs:</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text },
+  },
+});
+
+keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+  },
+});
+</code></pre>
+<p>And each list can have as many fields as you need.</p>
+<p>Keystone will process each List, converting it into a series of GraphQL CRUD
+(<strong>C</strong>reate, <strong>R</strong>ead, <strong>U</strong>pdate, <strong>D</strong>elete) operations. For example, the above lists will generate:</p>
+<pre><code class="language-graphql">type Mutation {
+  createTodo(...): Todo
+  updateTodo(...): Todo
+  deleteTodo(...): Todo
+  createUser(...): User
+  updateUser(...): User
+  deleteUser(...): User
+}
+
+type Query {
+  allTodos(...): [Todo]
+  Todo(...): Todo
+  allUsers(...): [User]
+  User(...): User
+}
+
+type Todo {
+  id: ID
+  task: String
+}
+
+type User {
+  id: ID
+  name: String
+  email: String
+}
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> Only a subset of the generated types/mutations/queries are shown here.
+For more details, see the <a href="/docs/guides/intro-to-graphql.md">GraphQL introduction guide</a>.</p>
+</blockquote>
+<h3>Customising lists and fields</h3>
+<p>Both lists and fields can accept further options:</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text, isRequired: true },
+  },
+  adminConfig: {
+    defaultPageSize: 20,
+  },
+});
+</code></pre>
+<p>In this example, the <code>adminConfig</code> options will apply only to the <code>Todo</code> list
+(setting how many items are shown per page in the <a href="/packages/app-admin-ui/README.md">Admin UI</a>).
+The <code>isRequired</code> option will ensure an API error
+is thrown if a <code>task</code> value is not provided when creating/updating items.</p>
+<!-- TODO: Screenshot -->
+<p><em>For more List options, see the <a href="/docs/api/create-list.md"><code>createList()</code> API docs</a>.</em></p>
+<p><em><a href="/packages/fields/README.md">There are many different field types available</a>,
+each specifying their own options.</em></p>
+<h3>Related lists</h3>
+<p>One of Keystone' most powerful features is defining <strong>Relationships</strong> between
+Lists.</p>
+<p>Relationships are a special field type in Keystone used to generate rich
+GraphQL operations and an intuitive Admin UI, especially useful for complex
+data modeling requirements.</p>
+<h4>Why relationships?</h4>
+<p><em>Already know Relationships? <a href="#defining-relationships">Skip to <strong>Defining Relationships</strong> below</a>.</em></p>
+<p>To understand the power of Relationships, let's imagine a world without them:</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text, isRequired: true },
+    createdBy: { type: Text },
+  },
+});
+</code></pre>
+<p>In this example, every todo has a user it belongs to (the <code>createdBy</code> field). We
+can query for all todos owned by a particular user, update the user, etc.</p>
+<p>Let's imagine we have a single item in our <code>Todo</code> list:</p>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th><th><code>createdBy</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Use Keystone</td><td>Tici</td></tr>
+</tbody>
+</table>
+<p>We could query this data like so:</p>
+<pre><code class="language-graphql">query {
+  allTodos {
+    task
+    createdBy
+  }
+}
+
+# output:
+# {
+#   allTodos: [
+#     { task: 'Use Keystone', createdBy: 'Tici' }
+#   ]
+# }
+</code></pre>
+<p>Everything looks great so far. Now, let's add another task:</p>
+<h5>Todo</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th><th><code>createdBy</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Use Keystone</td><td>Tici</td></tr>
+<tr><td>2</td><td>Setup linter</td><td>Tici</td></tr>
+</tbody>
+</table>
+<pre><code class="language-graphql">query {
+  allTodos {
+    task
+    createdBy
+  }
+}
+
+# output:
+# {
+#   allTodos: [
+#     { task: 'Use Keystone', createdBy: 'Tici' }
+#     { task: 'Setup linter', createdBy: 'Tici' }
+#   ]
+# }
+</code></pre>
+<p>Still ok.</p>
+<p>What if we add a new field:</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text, isRequired: true },
+    createdBy: { type: Text },
+    email: { type: Text },
+  },
+});
+</code></pre>
+<h5>Todo</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th><th><code>createdBy</code></th><th><code>email</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Use Keystone</td><td>Tici</td><td>tici@example.com</td></tr>
+<tr><td>2</td><td>Setup Linter</td><td>Tici</td><td>tici@example.com</td></tr>
+</tbody>
+</table>
+<pre><code class="language-graphql">query {
+  allTodos {
+    task
+    createdBy
+    email
+  }
+}
+
+# output:
+# {
+#   allTodos: [
+#     { task: 'Use Keystone', createdBy: 'Tici', email: 'tici@example.com' }
+#     { task: 'Setup linter', createdBy: 'Tici', email: 'tici@example.com' }
+#   ]
+# }
+</code></pre>
+<p>Now we're starting to see multiple sets of duplicated data (<code>createdBy</code> +
+<code>email</code> are repeated). If we wanted to update the <code>email</code> field, we'd have to
+find all items, change the value, and save it back. Not so bad with 2 items, but
+what about 300? 10,000? It can be quite a big operation to make these changes.</p>
+<p>We can avoid the duplicate data by moving it out into its own <code>User</code> list:</p>
+<h5>Todo</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th><th><code>createdBy</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Use Keystone</td><td>1</td></tr>
+<tr><td>2</td><td>Setup Linter</td><td>1</td></tr>
+</tbody>
+</table>
+<h5>User</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>name</code></th><th><code>email</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Tici</td><td>tici@example.com</td></tr>
+</tbody>
+</table>
+<p>The <code>createdBy</code> field is no longer a name, but instead refers to the <code>id</code> of an
+item in the <code>User</code> list (commonly referred to as <em><a href="https://en.wikipedia.org/wiki/Database_normalization">data
+normalization</a></em>).</p>
+<p>This gives us only one place to update <code>email</code>.</p>
+<p>Now that we have two different lists, to get all the data now takes two queries:</p>
+<pre><code class="language-graphql">query {
+  allTodos {
+    task
+    createdBy
+  }
+}
+
+# output:
+# {
+#   allTodos: [
+#     { task: 'Use Keystone', createdBy: 1 }
+#     { task: 'Setup linter', createdBy: 1 }
+#   ]
+# }
+</code></pre>
+<p>We'd then have to iterate over each item and extract the <code>createdBy</code> id, to be
+passed to a query such as:</p>
+<pre><code class="language-graphql">query {
+  User(where: { id: &quot;1&quot; }) {
+    name
+    email
+  }
+}
+
+# output:
+# {
+#   User: { name: 'Tici', email: 'tici@example.com' }
+# }
+</code></pre>
+<p>Which we'd have to execute once for every <code>User</code> that was referenced by a
+<code>Todo</code>'s <code>createdBy</code> field.</p>
+<p>Using <strong>Relationships</strong> makes this a lot easier.</p>
+<h4>Defining Relationships</h4>
+<p>Relationships are defined using the <code>Relationship</code> field type, and require at
+least 2 configured lists (one will refer to the other).</p>
+<pre><code class="language-javascript">const { Relationship } = require('@keystonejs/fields');
+
+keystone.createList('Todo', {
+  fields: {
+    task: { type: Text },
+    createdBy: { type: Relationship, ref: 'User' },
+  },
+});
+
+keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+  },
+});
+</code></pre>
+<p>This is a <a href="#to-single-relationships">to-single relationship</a> from the <code>Todo</code>
+list to an item in the <code>User</code> list.</p>
+<p>To query the data, we can write a single query which returns both the <code>Todo</code>s
+and their related <code>User</code>s:</p>
+<pre><code class="language-graphql">query {
+  allTodos {
+    task
+    createdBy {
+      name
+      email
+    }
+  }
+}
+
+# output:
+# {
+#   allTodos: [
+#     { task: 'Use Keystone', createdBy: { name: 'Tici', email: 'tici@example.com' } }
+#     { task: 'Setup linter', createdBy: { name: 'Tici', email: 'tici@example.com' } }
+#   ]
+# }
+</code></pre>
+<p>A note on definitions:</p>
+<ul>
+<li><strong>To-single / To-many</strong> refer to <em>the number of related items</em> (1, or more than 1).</li>
+<li><strong>One-way / Two-way</strong> refer to <em>the direction of the query</em>.</li>
+<li><strong>Back References</strong> refer to a special type of two-way relationships where <em>one
+field can update a related list's field as it changes</em>.</li>
+</ul>
+<h4>To-single Relationships</h4>
+<p>When you have a single related item you want to refer to, a <em>to-single</em>
+relationship allows storing that item, and querying it via the GraphQL API.</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text },
+    createdBy: { type: Relationship, ref: 'User' },
+  },
+});
+
+keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+  },
+});
+</code></pre>
+<p>Here we've defined the <code>createdBy</code> field to be a <code>Relationship</code> type, and
+configured its relation to be the <code>User</code> list by setting the <code>ref</code> option.</p>
+<p>A query for a to-single relationship field will return an object with the
+requested data:</p>
+<pre><code class="language-graphql">query {
+  Todo(where: { id: &quot;&lt;todoId&gt;&quot; }) {
+    createdBy {
+      id
+      name
+    }
+  }
+}
+
+# output:
+# {
+#   Todo: {
+#     createdBy: { id: '1', name: 'Tici' }
+#   }
+# }
+</code></pre>
+<p>The data stored in the database for the <code>createdBy</code> field will be a single ID:</p>
+<h5>Todo</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th><th><code>createdBy</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Use Keystone</td><td>1</td></tr>
+<tr><td>2</td><td>Setup Linter</td><td>1</td></tr>
+</tbody>
+</table>
+<h5>User</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>name</code></th><th><code>email</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Tici</td><td>tici@example.com</td></tr>
+</tbody>
+</table>
+<h4>To-many Relationships</h4>
+<p>When you have multiple items you want to refer to from a single field, a
+<em>to-many</em> relationship will store an array, also exposing that array via the
+GraphQL API.</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text },
+  },
+});
+
+keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+    todoList: { type: Relationship, ref: 'Todo', many: true },
+  },
+});
+</code></pre>
+<p>A query for a to-many relationship field will return an array of objects with
+the requested data:</p>
+<pre><code class="language-graphql">query {
+  User(where: { id: &quot;&lt;userId&gt;&quot; }) {
+    todoList {
+      task
+    }
+  }
+}
+
+# output:
+# {
+#   User: {
+#     todoList: [
+#       { task: 'Use Keystone' },
+#       { task: 'Setup linter' },
+#     ]
+#   ]
+# }
+</code></pre>
+<p>The data stored in the database for the <code>todoList</code> field will be an array of
+IDs:</p>
+<h5>Todo</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Use Keystone</td></tr>
+<tr><td>2</td><td>Setup Linter</td></tr>
+<tr><td>3</td><td>Be Awesome</td></tr>
+<tr><td>4</td><td>Write docs</td></tr>
+<tr><td>5</td><td>Buy milk</td></tr>
+</tbody>
+</table>
+<h5>User</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>name</code></th><th><code>email</code></th><th><code>todoList</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Tici</td><td>tici@example.com</td><td>[1, 2]</td></tr>
+<tr><td>2</td><td>Jess</td><td>jess@example.com</td><td>[3, 4, 5]</td></tr>
+</tbody>
+</table>
+<h4>Two-way Relationships</h4>
+<p>In the <a href="#to-single-relationships">to-single</a> and
+<a href="#to-many-relationships">to-many</a> examples above, we were only querying <em>in one
+direction</em>; always from the list with the Relationship field.</p>
+<p>Often, you will want to query <em>in both directions</em> (aka <em>two-way</em>). For example:
+you may want to list all Todo tasks for a User <em>and</em> want to list the User who
+owns a Todo.</p>
+<p>A two-way relationship requires having a <code>Relationship</code> field on both lists:</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text },
+    createdBy: { type: Relationship, ref: 'User' },
+  },
+});
+
+keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+    todoList { type: Relationship, ref: 'Todo', many: true },
+  }
+});
+</code></pre>
+<p>Here we have two relationships:</p>
+<ul>
+<li>A <em>to-single</em> <code>createdBy</code> field on the <code>Todo</code> list, and</li>
+<li>A <em>to-many</em> <code>todoList</code> field on the <code>User</code> list.</li>
+</ul>
+<p>Now it's possible to query in both directions:</p>
+<pre><code class="language-graphql">query {
+  User(where: { id: &quot;&lt;userId&gt;&quot; }) {
+    todoList {
+      task
+    }
+  }
+
+  Todo(where: { id: &quot;&lt;todoId&gt;&quot; }) {
+    createdBy {
+      id
+      name
+    }
+  }
+}
+
+# output:
+# {
+#   User: {
+#     todoList: [
+#       { task: 'Use Keystone' },
+#       { task: 'Setup linter' },
+#     ]
+#   ],
+#   Todo: {
+#     createdBy: { id: '1', name: 'Tici' }
+#   }
+# }
+</code></pre>
+<p>The database would look like:</p>
+<h5>Todo</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th><th><code>createdBy</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Use Keystone</td><td>1</td></tr>
+<tr><td>2</td><td>Setup Linter</td><td>1</td></tr>
+<tr><td>3</td><td>Be Awesome</td><td>2</td></tr>
+<tr><td>4</td><td>Write docs</td><td>2</td></tr>
+<tr><td>5</td><td>Buy milk</td><td>2</td></tr>
+</tbody>
+</table>
+<h5>User</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>name</code></th><th><code>email</code></th><th><code>todoList</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Tici</td><td>tici@example.com</td><td>[1, 2]</td></tr>
+<tr><td>2</td><td>Jess</td><td>jess@example.com</td><td>[3, 4, 5]</td></tr>
+</tbody>
+</table>
+<p>Note the two relationship fields in this example <em>know nothing about each other</em>.
+They are not specially linked. This means if you update data in one place, you
+must update it in both. To automate this and link two relationship fields, read
+on about <code>Relationship Back References</code> below.</p>
+<h4>Relationship Back References</h4>
+<p>There is a special type of <a href="#two-way-relationships">two-way relationship</a> where
+<em>one field can update a related list's field as it changes</em>. The mechanism
+enabling this is called <em>Back References</em>.</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text },
+    createdBy: { type: Relationship, ref: 'User' },
+  },
+});
+
+keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+    todoList { type: Relationship, ref: 'Todo', many: true },
+  }
+});
+</code></pre>
+<p>In this example, when a new <code>Todo</code> item is created, we can set the <code>createdBy</code>
+field as part of the mutation:</p>
+<pre><code class="language-graphql">mutation {
+  createTodo(data: {
+    task: 'Learn Node',
+    createdBy: { connect: { id: '1' } },
+  }) {
+    id
+  }
+}
+</code></pre>
+<p><em>See <a href="/packages/fields/src/types/Relationship/README.md">the Relationship API docs for more on <code>connect</code></a>.</em></p>
+<p>If this was the first <code>Todo</code> item created, the database would now look like:</p>
+<h5>Todo</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th><th><code>createdBy</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Learn Node</td><td>1</td></tr>
+</tbody>
+</table>
+<h5>User</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>name</code></th><th><code>email</code></th><th><code>todoList</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Tici</td><td>tici@example.com</td><td>[]</td></tr>
+</tbody>
+</table>
+<p>Notice the <code>Todo</code> item's <code>createdBy</code> field is set, but the <code>User</code> item's
+<code>todoList</code> does <em>not</em> contain the ID of the newly created <code>Todo</code>!</p>
+<p>If we were to query the data now, we would get:</p>
+<pre><code class="language-graphql">query {
+  User(where: { id: &quot;1&quot; }) {
+    todoList {
+      id
+      task
+    }
+  }
+
+  Todo(where: { id: &quot;1&quot; }) {
+    createdBy {
+      id
+      name
+    }
+  }
+}
+
+# output:
+# {
+#   User: {
+#     todoList: []
+#   ],
+#   Todo: {
+#     createdBy: { id: '1', name: 'Tici' }
+#   }
+# }
+</code></pre>
+<p><em>Back References</em> solve this problem.</p>
+<p>To setup a back reference, we need to specify both the list <em>and the field</em> in
+the <code>ref</code> option:</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text },
+    // The `ref` option now includes which field to update
+    createdBy: { type: Relationship, ref: 'User.todoList' },
+  },
+});
+
+keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+    todoList: { type: Relationship, ref: 'Todo', many: true },
+  },
+});
+</code></pre>
+<p>This works for both <a href="#to-single-relationships">to-single</a> and
+<a href="#to-many-relationships">to-many</a> relationships.</p>
+<p>Now, if we run the same mutation:</p>
+<pre><code class="language-graphql">mutation {
+  createTodo(data: {
+    task: 'Learn Node',
+    createdBy: { connect: { id: '1' } },
+  }) {
+    id
+  }
+}
+</code></pre>
+<p>Our database would look like:</p>
+<h5>Todo</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th><th><code>createdBy</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Learn Node</td><td>1</td></tr>
+</tbody>
+</table>
+<h5>User</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>name</code></th><th><code>email</code></th><th><code>todoList</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Tici</td><td>tici@example.com</td><td>[1]</td></tr>
+</tbody>
+</table>
+<pre><code class="language-graphql">query {
+  User(where: { id: &quot;1&quot; }) {
+    todoList {
+      id
+      task
+    }
+  }
+
+  Todo(where: { id: &quot;1&quot; }) {
+    createdBy {
+      id
+      name
+    }
+  }
+}
+
+# output:
+# {
+#   User: {
+#     todoList: [{ id: '1', task: 'Learn Node' }]
+#   ],
+#   Todo: {
+#     createdBy: { id: '1', name: 'Tici' }
+#   }
+# }
+</code></pre>
+<p>We can do the same modification for the <code>User</code> list, and reap the same rewards
+for creating a new <code>User</code>:</p>
+<pre><code class="language-javascript">keystone.createList('Todo', {
+  fields: {
+    task: { type: Text },
+    // The `ref` option now includes which field to update
+    createdBy: { type: Relationship, ref: 'User.todoList' },
+  }
+});
+
+keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: { type: Text },
+    todoList { type: Relationship, ref: 'Todo.createdBy', many: true },
+  }
+});
+</code></pre>
+<p>In this case, we'll create the first task along with creating the user. <em>For
+more info on the <code>create</code> syntax, see
+<a href="/packages/fields/src/types/Relationship/README.md">the Relationship API docs</a>.</em></p>
+<pre><code class="language-graphql">mutation {
+  createUser(data: {
+    name: 'Tici',
+    email: 'tici@example.com',
+    todoList: { create: [{ task: 'Learn Node' }] },
+  }) {
+    id
+  }
+}
+</code></pre>
+<p>The data would finally look like:</p>
+<h5>Todo</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>task</code></th><th><code>createdBy</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Learn Node</td><td>1</td></tr>
+</tbody>
+</table>
+<h5>User</h5>
+<table>
+<thead>
+<tr><th><code>id</code></th><th><code>name</code></th><th><code>email</code></th><th><code>todoList</code></th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Tici</td><td>tici@example.com</td><td>[1]</td></tr>
+</tbody>
+</table>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Data modelling\n[meta]--\u003e\n\n# Data modelling\n\nA schema definition (_often abbreviated to \"schema\"_) is defined by:\n\n- a set of **Lists**\n- containing one or more **Fields**\n- which each have a **Type**\n\n\u003c!-- TODO: Link to glossary --\u003e\n\n\u003c!-- TODO: Make this a component that can be imported somehow --\u003e\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text },\n  },\n});\n```\n\n\u003e Create a **List** called `Todo`, containing a single **Field** `task`, with a **Type** of `Text`\n\n## Lists\n\nYou can create as many lists as your project needs:\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text },\n  },\n});\n\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n  },\n});\n```\n\nAnd each list can have as many fields as you need.\n\nKeystone will process each List, converting it into a series of GraphQL CRUD\n(**C**reate, **R**ead, **U**pdate, **D**elete) operations. For example, the above lists will generate:\n\n```graphql\ntype Mutation {\n  createTodo(...): Todo\n  updateTodo(...): Todo\n  deleteTodo(...): Todo\n  createUser(...): User\n  updateUser(...): User\n  deleteUser(...): User\n}\n\ntype Query {\n  allTodos(...): [Todo]\n  Todo(...): Todo\n  allUsers(...): [User]\n  User(...): User\n}\n\ntype Todo {\n  id: ID\n  task: String\n}\n\ntype User {\n  id: ID\n  name: String\n  email: String\n}\n```\n\n\u003e **Note:** Only a subset of the generated types/mutations/queries are shown here.\n\u003e For more details, see the [GraphQL introduction guide](/docs/guides/intro-to-graphql.md).\n\n### Customising lists and fields\n\nBoth lists and fields can accept further options:\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text, isRequired: true },\n  },\n  adminConfig: {\n    defaultPageSize: 20,\n  },\n});\n```\n\nIn this example, the `adminConfig` options will apply only to the `Todo` list\n(setting how many items are shown per page in the [Admin UI](/packages/app-admin-ui/README.md)).\nThe `isRequired` option will ensure an API error\nis thrown if a `task` value is not provided when creating/updating items.\n\n\u003c!-- TODO: Screenshot --\u003e\n\n_For more List options, see the [`createList()` API docs](/docs/api/create-list.md)._\n\n_[There are many different field types available](/packages/fields/README.md),\neach specifying their own options._\n\n### Related lists\n\nOne of Keystone' most powerful features is defining **Relationships** between\nLists.\n\nRelationships are a special field type in Keystone used to generate rich\nGraphQL operations and an intuitive Admin UI, especially useful for complex\ndata modeling requirements.\n\n#### Why relationships?\n\n_Already know Relationships? [Skip to **Defining Relationships** below](#defining-relationships)._\n\nTo understand the power of Relationships, let's imagine a world without them:\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text, isRequired: true },\n    createdBy: { type: Text },\n  },\n});\n```\n\nIn this example, every todo has a user it belongs to (the `createdBy` field). We\ncan query for all todos owned by a particular user, update the user, etc.\n\nLet's imagine we have a single item in our `Todo` list:\n\n| `id` | `task`       | `createdBy` |\n| ---- | ------------ | ----------- |\n| 1    | Use Keystone | Tici        |\n\nWe could query this data like so:\n\n```graphql\nquery {\n  allTodos {\n    task\n    createdBy\n  }\n}\n\n# output:\n# {\n#   allTodos: [\n#     { task: 'Use Keystone', createdBy: 'Tici' }\n#   ]\n# }\n```\n\nEverything looks great so far. Now, let's add another task:\n\n##### Todo\n\n| `id` | `task`       | `createdBy` |\n| ---- | ------------ | ----------- |\n| 1    | Use Keystone | Tici        |\n| 2    | Setup linter | Tici        |\n\n```graphql\nquery {\n  allTodos {\n    task\n    createdBy\n  }\n}\n\n# output:\n# {\n#   allTodos: [\n#     { task: 'Use Keystone', createdBy: 'Tici' }\n#     { task: 'Setup linter', createdBy: 'Tici' }\n#   ]\n# }\n```\n\nStill ok.\n\nWhat if we add a new field:\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text, isRequired: true },\n    createdBy: { type: Text },\n    email: { type: Text },\n  },\n});\n```\n\n##### Todo\n\n| `id` | `task`       | `createdBy` | `email`          |\n| ---- | ------------ | ----------- | ---------------- |\n| 1    | Use Keystone | Tici        | tici@example.com |\n| 2    | Setup Linter | Tici        | tici@example.com |\n\n```graphql\nquery {\n  allTodos {\n    task\n    createdBy\n    email\n  }\n}\n\n# output:\n# {\n#   allTodos: [\n#     { task: 'Use Keystone', createdBy: 'Tici', email: 'tici@example.com' }\n#     { task: 'Setup linter', createdBy: 'Tici', email: 'tici@example.com' }\n#   ]\n# }\n```\n\nNow we're starting to see multiple sets of duplicated data (`createdBy` +\n`email` are repeated). If we wanted to update the `email` field, we'd have to\nfind all items, change the value, and save it back. Not so bad with 2 items, but\nwhat about 300? 10,000? It can be quite a big operation to make these changes.\n\nWe can avoid the duplicate data by moving it out into its own `User` list:\n\n##### Todo\n\n| `id` | `task`       | `createdBy` |\n| ---- | ------------ | ----------- |\n| 1    | Use Keystone | 1           |\n| 2    | Setup Linter | 1           |\n\n##### User\n\n| `id` | `name` | `email`          |\n| ---- | ------ | ---------------- |\n| 1    | Tici   | tici@example.com |\n\nThe `createdBy` field is no longer a name, but instead refers to the `id` of an\nitem in the `User` list (commonly referred to as _[data\nnormalization](https://en.wikipedia.org/wiki/Database_normalization)_).\n\nThis gives us only one place to update `email`.\n\nNow that we have two different lists, to get all the data now takes two queries:\n\n```graphql\nquery {\n  allTodos {\n    task\n    createdBy\n  }\n}\n\n# output:\n# {\n#   allTodos: [\n#     { task: 'Use Keystone', createdBy: 1 }\n#     { task: 'Setup linter', createdBy: 1 }\n#   ]\n# }\n```\n\nWe'd then have to iterate over each item and extract the `createdBy` id, to be\npassed to a query such as:\n\n```graphql\nquery {\n  User(where: { id: \"1\" }) {\n    name\n    email\n  }\n}\n\n# output:\n# {\n#   User: { name: 'Tici', email: 'tici@example.com' }\n# }\n```\n\nWhich we'd have to execute once for every `User` that was referenced by a\n`Todo`'s `createdBy` field.\n\nUsing **Relationships** makes this a lot easier.\n\n#### Defining Relationships\n\nRelationships are defined using the `Relationship` field type, and require at\nleast 2 configured lists (one will refer to the other).\n\n```javascript\nconst { Relationship } = require('@keystonejs/fields');\n\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text },\n    createdBy: { type: Relationship, ref: 'User' },\n  },\n});\n\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n  },\n});\n```\n\nThis is a [to-single relationship](#to-single-relationships) from the `Todo`\nlist to an item in the `User` list.\n\nTo query the data, we can write a single query which returns both the `Todo`s\nand their related `User`s:\n\n```graphql\nquery {\n  allTodos {\n    task\n    createdBy {\n      name\n      email\n    }\n  }\n}\n\n# output:\n# {\n#   allTodos: [\n#     { task: 'Use Keystone', createdBy: { name: 'Tici', email: 'tici@example.com' } }\n#     { task: 'Setup linter', createdBy: { name: 'Tici', email: 'tici@example.com' } }\n#   ]\n# }\n```\n\nA note on definitions:\n\n- **To-single / To-many** refer to _the number of related items_ (1, or more than 1).\n- **One-way / Two-way** refer to _the direction of the query_.\n- **Back References** refer to a special type of two-way relationships where _one\n  field can update a related list's field as it changes_.\n\n#### To-single Relationships\n\nWhen you have a single related item you want to refer to, a _to-single_\nrelationship allows storing that item, and querying it via the GraphQL API.\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text },\n    createdBy: { type: Relationship, ref: 'User' },\n  },\n});\n\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n  },\n});\n```\n\nHere we've defined the `createdBy` field to be a `Relationship` type, and\nconfigured its relation to be the `User` list by setting the `ref` option.\n\nA query for a to-single relationship field will return an object with the\nrequested data:\n\n```graphql\nquery {\n  Todo(where: { id: \"\u003ctodoId\u003e\" }) {\n    createdBy {\n      id\n      name\n    }\n  }\n}\n\n# output:\n# {\n#   Todo: {\n#     createdBy: { id: '1', name: 'Tici' }\n#   }\n# }\n```\n\nThe data stored in the database for the `createdBy` field will be a single ID:\n\n##### Todo\n\n| `id` | `task`       | `createdBy` |\n| ---- | ------------ | ----------- |\n| 1    | Use Keystone | 1           |\n| 2    | Setup Linter | 1           |\n\n##### User\n\n| `id` | `name` | `email`          |\n| ---- | ------ | ---------------- |\n| 1    | Tici   | tici@example.com |\n\n#### To-many Relationships\n\nWhen you have multiple items you want to refer to from a single field, a\n_to-many_ relationship will store an array, also exposing that array via the\nGraphQL API.\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text },\n  },\n});\n\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n    todoList: { type: Relationship, ref: 'Todo', many: true },\n  },\n});\n```\n\nA query for a to-many relationship field will return an array of objects with\nthe requested data:\n\n```graphql\nquery {\n  User(where: { id: \"\u003cuserId\u003e\" }) {\n    todoList {\n      task\n    }\n  }\n}\n\n# output:\n# {\n#   User: {\n#     todoList: [\n#       { task: 'Use Keystone' },\n#       { task: 'Setup linter' },\n#     ]\n#   ]\n# }\n```\n\nThe data stored in the database for the `todoList` field will be an array of\nIDs:\n\n##### Todo\n\n| `id` | `task`       |\n| ---- | ------------ |\n| 1    | Use Keystone |\n| 2    | Setup Linter |\n| 3    | Be Awesome   |\n| 4    | Write docs   |\n| 5    | Buy milk     |\n\n##### User\n\n| `id` | `name` | `email`          | `todoList` |\n| ---- | ------ | ---------------- | ---------- |\n| 1    | Tici   | tici@example.com | [1, 2]     |\n| 2    | Jess   | jess@example.com | [3, 4, 5]  |\n\n#### Two-way Relationships\n\nIn the [to-single](#to-single-relationships) and\n[to-many](#to-many-relationships) examples above, we were only querying _in one\ndirection_; always from the list with the Relationship field.\n\nOften, you will want to query _in both directions_ (aka _two-way_). For example:\nyou may want to list all Todo tasks for a User _and_ want to list the User who\nowns a Todo.\n\nA two-way relationship requires having a `Relationship` field on both lists:\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text },\n    createdBy: { type: Relationship, ref: 'User' },\n  },\n});\n\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n    todoList { type: Relationship, ref: 'Todo', many: true },\n  }\n});\n```\n\nHere we have two relationships:\n\n- A _to-single_ `createdBy` field on the `Todo` list, and\n- A _to-many_ `todoList` field on the `User` list.\n\nNow it's possible to query in both directions:\n\n```graphql\nquery {\n  User(where: { id: \"\u003cuserId\u003e\" }) {\n    todoList {\n      task\n    }\n  }\n\n  Todo(where: { id: \"\u003ctodoId\u003e\" }) {\n    createdBy {\n      id\n      name\n    }\n  }\n}\n\n# output:\n# {\n#   User: {\n#     todoList: [\n#       { task: 'Use Keystone' },\n#       { task: 'Setup linter' },\n#     ]\n#   ],\n#   Todo: {\n#     createdBy: { id: '1', name: 'Tici' }\n#   }\n# }\n```\n\nThe database would look like:\n\n##### Todo\n\n| `id` | `task`       | `createdBy` |\n| ---- | ------------ | ----------- |\n| 1    | Use Keystone | 1           |\n| 2    | Setup Linter | 1           |\n| 3    | Be Awesome   | 2           |\n| 4    | Write docs   | 2           |\n| 5    | Buy milk     | 2           |\n\n##### User\n\n| `id` | `name` | `email`          | `todoList` |\n| ---- | ------ | ---------------- | ---------- |\n| 1    | Tici   | tici@example.com | [1, 2]     |\n| 2    | Jess   | jess@example.com | [3, 4, 5]  |\n\nNote the two relationship fields in this example _know nothing about each other_.\nThey are not specially linked. This means if you update data in one place, you\nmust update it in both. To automate this and link two relationship fields, read\non about `Relationship Back References` below.\n\n#### Relationship Back References\n\nThere is a special type of [two-way relationship](#two-way-relationships) where\n_one field can update a related list's field as it changes_. The mechanism\nenabling this is called _Back References_.\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text },\n    createdBy: { type: Relationship, ref: 'User' },\n  },\n});\n\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n    todoList { type: Relationship, ref: 'Todo', many: true },\n  }\n});\n```\n\nIn this example, when a new `Todo` item is created, we can set the `createdBy`\nfield as part of the mutation:\n\n```graphql\nmutation {\n  createTodo(data: {\n    task: 'Learn Node',\n    createdBy: { connect: { id: '1' } },\n  }) {\n    id\n  }\n}\n```\n\n_See [the Relationship API docs for more on `connect`](/packages/fields/src/types/Relationship/README.md)._\n\nIf this was the first `Todo` item created, the database would now look like:\n\n##### Todo\n\n| `id` | `task`     | `createdBy` |\n| ---- | ---------- | ----------- |\n| 1    | Learn Node | 1           |\n\n##### User\n\n| `id` | `name` | `email`          | `todoList` |\n| ---- | ------ | ---------------- | ---------- |\n| 1    | Tici   | tici@example.com | \\[]        |\n\nNotice the `Todo` item's `createdBy` field is set, but the `User` item's\n`todoList` does _not_ contain the ID of the newly created `Todo`!\n\nIf we were to query the data now, we would get:\n\n```graphql\nquery {\n  User(where: { id: \"1\" }) {\n    todoList {\n      id\n      task\n    }\n  }\n\n  Todo(where: { id: \"1\" }) {\n    createdBy {\n      id\n      name\n    }\n  }\n}\n\n# output:\n# {\n#   User: {\n#     todoList: []\n#   ],\n#   Todo: {\n#     createdBy: { id: '1', name: 'Tici' }\n#   }\n# }\n```\n\n_Back References_ solve this problem.\n\nTo setup a back reference, we need to specify both the list _and the field_ in\nthe `ref` option:\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text },\n    // The `ref` option now includes which field to update\n    createdBy: { type: Relationship, ref: 'User.todoList' },\n  },\n});\n\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n    todoList: { type: Relationship, ref: 'Todo', many: true },\n  },\n});\n```\n\nThis works for both [to-single](#to-single-relationships) and\n[to-many](#to-many-relationships) relationships.\n\nNow, if we run the same mutation:\n\n```graphql\nmutation {\n  createTodo(data: {\n    task: 'Learn Node',\n    createdBy: { connect: { id: '1' } },\n  }) {\n    id\n  }\n}\n```\n\nOur database would look like:\n\n##### Todo\n\n| `id` | `task`     | `createdBy` |\n| ---- | ---------- | ----------- |\n| 1    | Learn Node | 1           |\n\n##### User\n\n| `id` | `name` | `email`          | `todoList` |\n| ---- | ------ | ---------------- | ---------- |\n| 1    | Tici   | tici@example.com | [1]        |\n\n```graphql\nquery {\n  User(where: { id: \"1\" }) {\n    todoList {\n      id\n      task\n    }\n  }\n\n  Todo(where: { id: \"1\" }) {\n    createdBy {\n      id\n      name\n    }\n  }\n}\n\n# output:\n# {\n#   User: {\n#     todoList: [{ id: '1', task: 'Learn Node' }]\n#   ],\n#   Todo: {\n#     createdBy: { id: '1', name: 'Tici' }\n#   }\n# }\n```\n\nWe can do the same modification for the `User` list, and reap the same rewards\nfor creating a new `User`:\n\n```javascript\nkeystone.createList('Todo', {\n  fields: {\n    task: { type: Text },\n    // The `ref` option now includes which field to update\n    createdBy: { type: Relationship, ref: 'User.todoList' },\n  }\n});\n\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: { type: Text },\n    todoList { type: Relationship, ref: 'Todo.createdBy', many: true },\n  }\n});\n```\n\nIn this case, we'll create the first task along with creating the user. _For\nmore info on the `create` syntax, see\n[the Relationship API docs](/packages/fields/src/types/Relationship/README.md)._\n\n```graphql\nmutation {\n  createUser(data: {\n    name: 'Tici',\n    email: 'tici@example.com',\n    todoList: { create: [{ task: 'Learn Node' }] },\n  }) {\n    id\n  }\n}\n```\n\nThe data would finally look like:\n\n##### Todo\n\n| `id` | `task`     | `createdBy` |\n| ---- | ---------- | ----------- |\n| 1    | Learn Node | 1           |\n\n##### User\n\n| `id` | `name` | `email`          | `todoList` |\n| ---- | ------ | ---------------- | ---------- |\n| 1    | Tici   | tici@example.com | [1]        |\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_schema.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

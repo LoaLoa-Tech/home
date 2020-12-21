@@ -1,0 +1,376 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Testing React components
+description: Using MockedProvider and associated APIs</p>
+<hr>
+<p>import {
+ExpansionPanel,
+} from 'gatsby-theme-apollo-docs/src/components/expansion-panel';</p>
+<p>This article describes best practices for testing React components that use Apollo Client.</p>
+<p>The examples below use <a href="https://facebook.github.io/jest/docs/en/tutorial-react.html">Jest</a> and React's <a href="https://reactjs.org/docs/test-renderer.html">test renderer</a> instead of tools like <a href="https://github.com/airbnb/enzyme">Enzyme</a> or <a href="https://github.com/kentcdodds/react-testing-library">react-testing-library</a>, but the concepts apply to any testing framework.</p>
+<h2>The <code>MockedProvider</code> component</h2>
+<p>Every test for a React component that uses Apollo Client must make Apollo Client available on <a href="https://reactjs.org/docs/context.html">React's context</a>. In application code, you achieve this by wrapping your component tree with the <code>ApolloProvider</code> component. In your tests, you use the <code>MockedProvider</code> component instead.</p>
+<p>The <code>MockedProvider</code> component enables you to define mock responses for individual queries that are executed in your test. This means your test <em>doesn't</em> need to communicate with a GraphQL server, which removes an external dependency and therefore improves the test's reliability.</p>
+<h3>Example</h3>
+<p>Let's say we want to test the following <code>Dog</code> component, which executes a basic query and displays its result:</p>
+<p><ExpansionPanel title="Click to expand 🐶"></p>
+<pre><code class="language-jsx:title=dog.jsx">import React from 'react';
+import { gql, useQuery } from '@apollo/client';
+
+// Make sure that both the query and the component are exported
+export const GET_DOG_QUERY = gql`
+  query GetDog($name: String) {
+    dog(name: $name) {
+      id
+      name
+      breed
+    }
+  }
+`;
+
+export function Dog({ name }) {
+  const { loading, error, data } = useQuery(
+    GET_DOG_QUERY,
+    { variables: { name } }
+  );
+  if (loading) return &lt;p&gt;Loading...&lt;/p&gt;;
+  if (error) return &lt;p&gt;Error!&lt;/p&gt;;
+
+  return (
+    &lt;p&gt;
+      {data.dog.name} is a {data.dog.breed}
+    &lt;/p&gt;
+  );
+}
+</code></pre>
+<p></ExpansionPanel></p>
+<p>A basic rendering test for the component looks like this (minus mocked responses):</p>
+<pre><code class="language-jsx:title=dog.test.js">import TestRenderer from 'react-test-renderer';
+import { MockedProvider } from '@apollo/client/testing';
+import { GET_DOG_QUERY, Dog } from './dog';
+
+const mocks = []; // We'll fill this in next
+
+it('renders without error', () =&gt; {
+  const component = TestRenderer.create(
+    &lt;MockedProvider mocks={mocks} addTypename={false}&gt;
+      &lt;Dog name=&quot;Buck&quot; /&gt;
+    &lt;/MockedProvider&gt;,
+  );
+
+  const tree = component.toJSON();
+  expect(tree.children).toContain('Loading...');
+});
+</code></pre>
+<h4>Defining mocked responses</h4>
+<p>The <code>mocks</code> prop of <code>MockedProvider</code> is an array of objects, each of which defines the mock response for a single operation. Let's define a mocked response for <code>GET_DOG_QUERY</code> when it's passed the <code>name</code> <code>Buck</code>:</p>
+<pre><code class="language-jsx:title=dog.test.js">const mocks = [
+  {
+    request: {
+      query: GET_DOG_QUERY,
+      variables: {
+        name: 'Buck',
+      },
+    },
+    result: {
+      data: {
+        dog: { id: '1', name: 'Buck', breed: 'bulldog' },
+      },
+    },
+  },
+];
+</code></pre>
+<p>Each mock object defines a <code>request</code> field (indicating the shape and variables of the operation to match against) and a <code>result</code> field (indicating the shape of the response to return for that operation).</p>
+<blockquote>
+<p><strong>Your test must execute an operation that <em>exactly</em> matches a mock's shape <em>and</em> variables to receive the associated mocked response.</strong></p>
+</blockquote>
+<p>Alternatively, the <code>result</code> field can be a function that returns a mocked response after performing arbitrary logic:</p>
+<pre><code class="language-jsx">result: () =&gt; {
+  // ...arbitrary logic...
+
+  return {
+    data: {
+      dog: { id: '1', name: 'Buck', breed: 'bulldog' },
+    },
+  }
+},
+</code></pre>
+<p>Combining our code above, we get the following complete test:</p>
+<p><ExpansionPanel title="Click to expand 🐶"></p>
+<pre><code class="language-jsx:title=dog.test.js">import TestRenderer from 'react-test-renderer';
+import { MockedProvider } from '@apollo/client/testing';
+import { GET_DOG_QUERY, Dog } from './dog';
+
+const mocks = [
+  {
+    request: {
+      query: GET_DOG_QUERY,
+      variables: {
+        name: 'Buck',
+      },
+    },
+    result: {
+      data: {
+        dog: { id: '1', name: 'Buck', breed: 'bulldog' },
+      },
+    },
+  },
+];
+
+it('renders without error', () =&gt; {
+  const component = TestRenderer.create(
+    &lt;MockedProvider mocks={mocks} addTypename={false}&gt;
+      &lt;Dog name=&quot;Buck&quot; /&gt;
+    &lt;/MockedProvider&gt;,
+  );
+
+  const tree = component.toJSON();
+  expect(tree.children).toContain('Loading...');
+});
+</code></pre>
+<p></ExpansionPanel></p>
+<blockquote>
+<p><strong>Important:</strong> As it's written, this test checks whether the <code>Dog</code> component renders successfully and displays a <code>Loading...</code> message. However, it <em>doesn't</em> wait for <code>MockedProvider</code> to respond to <code>GET_DOG_QUERY</code>. Even when GraphQL operations are mocked, they're <code>Promise</code>-based and therefore asynchronous. Because of this, this test always completes while the component is still in its initial <a href="#testing-the-loading-state">loading state</a>.</p>
+<p>To test a component's rendering <em>after</em> <code>MockedProvider</code> responds, see <a href="#testing-the-success-state">The &quot;completed&quot; state</a> and <a href="#testing-error-states">Error states</a>.</p>
+</blockquote>
+<h3>Setting <code>addTypename</code></h3>
+<p>In the example above, we set the <code>addTypename</code> prop of <code>MockedProvider</code> to <code>false</code>. This prevents Apollo Client from automatically adding the special <code>__typename</code> field to every object it queries for (it does this by default to support data normalization in the cache).</p>
+<p>We <em>don't</em> want to automatically add <code>__typename</code> to <code>GET_DOG_QUERY</code> in our test, because then it won't match the shape of the query that our mock is expecting.</p>
+<p>Unless you explicitly configure your mocks to expect a <code>__typename</code> field, always set <code>addTypename</code> to <code>false</code> in your tests.</p>
+<h2>Testing the &quot;loading&quot; state</h2>
+<p>You can test how your component is rendered while it's still awaiting a query result. In fact, this is a test's default behavior if it doesn't <em>explicitly</em> wait for the <code>Promise</code>-based result from <code>MockedProvider</code>.</p>
+<p><a href="#example">The example above</a> shows a test that renders a component in its &quot;loading&quot; state without awaiting a result from <code>MockedProvider</code>.</p>
+<h2>Testing the &quot;success&quot; state</h2>
+<p>To test how your component is rendered after its query completes, you can <code>await</code> a zero-millisecond timeout before performing your checks. This delays the checks until the next &quot;tick&quot; of the event loop, which gives <code>MockedProvider</code> an opportunity to populate the mocked result:</p>
+<pre><code class="language-jsx">it('should render dog', async () =&gt; {
+  const dogMock = {
+    request: {
+      query: GET_DOG_QUERY,
+      variables: { name: 'Buck' },
+    },
+    result: {
+      data: { dog: { id: 1, name: 'Buck', breed: 'poodle' } },
+    },
+  };
+
+  const component = TestRenderer.create(
+    &lt;MockedProvider mocks={[dogMock]} addTypename={false}&gt;
+      &lt;Dog name=&quot;Buck&quot; /&gt;
+    &lt;/MockedProvider&gt;,
+  );
+
+  await new Promise(resolve =&gt; setTimeout(resolve, 0)); // highlight-line
+
+  const p = component.root.findByType('p');
+  expect(p.children.join('')).toContain('Buck is a poodle');
+});
+</code></pre>
+<p>If your component performs complex calculations or includes delays in its render logic, you can increase the timeout's duration accordingly. You can also use a package like <a href="https://npm.im/wait-for-expect"><code>wait-for-expect</code></a> to delay until the render has occurred. The risk of using a package like this everywhere is that <em>every</em> test might take up to five seconds to execute (or longer if the default timeout is increased).</p>
+<h2>Testing error states</h2>
+<p>Your component's error states are just as important to test as its success state, if not more so. You can use the <code>MockedProvider</code> component to simulate both network errors and GraphQL errors.</p>
+<ul>
+<li>Network errors are errors that occur while your client attempts to communicate with your GraphQL server.</li>
+<li>GraphQL errors are errors that occur while your GraphQL server attempts to resolve your client's operation.</li>
+</ul>
+<blockquote>
+<p>Tests for error states require the same zero-millisecond timeout as <a href="#testing-the-success-state">tests for the success state</a>.</p>
+</blockquote>
+<h3>Network errors</h3>
+<p>To simulate a network error, you can include an <code>error</code> field in your test's mock object, instead of the <code>result</code> field:</p>
+<pre><code class="language-jsx">it('should show error UI', async () =&gt; {
+  const dogMock = {
+    request: {
+      query: GET_DOG_QUERY,
+      variables: { name: 'Buck' },
+    },
+    error: new Error('An error occurred'),
+  };
+
+  const component = TestRenderer.create(
+    &lt;MockedProvider mocks={[dogMock]} addTypename={false}&gt;
+      &lt;Dog name=&quot;Buck&quot; /&gt;
+    &lt;/MockedProvider&gt;,
+  );
+
+  await new Promise(resolve =&gt; setTimeout(resolve, 0)); // wait for response
+
+  const tree = component.toJSON();
+  expect(tree.children).toContain('An error occurred');
+});
+</code></pre>
+<p>In this case, when the <code>Dog</code> component executes its query, the <code>MockedProvider</code> returns the corresponding error. This applies the error state to our <code>Dog</code> component, enabling us to verify that the error is handled gracefully.</p>
+<h3>GraphQL errors</h3>
+<p>To simulate GraphQL errors, you define an <code>errors</code> field <em>inside</em> a mock's <code>result</code> field. The value of this field is an array of instantiated <code>GraphQLError</code> objects:</p>
+<pre><code class="language-js">const dogMock = {
+  // ...
+  result: {
+    errors: [new GraphQLError('Error!')],
+  },
+};
+</code></pre>
+<p>Because GraphQL supports returning partial results when an error occurs, a mock object's <code>result</code> can include both <code>errors</code> <em>and</em> <code>data</code>.</p>
+<h2>Testing mutations</h2>
+<p>You test components that use <code>useMutation</code> similarly to how you test components that use <code>useQuery</code>. Just like in your application code, the primary <em>difference</em> is that you need to call the mutation's <strong>mutate function</strong> to actually execute the operation.</p>
+<h3>Example</h3>
+<p>The following <code>DeleteButton</code> component executes the <code>DELETE_DOG_MUTATION</code> to delete a dog named <code>Buck</code> from our data graph (don't worry, Buck will be fine 🐶):</p>
+<pre><code class="language-jsx:title=delete-dog.jsx">export const DELETE_DOG_MUTATION = gql`
+  mutation deleteDog($name: String!) {
+    deleteDog(name: $name) {
+      id
+      name
+      breed
+    }
+  }
+`;
+
+export function DeleteButton() {
+  const [mutate, { loading, error, data }] = useMutation(DELETE_DOG_MUTATION);
+
+  if (loading) return &lt;p&gt;Loading...&lt;/p&gt;;
+  if (error) return &lt;p&gt;Error!&lt;/p&gt;;
+  if (data) return &lt;p&gt;Deleted!&lt;/p&gt;;
+
+  return (
+    &lt;button onClick={() =&gt; mutate({ variables: { name: 'Buck' } })}&gt;
+      Click to Delete Buck
+    &lt;/button&gt;
+  );
+}
+</code></pre>
+<p>We can test the initial rendering of this component just like we <a href="#example">tested our <code>Dog</code> component</a>:</p>
+<pre><code class="language-jsx:title=delete-dog.test.js">import TestRenderer from 'react-test-renderer';
+import { MockedProvider } from '@apollo/client/testing';
+import DeleteButton, { DELETE_DOG_MUTATION } from './delete-dog';
+
+it('should render without error', () =&gt; {
+  TestRenderer.create(
+    &lt;MockedProvider mocks={[]}&gt;
+      &lt;DeleteButton /&gt;
+    &lt;/MockedProvider&gt;,
+  );
+});
+</code></pre>
+<p>In the test above, <code>DELETE_DOG_MUTATION</code> is <em>not</em> executed, because the mutate function is not called.</p>
+<p>The following test <em>does</em> execute the mutation by clicking the button:</p>
+<pre><code class="language-jsx:title=delete-dog.test.js">it('should render loading state initially', () =&gt; {
+  const deleteDog = { name: 'Buck', breed: 'Poodle', id: 1 };
+  const mocks = [
+    {
+      request: {
+        query: DELETE_DOG_MUTATION,
+        variables: { name: 'Buck' },
+      },
+      result: { data: { deleteDog } },
+    },
+  ];
+
+  const component = TestRenderer.create(
+    &lt;MockedProvider mocks={mocks} addTypename={false}&gt;
+      &lt;DeleteButton /&gt;
+    &lt;/MockedProvider&gt;,
+  );
+
+  // find the button and simulate a click
+  const button = component.root.findByType('button');
+  button.props.onClick(); // fires the mutation
+
+  const tree = component.toJSON();
+  expect(tree.children).toContain('Loading...');
+});
+</code></pre>
+<p>Again, this example is similar to <a href="#example">the <code>useQuery</code>-based component above</a>, but it differs after the rendering is completed. Because this component relies on a button click to fire a mutation, we use the renderer's API to find the button and simulate a click with its <code>onClick</code> handler. This fires off the mutation, and the rest of the test runs as expected.</p>
+<blockquote>
+<p>Other test utilities like <a href="https://github.com/airbnb/enzyme">Enzyme</a> and <a href="https://github.com/kentcdodds/react-testing-library">react-testing-library</a> have built-in tools for finding elements and simulating events, but the concept is the same: find the button and simulate a click on it.</p>
+</blockquote>
+<p>To test for a successful mutation after simulating the click, use a zero-millisecond timeout, as shown in <a href="#testing-the-success-state">Testing the &quot;success&quot; state</a>:</p>
+<p><ExpansionPanel title="Click to expand 🐶"></p>
+<pre><code class="language-jsx">import TestRenderer from 'react-test-renderer';
+import { MockedProvider } from '@apollo/client/testing';
+import DeleteButton, { DELETE_DOG_MUTATION } from './delete-dog';
+
+it('should delete and give visual feedback', async () =&gt; {
+  const deleteDog = { name: 'Buck', breed: 'Poodle', id: 1 };
+  const mocks = [
+    {
+      request: {
+        query: DELETE_DOG_MUTATION,
+        variables: { name: 'Buck' },
+      },
+      result: { data: { deleteDog } },
+    },
+  ];
+
+  const component = TestRenderer.create(
+    &lt;MockedProvider mocks={mocks} addTypename={false}&gt;
+      &lt;DeleteButton /&gt;
+    &lt;/MockedProvider&gt;,
+  );
+
+  // find the button and simulate a click
+  const button = component.root.findByType('button');
+  button.props.onClick(); // fires the mutation
+
+  await new Promise(resolve =&gt; setTimeout(resolve, 0)); // wait for response
+
+  const tree = component.toJSON();
+  expect(tree.children).toContain('Deleted!');
+});
+</code></pre>
+<p></ExpansionPanel></p>
+<p>Remember that the mock's value for <code>result</code> can also be a function, so you can perform arbitrary logic (like setting a boolean to indicate that the mutation completed) before returning its result.</p>
+<p><a href="#testing-error-states">Testing error states</a> for mutations is identical to testing them for queries..</p>
+<h2>Testing with the cache</h2>
+<p>If your application sets any <a href="../caching/cache-configuration/#configuration-options">cache configuration options</a> (such as <code>possibleTypes</code> or <code>typePolicies</code>), you should provide <code>MockedProvider</code> with an instance of <code>InMemoryCache</code> that sets the exact same options:</p>
+<pre><code class="language-jsx">const cache = new InMemoryCache({
+  // ...configuration options...
+})
+
+&lt;MockedProvider mocks={mocks} cache={cache}&gt;
+  &lt;DeleteButton /&gt;
+&lt;/MockedProvider&gt;,
+</code></pre>
+<p>The following sample specifies <code>possibleTypes</code> and <code>typePolicies</code> in its cache configuration, both of which must also be specified in relevant tests to prevent unexpected behavior.</p>
+<p><ExpansionPanel title="Click to expand 🐶"></p>
+<pre><code class="language-jsx">// &quot;Dog&quot; supertype can be of type &quot;ShibeInu&quot;
+const ShibeFragment = gql`
+  fragment ShibeInuFields on Dog {
+    ... on ShibeInu {
+      tail {
+        isCurly
+      }
+    }
+  }
+`;
+
+export const GET_DOG_QUERY = gql`
+  query GetDog($name: String) {
+    dog(name: $name) {
+      id
+      name
+      breed
+
+      ...ShibeInuFields
+    }
+  }
+
+  ${ShibeFragment}
+`;
+
+export const cache = new ApolloClient({
+  cache: new InMemoryCache({
+    possibleTypes: {
+      Dog: ['ShibeInu']
+    },
+    // suppose you want you key fields for &quot;Dog&quot; to not be simply &quot;id&quot;
+    typePolicies: {
+      keyFields: {
+        Dog: ['name', 'breed']
+      }
+    }
+  })
+})
+</code></pre>
+<p></ExpansionPanel></p>
+<h2>Sandbox example</h2>
+<p>For a working example that demonstrates how to test components, check out this project on CodeSandbox:</p>
+<p><a href="https://codesandbox.io/s/40k7j708n4"><img src="https://codesandbox.io/static/img/play-codesandbox.svg" alt="Edit React-Apollo Testing"></a></p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Testing React components\ndescription: Using MockedProvider and associated APIs\n---\n\nimport {\n  ExpansionPanel,\n} from 'gatsby-theme-apollo-docs/src/components/expansion-panel';\n\nThis article describes best practices for testing React components that use Apollo Client.\n\nThe examples below use [Jest](https://facebook.github.io/jest/docs/en/tutorial-react.html) and React's [test renderer](https://reactjs.org/docs/test-renderer.html) instead of tools like [Enzyme](https://github.com/airbnb/enzyme) or [react-testing-library](https://github.com/kentcdodds/react-testing-library), but the concepts apply to any testing framework.\n\n## The `MockedProvider` component\n\nEvery test for a React component that uses Apollo Client must make Apollo Client available on [React's context](https://reactjs.org/docs/context.html). In application code, you achieve this by wrapping your component tree with the `ApolloProvider` component. In your tests, you use the `MockedProvider` component instead.\n\nThe `MockedProvider` component enables you to define mock responses for individual queries that are executed in your test. This means your test _doesn't_ need to communicate with a GraphQL server, which removes an external dependency and therefore improves the test's reliability.\n\n### Example\n\nLet's say we want to test the following `Dog` component, which executes a basic query and displays its result:\n\n\u003cExpansionPanel title=\"Click to expand 🐶\"\u003e\n\n```jsx:title=dog.jsx\nimport React from 'react';\nimport { gql, useQuery } from '@apollo/client';\n\n// Make sure that both the query and the component are exported\nexport const GET_DOG_QUERY = gql`\n  query GetDog($name: String) {\n    dog(name: $name) {\n      id\n      name\n      breed\n    }\n  }\n`;\n\nexport function Dog({ name }) {\n  const { loading, error, data } = useQuery(\n    GET_DOG_QUERY,\n    { variables: { name } }\n  );\n  if (loading) return \u003cp\u003eLoading...\u003c/p\u003e;\n  if (error) return \u003cp\u003eError!\u003c/p\u003e;\n\n  return (\n    \u003cp\u003e\n      {data.dog.name} is a {data.dog.breed}\n    \u003c/p\u003e\n  );\n}\n```\n\n\u003c/ExpansionPanel\u003e\n\nA basic rendering test for the component looks like this (minus mocked responses):\n\n```jsx:title=dog.test.js\nimport TestRenderer from 'react-test-renderer';\nimport { MockedProvider } from '@apollo/client/testing';\nimport { GET_DOG_QUERY, Dog } from './dog';\n\nconst mocks = []; // We'll fill this in next\n\nit('renders without error', () =\u003e {\n  const component = TestRenderer.create(\n    \u003cMockedProvider mocks={mocks} addTypename={false}\u003e\n      \u003cDog name=\"Buck\" /\u003e\n    \u003c/MockedProvider\u003e,\n  );\n\n  const tree = component.toJSON();\n  expect(tree.children).toContain('Loading...');\n});\n```\n\n#### Defining mocked responses\n\nThe `mocks` prop of `MockedProvider` is an array of objects, each of which defines the mock response for a single operation. Let's define a mocked response for `GET_DOG_QUERY` when it's passed the `name` `Buck`:\n\n```jsx:title=dog.test.js\nconst mocks = [\n  {\n    request: {\n      query: GET_DOG_QUERY,\n      variables: {\n        name: 'Buck',\n      },\n    },\n    result: {\n      data: {\n        dog: { id: '1', name: 'Buck', breed: 'bulldog' },\n      },\n    },\n  },\n];\n```\n\nEach mock object defines a `request` field (indicating the shape and variables of the operation to match against) and a `result` field (indicating the shape of the response to return for that operation).\n\n\u003e **Your test must execute an operation that _exactly_ matches a mock's shape _and_ variables to receive the associated mocked response.**\n\nAlternatively, the `result` field can be a function that returns a mocked response after performing arbitrary logic:\n\n```jsx\nresult: () =\u003e {\n  // ...arbitrary logic...\n\n  return {\n    data: {\n      dog: { id: '1', name: 'Buck', breed: 'bulldog' },\n    },\n  }\n},\n```\n\nCombining our code above, we get the following complete test:\n\n\u003cExpansionPanel title=\"Click to expand 🐶\"\u003e\n\n```jsx:title=dog.test.js\nimport TestRenderer from 'react-test-renderer';\nimport { MockedProvider } from '@apollo/client/testing';\nimport { GET_DOG_QUERY, Dog } from './dog';\n\nconst mocks = [\n  {\n    request: {\n      query: GET_DOG_QUERY,\n      variables: {\n        name: 'Buck',\n      },\n    },\n    result: {\n      data: {\n        dog: { id: '1', name: 'Buck', breed: 'bulldog' },\n      },\n    },\n  },\n];\n\nit('renders without error', () =\u003e {\n  const component = TestRenderer.create(\n    \u003cMockedProvider mocks={mocks} addTypename={false}\u003e\n      \u003cDog name=\"Buck\" /\u003e\n    \u003c/MockedProvider\u003e,\n  );\n\n  const tree = component.toJSON();\n  expect(tree.children).toContain('Loading...');\n});\n```\n\n\u003c/ExpansionPanel\u003e\n\n\u003e **Important:** As it's written, this test checks whether the `Dog` component renders successfully and displays a `Loading...` message. However, it _doesn't_ wait for `MockedProvider` to respond to `GET_DOG_QUERY`. Even when GraphQL operations are mocked, they're `Promise`-based and therefore asynchronous. Because of this, this test always completes while the component is still in its initial [loading state](#testing-the-loading-state).\n\u003e\n\u003e To test a component's rendering _after_ `MockedProvider` responds, see [The \"completed\" state](#testing-the-success-state) and [Error states](#testing-error-states).\n\n### Setting `addTypename`\n\nIn the example above, we set the `addTypename` prop of `MockedProvider` to `false`. This prevents Apollo Client from automatically adding the special `__typename` field to every object it queries for (it does this by default to support data normalization in the cache).\n\nWe _don't_ want to automatically add `__typename` to `GET_DOG_QUERY` in our test, because then it won't match the shape of the query that our mock is expecting.\n\nUnless you explicitly configure your mocks to expect a `__typename` field, always set `addTypename` to `false` in your tests.\n\n## Testing the \"loading\" state\n\nYou can test how your component is rendered while it's still awaiting a query result. In fact, this is a test's default behavior if it doesn't _explicitly_ wait for the `Promise`-based result from `MockedProvider`.\n\n[The example above](#example) shows a test that renders a component in its \"loading\" state without awaiting a result from `MockedProvider`.\n\n## Testing the \"success\" state\n\nTo test how your component is rendered after its query completes, you can `await` a zero-millisecond timeout before performing your checks. This delays the checks until the next \"tick\" of the event loop, which gives `MockedProvider` an opportunity to populate the mocked result:\n\n```jsx\nit('should render dog', async () =\u003e {\n  const dogMock = {\n    request: {\n      query: GET_DOG_QUERY,\n      variables: { name: 'Buck' },\n    },\n    result: {\n      data: { dog: { id: 1, name: 'Buck', breed: 'poodle' } },\n    },\n  };\n\n  const component = TestRenderer.create(\n    \u003cMockedProvider mocks={[dogMock]} addTypename={false}\u003e\n      \u003cDog name=\"Buck\" /\u003e\n    \u003c/MockedProvider\u003e,\n  );\n\n  await new Promise(resolve =\u003e setTimeout(resolve, 0)); // highlight-line\n\n  const p = component.root.findByType('p');\n  expect(p.children.join('')).toContain('Buck is a poodle');\n});\n```\n\nIf your component performs complex calculations or includes delays in its render logic, you can increase the timeout's duration accordingly. You can also use a package like [`wait-for-expect`](https://npm.im/wait-for-expect) to delay until the render has occurred. The risk of using a package like this everywhere is that _every_ test might take up to five seconds to execute (or longer if the default timeout is increased).\n\n## Testing error states\n\nYour component's error states are just as important to test as its success state, if not more so. You can use the `MockedProvider` component to simulate both network errors and GraphQL errors.\n\n* Network errors are errors that occur while your client attempts to communicate with your GraphQL server.\n* GraphQL errors are errors that occur while your GraphQL server attempts to resolve your client's operation.\n\n\u003e Tests for error states require the same zero-millisecond timeout as [tests for the success state](#testing-the-success-state).\n\n### Network errors\n\nTo simulate a network error, you can include an `error` field in your test's mock object, instead of the `result` field:\n\n```jsx\nit('should show error UI', async () =\u003e {\n  const dogMock = {\n    request: {\n      query: GET_DOG_QUERY,\n      variables: { name: 'Buck' },\n    },\n    error: new Error('An error occurred'),\n  };\n\n  const component = TestRenderer.create(\n    \u003cMockedProvider mocks={[dogMock]} addTypename={false}\u003e\n      \u003cDog name=\"Buck\" /\u003e\n    \u003c/MockedProvider\u003e,\n  );\n\n  await new Promise(resolve =\u003e setTimeout(resolve, 0)); // wait for response\n\n  const tree = component.toJSON();\n  expect(tree.children).toContain('An error occurred');\n});\n```\n\nIn this case, when the `Dog` component executes its query, the `MockedProvider` returns the corresponding error. This applies the error state to our `Dog` component, enabling us to verify that the error is handled gracefully.\n\n### GraphQL errors\n\nTo simulate GraphQL errors, you define an `errors` field _inside_ a mock's `result` field. The value of this field is an array of instantiated `GraphQLError` objects:\n\n```js\nconst dogMock = {\n  // ...\n  result: {\n    errors: [new GraphQLError('Error!')],\n  },\n};\n```\n\nBecause GraphQL supports returning partial results when an error occurs, a mock object's `result` can include both `errors` _and_ `data`.\n\n## Testing mutations\n\nYou test components that use `useMutation` similarly to how you test components that use `useQuery`. Just like in your application code, the primary _difference_ is that you need to call the mutation's **mutate function** to actually execute the operation.\n\n### Example\n\nThe following `DeleteButton` component executes the `DELETE_DOG_MUTATION` to delete a dog named `Buck` from our data graph (don't worry, Buck will be fine 🐶):\n\n```jsx:title=delete-dog.jsx\nexport const DELETE_DOG_MUTATION = gql`\n  mutation deleteDog($name: String!) {\n    deleteDog(name: $name) {\n      id\n      name\n      breed\n    }\n  }\n`;\n\nexport function DeleteButton() {\n  const [mutate, { loading, error, data }] = useMutation(DELETE_DOG_MUTATION);\n\n  if (loading) return \u003cp\u003eLoading...\u003c/p\u003e;\n  if (error) return \u003cp\u003eError!\u003c/p\u003e;\n  if (data) return \u003cp\u003eDeleted!\u003c/p\u003e;\n\n  return (\n    \u003cbutton onClick={() =\u003e mutate({ variables: { name: 'Buck' } })}\u003e\n      Click to Delete Buck\n    \u003c/button\u003e\n  );\n}\n```\n\nWe can test the initial rendering of this component just like we [tested our `Dog` component](#example):\n\n```jsx:title=delete-dog.test.js\nimport TestRenderer from 'react-test-renderer';\nimport { MockedProvider } from '@apollo/client/testing';\nimport DeleteButton, { DELETE_DOG_MUTATION } from './delete-dog';\n\nit('should render without error', () =\u003e {\n  TestRenderer.create(\n    \u003cMockedProvider mocks={[]}\u003e\n      \u003cDeleteButton /\u003e\n    \u003c/MockedProvider\u003e,\n  );\n});\n```\n\nIn the test above, `DELETE_DOG_MUTATION` is _not_ executed, because the mutate function is not called.\n\nThe following test _does_ execute the mutation by clicking the button:\n\n```jsx:title=delete-dog.test.js\nit('should render loading state initially', () =\u003e {\n  const deleteDog = { name: 'Buck', breed: 'Poodle', id: 1 };\n  const mocks = [\n    {\n      request: {\n        query: DELETE_DOG_MUTATION,\n        variables: { name: 'Buck' },\n      },\n      result: { data: { deleteDog } },\n    },\n  ];\n\n  const component = TestRenderer.create(\n    \u003cMockedProvider mocks={mocks} addTypename={false}\u003e\n      \u003cDeleteButton /\u003e\n    \u003c/MockedProvider\u003e,\n  );\n\n  // find the button and simulate a click\n  const button = component.root.findByType('button');\n  button.props.onClick(); // fires the mutation\n\n  const tree = component.toJSON();\n  expect(tree.children).toContain('Loading...');\n});\n```\n\nAgain, this example is similar to [the `useQuery`-based component above](#example), but it differs after the rendering is completed. Because this component relies on a button click to fire a mutation, we use the renderer's API to find the button and simulate a click with its `onClick` handler. This fires off the mutation, and the rest of the test runs as expected.\n\n\u003e Other test utilities like [Enzyme](https://github.com/airbnb/enzyme) and [react-testing-library](https://github.com/kentcdodds/react-testing-library) have built-in tools for finding elements and simulating events, but the concept is the same: find the button and simulate a click on it.\n\nTo test for a successful mutation after simulating the click, use a zero-millisecond timeout, as shown in [Testing the \"success\" state](#testing-the-success-state):\n\n\u003cExpansionPanel title=\"Click to expand 🐶\"\u003e\n\n```jsx\nimport TestRenderer from 'react-test-renderer';\nimport { MockedProvider } from '@apollo/client/testing';\nimport DeleteButton, { DELETE_DOG_MUTATION } from './delete-dog';\n\nit('should delete and give visual feedback', async () =\u003e {\n  const deleteDog = { name: 'Buck', breed: 'Poodle', id: 1 };\n  const mocks = [\n    {\n      request: {\n        query: DELETE_DOG_MUTATION,\n        variables: { name: 'Buck' },\n      },\n      result: { data: { deleteDog } },\n    },\n  ];\n\n  const component = TestRenderer.create(\n    \u003cMockedProvider mocks={mocks} addTypename={false}\u003e\n      \u003cDeleteButton /\u003e\n    \u003c/MockedProvider\u003e,\n  );\n\n  // find the button and simulate a click\n  const button = component.root.findByType('button');\n  button.props.onClick(); // fires the mutation\n\n  await new Promise(resolve =\u003e setTimeout(resolve, 0)); // wait for response\n\n  const tree = component.toJSON();\n  expect(tree.children).toContain('Deleted!');\n});\n```\n\n\u003c/ExpansionPanel\u003e\n\nRemember that the mock's value for `result` can also be a function, so you can perform arbitrary logic (like setting a boolean to indicate that the mutation completed) before returning its result.\n\n[Testing error states](#testing-error-states) for mutations is identical to testing them for queries..\n\n## Testing with the cache\n\nIf your application sets any [cache configuration options](../caching/cache-configuration/#configuration-options) (such as `possibleTypes` or `typePolicies`), you should provide `MockedProvider` with an instance of `InMemoryCache` that sets the exact same options:\n\n```jsx\nconst cache = new InMemoryCache({\n  // ...configuration options...\n})\n\n\u003cMockedProvider mocks={mocks} cache={cache}\u003e\n  \u003cDeleteButton /\u003e\n\u003c/MockedProvider\u003e,\n```\n\nThe following sample specifies `possibleTypes` and `typePolicies` in its cache configuration, both of which must also be specified in relevant tests to prevent unexpected behavior.\n\n\u003cExpansionPanel title=\"Click to expand 🐶\"\u003e\n\n```jsx\n// \"Dog\" supertype can be of type \"ShibeInu\"\nconst ShibeFragment = gql`\n  fragment ShibeInuFields on Dog {\n    ... on ShibeInu {\n      tail {\n        isCurly\n      }\n    }\n  }\n`;\n\nexport const GET_DOG_QUERY = gql`\n  query GetDog($name: String) {\n    dog(name: $name) {\n      id\n      name\n      breed\n\n      ...ShibeInuFields\n    }\n  }\n\n  ${ShibeFragment}\n`;\n\nexport const cache = new ApolloClient({\n  cache: new InMemoryCache({\n    possibleTypes: {\n      Dog: ['ShibeInu']\n    },\n    // suppose you want you key fields for \"Dog\" to not be simply \"id\"\n    typePolicies: {\n      keyFields: {\n        Dog: ['name', 'breed']\n      }\n    }\n  })\n})\n```\n\n\u003c/ExpansionPanel\u003e\n\n## Sandbox example\n\nFor a working example that demonstrates how to test components, check out this project on CodeSandbox:\n\n[![Edit React-Apollo Testing](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/40k7j708n4)\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_development-testing_testing.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

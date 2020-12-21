@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<h2>title: Authentication</h2>
+<p>Unless all of the data you are loading is completely public, your app has some sort of users, accounts and permissions systems. If different users have different permissions in your application, then you need a way to tell the server which user is associated with each request.</p>
+<p>Apollo Client uses the ultra flexible <a href="https://www.apollographql.com/docs/link">Apollo Link</a> that includes several options for authentication.</p>
+<h2>Cookie</h2>
+<p>If your app is browser based and you are using cookies for login and session management with a backend, it's very easy to tell your network interface to send the cookie along with every request. You just need to pass the credentials option. e.g.  <code>credentials: 'same-origin'</code> as shown below, if your backend server is the same domain or else <code>credentials: 'include'</code> if your backend is a different domain.</p>
+<pre><code class="language-js">const link = createHttpLink({
+  uri: '/graphql',
+  credentials: 'same-origin'
+});
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link,
+});
+</code></pre>
+<p>This option is simply passed through to the <a href="https://github.com/github/fetch"><code>fetch</code> implementation</a> used by the HttpLink when sending the query.</p>
+<p>Note: the backend must also allow credentials from the requested origin. e.g. if using the popular 'cors' package from npm in node.js, the following settings would work in tandem with the above apollo client settings:</p>
+<pre><code class="language-js">// enable cors
+var corsOptions = {
+  origin: '&lt;insert uri of front-end domain&gt;',
+  credentials: true // &lt;-- REQUIRED backend setting
+};
+app.use(cors(corsOptions));
+</code></pre>
+<h2>Header</h2>
+<p>Another common way to identify yourself when using HTTP is to send along an authorization header. It's easy to add an <code>authorization</code> header to every HTTP request by chaining together Apollo Links. In this example, we'll pull the login token from <code>localStorage</code> every time a request is sent:</p>
+<pre><code class="language-js">import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+
+const httpLink = createHttpLink({
+  uri: '/graphql',
+});
+
+const authLink = setContext((_, { headers }) =&gt; {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem('token');
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : &quot;&quot;,
+    }
+  }
+});
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache()
+});
+</code></pre>
+<p>The server can use that header to authenticate the user and attach it to the GraphQL execution context, so resolvers can modify their behavior based on a user's role and permissions.</p>
+<h2>Reset store on logout</h2>
+<p>Since Apollo caches all of your query results, it's important to get rid of them when the login state changes.</p>
+<p>The easiest way to ensure that the UI and store state reflects the current user's permissions is to call <code>client.resetStore()</code> after your login or logout process has completed. This will cause the store to be cleared and all active queries to be refetched. If you just want the store to be cleared and don't want to refetch active queries, use <code>client.clearStore()</code> instead. Another option is to reload the page, which will have a similar effect.</p>
+<pre><code class="language-jsx">const PROFILE_QUERY = gql`
+  query CurrentUserForLayout {
+    currentUser {
+      login
+      avatar_url
+    }
+  }
+`;
+
+function Profile() {
+  const { client, loading, data: { currentUser } } = useQuery(
+    PROFILE_QUERY,
+    { fetchPolicy: &quot;network-only&quot; }
+  );
+
+  if (loading) {
+    return &lt;p className=&quot;navbar-text navbar-right&quot;&gt;Loading...&lt;/p&gt;;
+  }
+
+  if (currentUser) {
+    return (
+      &lt;span&gt;
+        &lt;p className=&quot;navbar-text navbar-right&quot;&gt;
+          {currentUser.login}
+          &amp;nbsp;
+          &lt;button
+            onClick={() =&gt; {
+              // call your auth logout code then reset store
+              App.logout().then(() =&gt; client.resetStore());
+            }}
+          &gt;
+            Log out
+          &lt;/button&gt;
+        &lt;/p&gt;
+      &lt;/span&gt;
+    );
+  }
+
+  return (
+    &lt;p className=&quot;navbar-text navbar-right&quot;&gt;
+      &lt;a href=&quot;/login/github&quot;&gt;Log in with GitHub&lt;/a&gt;
+    &lt;/p&gt;
+  );
+}
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Authentication\n---\n\nUnless all of the data you are loading is completely public, your app has some sort of users, accounts and permissions systems. If different users have different permissions in your application, then you need a way to tell the server which user is associated with each request.\n\nApollo Client uses the ultra flexible [Apollo Link](https://www.apollographql.com/docs/link) that includes several options for authentication.\n\n## Cookie\n\nIf your app is browser based and you are using cookies for login and session management with a backend, it's very easy to tell your network interface to send the cookie along with every request. You just need to pass the credentials option. e.g.  `credentials: 'same-origin'` as shown below, if your backend server is the same domain or else `credentials: 'include'` if your backend is a different domain.\n\n```js\nconst link = createHttpLink({\n  uri: '/graphql',\n  credentials: 'same-origin'\n});\n\nconst client = new ApolloClient({\n  cache: new InMemoryCache(),\n  link,\n});\n```\n\nThis option is simply passed through to the [`fetch` implementation](https://github.com/github/fetch) used by the HttpLink when sending the query.\n\nNote: the backend must also allow credentials from the requested origin. e.g. if using the popular 'cors' package from npm in node.js, the following settings would work in tandem with the above apollo client settings:\n\n```js\n// enable cors\nvar corsOptions = {\n  origin: '\u003cinsert uri of front-end domain\u003e',\n  credentials: true // \u003c-- REQUIRED backend setting\n};\napp.use(cors(corsOptions));\n```\n\n## Header\n\nAnother common way to identify yourself when using HTTP is to send along an authorization header. It's easy to add an `authorization` header to every HTTP request by chaining together Apollo Links. In this example, we'll pull the login token from `localStorage` every time a request is sent:\n\n```js\nimport { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';\nimport { setContext } from '@apollo/client/link/context';\n\nconst httpLink = createHttpLink({\n  uri: '/graphql',\n});\n\nconst authLink = setContext((_, { headers }) =\u003e {\n  // get the authentication token from local storage if it exists\n  const token = localStorage.getItem('token');\n  // return the headers to the context so httpLink can read them\n  return {\n    headers: {\n      ...headers,\n      authorization: token ? `Bearer ${token}` : \"\",\n    }\n  }\n});\n\nconst client = new ApolloClient({\n  link: authLink.concat(httpLink),\n  cache: new InMemoryCache()\n});\n```\n\nThe server can use that header to authenticate the user and attach it to the GraphQL execution context, so resolvers can modify their behavior based on a user's role and permissions.\n\n## Reset store on logout\n\nSince Apollo caches all of your query results, it's important to get rid of them when the login state changes.\n\nThe easiest way to ensure that the UI and store state reflects the current user's permissions is to call `client.resetStore()` after your login or logout process has completed. This will cause the store to be cleared and all active queries to be refetched. If you just want the store to be cleared and don't want to refetch active queries, use `client.clearStore()` instead. Another option is to reload the page, which will have a similar effect.\n\n```jsx\nconst PROFILE_QUERY = gql`\n  query CurrentUserForLayout {\n    currentUser {\n      login\n      avatar_url\n    }\n  }\n`;\n\nfunction Profile() {\n  const { client, loading, data: { currentUser } } = useQuery(\n    PROFILE_QUERY,\n    { fetchPolicy: \"network-only\" }\n  );\n\n  if (loading) {\n    return \u003cp className=\"navbar-text navbar-right\"\u003eLoading...\u003c/p\u003e;\n  }\n\n  if (currentUser) {\n    return (\n      \u003cspan\u003e\n        \u003cp className=\"navbar-text navbar-right\"\u003e\n          {currentUser.login}\n          \u0026nbsp;\n          \u003cbutton\n            onClick={() =\u003e {\n              // call your auth logout code then reset store\n              App.logout().then(() =\u003e client.resetStore());\n            }}\n          \u003e\n            Log out\n          \u003c/button\u003e\n        \u003c/p\u003e\n      \u003c/span\u003e\n    );\n  }\n\n  return (\n    \u003cp className=\"navbar-text navbar-right\"\u003e\n      \u003ca href=\"/login/github\"\u003eLog in with GitHub\u003c/a\u003e\n    \u003c/p\u003e\n  );\n}\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_networking_authentication.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

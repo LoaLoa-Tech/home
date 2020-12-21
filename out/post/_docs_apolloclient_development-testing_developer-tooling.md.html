@@ -1,0 +1,136 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Developer tools
+description: Improve your developer experience with these these services and extensions</p>
+<hr>
+<h2>Apollo Studio</h2>
+<p><a href="https://www.apollographql.com/docs/platform/graph-manager-overview/">Apollo Studio</a> (formerly Graph Manager) is a cloud app that provides a single, consolidated place for you to collaborate on the evolution of your graph.</p>
+<p>It provides the following features to all Apollo users for free:</p>
+<ul>
+<li>A query window that connects to all your environments and provides ergonomic ways to author and manage queries.</li>
+<li>A GraphQL schema registry that tracks the evolution of your graph across your environments.</li>
+<li>Key insights into which parts of your schema are being actively used, and by whom.</li>
+<li>Team collaboration via organizations</li>
+</ul>
+<p>Advanced features are available with a subscription to an Apollo Team or Enterprise plan.</p>
+<p>To learn more about Graph Manager, check out the <a href="https://www.apollographql.com/docs/platform/graph-manager-overview/">overview</a>.</p>
+<h2>Apollo Client Devtools</h2>
+<p>The Apollo Client Devtools are available as extension for <a href="https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/apollo-developer-tools/">Firefox</a>.</p>
+<h3>Features</h3>
+<p>The devtools appear as an &quot;Apollo&quot; tab in your Chrome inspector, along side the &quot;Elements&quot; and &quot;Console&quot; tabs. There are currently 3 main features of the devtools:</p>
+<ul>
+<li>GraphiQL: Send queries to your server through the Apollo network interface, or query the Apollo cache to see what data is loaded.</li>
+<li>Normalized store inspector: Visualize your GraphQL store the way Apollo Client sees it, and search by field names or values.</li>
+<li>Watched query inspector: View active queries and variables, and locate the associated UI components.</li>
+</ul>
+<p><img src="../assets/devtools/apollo-client-devtools/apollo-devtools-graphiql.png" alt="GraphiQL Console"></p>
+<p>Make requests against either your app’s GraphQL server or the Apollo Client cache through the Chrome developer console. This version of GraphiQL leverages your app’s network interface, so there’s no configuration necessary — it automatically passes along the proper HTTP headers, etc. the same way your Apollo Client app does.</p>
+<p><img src="../assets/devtools/apollo-client-devtools/apollo-devtools-store.png" alt="Store Inspector"></p>
+<p>View the state of your client-side cache as a tree and inspect every object inside. Visualize the <a href="https://blog.apollographql.com/the-concepts-of-graphql-bc68bd819be3">mental model</a> of the Apollo cache. Search for specific keys and values in the store and see the path to those keys highlighted.</p>
+<p><img src="../assets/devtools/apollo-client-devtools/apollo-devtools-queries.png" alt="Watched Query Inspector"></p>
+<p>View the queries being actively watched on any given page. See when they're loading, what variables they're using, and, if you’re using React, which React component they’re attached to. Angular support coming soon.</p>
+<h3>Installation</h3>
+<p>You can install the extension via the <a href="https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm">Chrome Webstore</a>.
+If you want to install a local version of the extension instead, skip ahead to the <strong>Developing</strong> section.</p>
+<h3>Configuration</h3>
+<p>While your app is in dev mode, the devtools will appear as an &quot;Apollo&quot; tab in your chrome inspector. To enable the devtools in your app even in production, pass <code>connectToDevTools: true</code> to the ApolloClient constructor in your app.  Pass <code>connectToDevTools: false</code> if want to manually disable this functionality.</p>
+<p>The &quot;Apollo&quot; tab will appear in the Chrome console if a global <code>window.__APOLLO_CLIENT__</code> object exists in your app. Apollo Client adds this hook to the window automatically unless <code>process.env.NODE_ENV === 'production'</code>. If you would like to use the devtools in production, just manually attach your Apollo Client instance to <code>window.__APOLLO_CLIENT__</code> or pass <code>connectToDevTools: true</code> to the constructor.</p>
+<p>Find more information about contributing and debugging on the <a href="https://github.com/apollographql/apollo-client-devtools">Apollo Client DevTools GitHub page</a>.</p>
+<h2>Apollo Codegen</h2>
+<p>Apollo Codegen is a tool to generate API code or type annotations based on a GraphQL schema and query documents.</p>
+<p>It currently generates Swift code, TypeScript annotations, Flow annotations, and Scala code, we hope to add support for other targets in the future.</p>
+<p>See <a href="https://github.com/apollographql/apollo-ios">Apollo iOS</a> for details on the mapping from GraphQL results to Swift types, as well as runtime support for executing queries and mutations. For Scala, see <a href="https://github.com/apollographql/react-apollo-scalajs">React Apollo Scala.js</a> for details on how to use generated Scala code in a Scala.js app with Apollo Client.</p>
+<h3>Usage</h3>
+<p>If you want to use <code>apollo-codegen</code>, you can install it command globally:</p>
+<pre><code class="language-bash">npm install -g apollo-codegen
+</code></pre>
+<h3><code>introspect-schema</code></h3>
+<p>The purpose of this command is to create a JSON introspection dump file for a given graphql schema. The input schema can be fetched from a remote graphql server or from a local file. The resulting JSON introspection dump file is needed as input to the <a href="#generate">generate</a> command.</p>
+<p>To download a GraphQL schema by sending an introspection query to a server:</p>
+<pre><code class="language-bash">apollo-codegen introspect-schema http://localhost:8080/graphql --output schema.json
+</code></pre>
+<p>You can use the <code>header</code> option to add additional HTTP headers to the request. For example, to include an authentication token, use <code>--header &quot;Authorization: Bearer &lt;token&gt;&quot;</code>.</p>
+<p>You can use the <code>insecure</code> option to ignore any SSL errors (for example if the server is running with self-signed certificate).</p>
+<p>To generate a GraphQL schema introspection JSON from a local GraphQL schema:</p>
+<pre><code class="language-bash">apollo-codegen introspect-schema schema.graphql --output schema.json
+</code></pre>
+<h3><code>generate</code></h3>
+<p>The purpose of this command is to generate types for query and mutation operations made against the schema (it will not generate types for the schema itself).</p>
+<p>This tool will generate Swift code by default from a set of query definitions in <code>.graphql</code> files:</p>
+<pre><code class="language-bash">apollo-codegen generate **/*.graphql --schema schema.json --output API.swift
+</code></pre>
+<p>You can also generate type annotations for TypeScript, Flow, or Scala using the <code>--target</code> option:</p>
+<pre><code class="language-bash"># TypeScript
+apollo-codegen generate **/*.graphql --schema schema.json --target typescript --output operation-result-types.ts
+# Flow
+apollo-codegen generate **/*.graphql --schema schema.json --target flow --output operation-result-types.flow.js
+# Scala
+apollo-codegen generate **/*.graphql --schema schema.json --target scala --output operation-result-types.scala
+</code></pre>
+<h3><code>gql</code> template support</h3>
+<p>If the source file for generation is a javascript or typescript file, the codegen will try to extrapolate the queries inside the <a href="https://github.com/apollographql/graphql-tag">gql tag</a> templates.</p>
+<p>The tag name is configurable using the CLI <code>--tag-name</code> option.</p>
+<h3>.graphqlconfig support</h3>
+<p>Instead of using the <code>--schema</code> option to point out your GraphQL schema, you can specify it in a <a href="https://github.com/graphcool/graphql-config"><code>.graphqlconfig</code></a> file.</p>
+<p>In case you specify multiple schemas in your <code>.graphqlconfig</code> file, choose which one to pick by using the <code>--project-name</code> option.</p>
+<h3>Typescript and Flow</h3>
+<p>When using <code>apollo-codegen</code> with Typescript or Flow, make sure to add the <code>__typename</code> introspection field to every selection set within your graphql operations.</p>
+<p>If you're using a client like <code>@apollo/client</code> that does this automatically for your GraphQL operations, pass in the <code>--addTypename</code> option to <code>apollo-codegen</code> to make sure the generated Typescript and Flow types have the <code>__typename</code> field as well. This is required to ensure proper type generation support for <code>GraphQLUnionType</code> and <code>GraphQLInterfaceType</code> fields.</p>
+<p><strong>Why is the __typename field required?</strong></p>
+<p>Using the type information from the GraphQL schema, we can infer the possible types for fields. However, in the case of a <code>GraphQLUnionType</code> or <code>GraphQLInterfaceType</code>, there are multiple types that are possible for that field. This is best modeled using a disjoint union with the <code>__typename</code>
+as the discriminant.</p>
+<p>For example, given a schema:</p>
+<pre><code class="language-graphql">interface Character {
+  name: String!
+}
+
+type Human implements Character {
+  homePlanet: String
+}
+
+type Droid implements Character {
+  primaryFunction: String
+}
+</code></pre>
+<p>Whenever a field of type <code>Character</code> is encountered, it could be either a Human or Droid. Human and Droid objects
+will have a different set of fields. Within your application code, when interacting with a <code>Character</code> you'll want to make sure to handle both of these cases.</p>
+<p>Given this query:</p>
+<pre><code class="language-graphql">query Characters {
+  characters(episode: NEW_HOPE) {
+    name
+
+    ... on Human {
+      homePlanet
+    }
+
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+</code></pre>
+<p>Apollo Codegen will generate a union type for Character.</p>
+<pre><code class="language-ts">export type CharactersQuery = {
+  characters: Array&lt;{
+    __typename: 'Human',
+    name: string,
+    homePlanet: ?string
+  } | {
+    __typename: 'Droid',
+    name: string,
+    primaryFunction: ?string
+  }&gt;
+}
+</code></pre>
+<p>This type can then be used as follows to ensure that all possible types are handled:</p>
+<pre><code class="language-tsx">function CharacterFigures({ characters }: CharactersQuery) {
+  return characters.map(character =&gt; {
+    switch(character.__typename) {
+      case &quot;Human&quot;:
+        return &lt;HumanFigure homePlanet={character.homePlanet} name={character.name} /&gt;
+      case &quot;Droid&quot;:
+        return &lt;DroidFigure primaryFunction={character.primaryFunction} name={character.name} /&gt;
+    }
+  });
+}
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Developer tools\ndescription: Improve your developer experience with these these services and extensions\n---\n\n## Apollo Studio\n\n[Apollo Studio](https://www.apollographql.com/docs/platform/graph-manager-overview/) (formerly Graph Manager) is a cloud app that provides a single, consolidated place for you to collaborate on the evolution of your graph.\n\nIt provides the following features to all Apollo users for free:\n\n- A query window that connects to all your environments and provides ergonomic ways to author and manage queries.\n- A GraphQL schema registry that tracks the evolution of your graph across your environments.\n- Key insights into which parts of your schema are being actively used, and by whom.\n- Team collaboration via organizations\n\nAdvanced features are available with a subscription to an Apollo Team or Enterprise plan.\n\nTo learn more about Graph Manager, check out the [overview](https://www.apollographql.com/docs/platform/graph-manager-overview/).\n\n## Apollo Client Devtools\n\nThe Apollo Client Devtools are available as extension for [Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm) and [Firefox](https://addons.mozilla.org/en-US/firefox/addon/apollo-developer-tools/).\n\n### Features\n\nThe devtools appear as an \"Apollo\" tab in your Chrome inspector, along side the \"Elements\" and \"Console\" tabs. There are currently 3 main features of the devtools:\n\n * GraphiQL: Send queries to your server through the Apollo network interface, or query the Apollo cache to see what data is loaded.\n * Normalized store inspector: Visualize your GraphQL store the way Apollo Client sees it, and search by field names or values.\n * Watched query inspector: View active queries and variables, and locate the associated UI components.\n\n ![GraphiQL Console](../assets/devtools/apollo-client-devtools/apollo-devtools-graphiql.png)\n\nMake requests against either your app’s GraphQL server or the Apollo Client cache through the Chrome developer console. This version of GraphiQL leverages your app’s network interface, so there’s no configuration necessary — it automatically passes along the proper HTTP headers, etc. the same way your Apollo Client app does.\n\n![Store Inspector](../assets/devtools/apollo-client-devtools/apollo-devtools-store.png)\n\nView the state of your client-side cache as a tree and inspect every object inside. Visualize the [mental model](https://blog.apollographql.com/the-concepts-of-graphql-bc68bd819be3) of the Apollo cache. Search for specific keys and values in the store and see the path to those keys highlighted.\n\n![Watched Query Inspector](../assets/devtools/apollo-client-devtools/apollo-devtools-queries.png)\n\nView the queries being actively watched on any given page. See when they're loading, what variables they're using, and, if you’re using React, which React component they’re attached to. Angular support coming soon.\n\n### Installation\n\nYou can install the extension via the [Chrome Webstore](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm).\nIf you want to install a local version of the extension instead, skip ahead to the __Developing__ section.\n\n### Configuration\n\nWhile your app is in dev mode, the devtools will appear as an \"Apollo\" tab in your chrome inspector. To enable the devtools in your app even in production, pass `connectToDevTools: true` to the ApolloClient constructor in your app.  Pass `connectToDevTools: false` if want to manually disable this functionality.\n\nThe \"Apollo\" tab will appear in the Chrome console if a global `window.__APOLLO_CLIENT__` object exists in your app. Apollo Client adds this hook to the window automatically unless `process.env.NODE_ENV === 'production'`. If you would like to use the devtools in production, just manually attach your Apollo Client instance to `window.__APOLLO_CLIENT__` or pass `connectToDevTools: true` to the constructor.\n\nFind more information about contributing and debugging on the [Apollo Client DevTools GitHub page](https://github.com/apollographql/apollo-client-devtools).\n\n\n## Apollo Codegen\n\nApollo Codegen is a tool to generate API code or type annotations based on a GraphQL schema and query documents.\n\nIt currently generates Swift code, TypeScript annotations, Flow annotations, and Scala code, we hope to add support for other targets in the future.\n\nSee [Apollo iOS](https://github.com/apollographql/apollo-ios) for details on the mapping from GraphQL results to Swift types, as well as runtime support for executing queries and mutations. For Scala, see [React Apollo Scala.js](https://github.com/apollographql/react-apollo-scalajs) for details on how to use generated Scala code in a Scala.js app with Apollo Client.\n\n### Usage\n\nIf you want to use `apollo-codegen`, you can install it command globally:\n\n```bash\nnpm install -g apollo-codegen\n```\n\n### `introspect-schema`\n\nThe purpose of this command is to create a JSON introspection dump file for a given graphql schema. The input schema can be fetched from a remote graphql server or from a local file. The resulting JSON introspection dump file is needed as input to the [generate](#generate) command.\n\nTo download a GraphQL schema by sending an introspection query to a server:\n\n```bash\napollo-codegen introspect-schema http://localhost:8080/graphql --output schema.json\n```\n\nYou can use the `header` option to add additional HTTP headers to the request. For example, to include an authentication token, use `--header \"Authorization: Bearer \u003ctoken\u003e\"`.\n\nYou can use the `insecure` option to ignore any SSL errors (for example if the server is running with self-signed certificate).\n\nTo generate a GraphQL schema introspection JSON from a local GraphQL schema:\n\n```bash\napollo-codegen introspect-schema schema.graphql --output schema.json\n```\n\n### `generate`\n\nThe purpose of this command is to generate types for query and mutation operations made against the schema (it will not generate types for the schema itself).\n\nThis tool will generate Swift code by default from a set of query definitions in `.graphql` files:\n\n```bash\napollo-codegen generate **/*.graphql --schema schema.json --output API.swift\n```\n\nYou can also generate type annotations for TypeScript, Flow, or Scala using the `--target` option:\n\n```bash\n# TypeScript\napollo-codegen generate **/*.graphql --schema schema.json --target typescript --output operation-result-types.ts\n# Flow\napollo-codegen generate **/*.graphql --schema schema.json --target flow --output operation-result-types.flow.js\n# Scala\napollo-codegen generate **/*.graphql --schema schema.json --target scala --output operation-result-types.scala\n```\n\n### `gql` template support\n\nIf the source file for generation is a javascript or typescript file, the codegen will try to extrapolate the queries inside the [gql tag](https://github.com/apollographql/graphql-tag) templates.\n\nThe tag name is configurable using the CLI `--tag-name` option.\n\n### .graphqlconfig support\n\nInstead of using the `--schema` option to point out your GraphQL schema, you can specify it in a [`.graphqlconfig`](https://github.com/graphcool/graphql-config) file.\n\nIn case you specify multiple schemas in your `.graphqlconfig` file, choose which one to pick by using the `--project-name` option.\n\n### Typescript and Flow\n\nWhen using `apollo-codegen` with Typescript or Flow, make sure to add the `__typename` introspection field to every selection set within your graphql operations.\n\nIf you're using a client like `@apollo/client` that does this automatically for your GraphQL operations, pass in the `--addTypename` option to `apollo-codegen` to make sure the generated Typescript and Flow types have the `__typename` field as well. This is required to ensure proper type generation support for `GraphQLUnionType` and `GraphQLInterfaceType` fields.\n\n**Why is the __typename field required?**\n\nUsing the type information from the GraphQL schema, we can infer the possible types for fields. However, in the case of a `GraphQLUnionType` or `GraphQLInterfaceType`, there are multiple types that are possible for that field. This is best modeled using a disjoint union with the `__typename`\nas the discriminant.\n\nFor example, given a schema:\n\n```graphql\ninterface Character {\n  name: String!\n}\n\ntype Human implements Character {\n  homePlanet: String\n}\n\ntype Droid implements Character {\n  primaryFunction: String\n}\n```\n\nWhenever a field of type `Character` is encountered, it could be either a Human or Droid. Human and Droid objects\nwill have a different set of fields. Within your application code, when interacting with a `Character` you'll want to make sure to handle both of these cases.\n\nGiven this query:\n\n```graphql\nquery Characters {\n  characters(episode: NEW_HOPE) {\n    name\n\n    ... on Human {\n      homePlanet\n    }\n\n    ... on Droid {\n      primaryFunction\n    }\n  }\n}\n```\n\nApollo Codegen will generate a union type for Character.\n\n```ts\nexport type CharactersQuery = {\n  characters: Array\u003c{\n    __typename: 'Human',\n    name: string,\n    homePlanet: ?string\n  } | {\n    __typename: 'Droid',\n    name: string,\n    primaryFunction: ?string\n  }\u003e\n}\n```\n\nThis type can then be used as follows to ensure that all possible types are handled:\n\n```tsx\nfunction CharacterFigures({ characters }: CharactersQuery) {\n  return characters.map(character =\u003e {\n    switch(character.__typename) {\n      case \"Human\":\n        return \u003cHumanFigure homePlanet={character.homePlanet} name={character.name} /\u003e\n      case \"Droid\":\n        return \u003cDroidFigure primaryFunction={character.primaryFunction} name={character.name} /\u003e\n    }\n  });\n}\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_development-testing_developer-tooling.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

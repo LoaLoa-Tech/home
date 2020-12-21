@@ -1,0 +1,231 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Apollo Link overview
+description: Customize Apollo Client's data flow</p>
+<hr>
+<blockquote>
+<p>If your application only needs to send conventional HTTP-based requests to a GraphQL server, you probably don't need to use the Apollo Link API. To learn more, see <a href="../../networking/basic-http-networking/">Basic HTTP networking</a>.</p>
+</blockquote>
+<p>The <strong>Apollo Link</strong> library helps you customize the flow of data between Apollo Client and your GraphQL server. You can define your client's network behavior as a list of <strong>link</strong> objects that execute in a sequence:</p>
+<p><img src="../../assets/link/concepts-intro-2.png" alt="Visualization of link interaction"></p>
+<p>In the above diagram:</p>
+<ol>
+<li>The first link might log the details of the operation for debugging purposes.</li>
+<li>The second link might add an HTTP header to the outgoing operation request.</li>
+<li>The third link might then <em>send</em> the request to a GraphQL server over HTTP.</li>
+</ol>
+<p>Note that although the figure above shows the rightmost link requesting results from a remote server, it can execute GraphQL operations against any local or remote target that can respond to them.</p>
+<p>By default, Apollo Client uses Apollo Link's <code>HttpLink</code> to send GraphQL operations to a remote server over HTTP. Apollo Client takes care of creating this default link, and it covers many use cases without requiring additional customization.</p>
+<p>To extend or replace Apollo Client's default networking layer, you can define one or more <em>custom</em> links and specify their order of execution in the <code>ApolloClient</code> constructor.</p>
+<h2>The anatomy of a link</h2>
+<p>A link can be either an instance of the <code>ApolloLink</code> class or a subclass of it. Regardless, it must define a method named <code>request</code> that:</p>
+<ul>
+<li>Accepts an <code>Operation</code> object and a <code>forward</code> function</li>
+<li>Returns an Observable, usually by calling the <code>forward</code> function</li>
+</ul>
+<p>This <code>request</code> method is known as the link's <strong>request handler</strong>.</p>
+<p>Here's an example of a custom link that defines its request handler by passing it as a parameter to the <code>ApolloLink</code> constructor:</p>
+<pre><code class="language-js">import { ApolloLink } from '@apollo/client';
+
+const timeStartLink = new ApolloLink((operation, forward) =&gt; {
+  operation.setContext({ start: new Date() });
+  return forward(operation);
+});
+</code></pre>
+<blockquote>
+<p>Apollo Link uses the Observables implementation provided by <a href="https://github.com/zenparsing/zen-observable"><code>zen-observable</code></a>. Refer to the <code>zen-observable</code> documentation for additional <code>Observable</code> API details.</p>
+</blockquote>
+<h3>The request handler</h3>
+<p>Every link defines a <code>request</code> method, also known as its <strong>request handler</strong>. This method takes the following arguments:</p>
+<ul>
+<li><code>operation</code>: The GraphQL operation that's being passed through the link. For details, see <a href="#the-operation-object">The <code>Operation</code> object</a>.</li>
+<li><code>forward</code>: A function for executing the next link in the chain (unless this is a <a href="#the-terminating-link">terminating link</a>).</li>
+</ul>
+<p>Whenever Apollo Client prepares to execute a GraphQL operation, it calls the request handler on the first link in the chain. It's the responsibility of each link to perform its intended operation and then pass execution along to the next link in the chain by calling the <a href="#the-forward-function"><code>forward</code> function</a>.</p>
+<h4>The <code>Operation</code> object</h4>
+<p>The <code>Operation</code> object includes the following fields:</p>
+<table>
+<thead>
+<tr><th>Name</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>query</code></td><td>A <code>DocumentNode</code> (parsed GraphQL operation) that describes the operation taking place.</td></tr>
+<tr><td><code>variables</code></td><td>A map of GraphQL variables being sent with the operation.</td></tr>
+<tr><td><code>operationName</code></td><td>A string name of the query if it is named, otherwise <code>null</code>.</td></tr>
+<tr><td><code>extensions</code></td><td>A map to store extensions data to be sent to the server.</td></tr>
+<tr><td><code>getContext</code></td><td>A function to return the context of the request. This context can be used by links to determine which actions to perform. See <a href="#managing-context">Managing context</a>.</td></tr>
+<tr><td><code>setContext</code></td><td>A function that takes either a new context object, or a function which takes in the previous context and returns a new one. See <a href="#managing-context">Managing context</a>.</td></tr>
+</tbody>
+</table>
+<h4>The <code>forward</code> function</h4>
+<p>When a link's request handler is done executing its logic, it should return a call to the <code>forward</code> function that's passed to it (unless it's the chain's <a href="#the-terminating-link">terminating link</a>). Calling the <code>forward</code> function passes execution along to the next link in the chain.</p>
+<p>You can use Apollo Link helper functions from the <code>@apollo/client</code> package to compose  your links. These functions are members of the <code>ApolloLink</code> class itself, and are explained in further detail in <a href="#composing-a-link-chain">Composing a link chain</a>.</p>
+<h2>Composing a link chain</h2>
+<p>Each link should represent a self-contained modification to a GraphQL operation. By composing these links into a chain, you can create an arbitrarily complex model for your client's data flow.</p>
+<p>There are two forms of link composition: <strong>additive</strong> and <strong>directional</strong>.</p>
+<ul>
+<li>Additive composition involves combining a set of links into a serially executed chain.</li>
+<li>Directional composition involves branching to one of multiple links, depending on the details of an operation.</li>
+</ul>
+<p>Note that no matter how you structure your links, the <a href="#the-terminating-link">terminating link</a> <em>must</em> be last.</p>
+<h3>The terminating link</h3>
+<p>The <strong>terminating link</strong> is the last link in your composed chain. Instead of calling the <code>forward</code> function, it's responsible for sending your composed GraphQL operation to the destination that will execute it (usually a GraphQL server) and returning an <code>ExecutionResult</code>.</p>
+<h3>Additive composition</h3>
+<p>If you have a collection of two or more links that should always be executed in the exact same order, you can use the <code>ApolloLink.from</code> helper method to combine those links into a <em>single</em> link, like so:</p>
+<pre><code class="language-js">import { from, HttpLink } from '@apollo/client';
+import { RetryLink } from '@apollo/client/link/retry';
+import MyAuthLink from '../auth';
+
+const link = from([
+  new RetryLink(),
+  new MyAuthLink(),
+  new HttpLink({ uri: 'http://localhost:4000/graphql' })
+]);
+</code></pre>
+<h3>Directional composition</h3>
+<p>You might want your link chain's execution to branch, depending on the details of the operation being performed. You can define this logic with the <code>split</code> method of an <code>ApolloLink</code> instance. This method takes three parameters:</p>
+<table>
+<thead>
+<tr><th>Name</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>test</code></td><td>A function that takes in the current <code>Operation</code> and returns either <code>true</code> or <code>false</code> depending on its details.</td></tr>
+<tr><td><code>left</code></td><td>The link to execute next if the <code>test</code> function returns <code>true</code>.</td></tr>
+<tr><td><code>right</code></td><td>An <strong>optional</strong> link to execute next if the <code>test</code> function returns <code>false</code>. If this is not provided, the link's <code>forward</code> parameter is used.</td></tr>
+</tbody>
+</table>
+<p>In the following example, a <code>RetryLink</code> passes execution along to one of two different <code>HttpLink</code>s depending on the associated context's <code>version</code>:</p>
+<pre><code class="language-js">import { ApolloLink, HttpLink } from '@apollo/client';
+import { RetryLink } from '@apollo/client/link/retry';
+
+const link = new RetryLink().split(
+  (operation) =&gt; operation.getContext().version === 1,
+  new HttpLink({ uri: &quot;http://localhost:4000/v1/graphql&quot; }),
+  new HttpLink({ uri: &quot;http://localhost:4000/v2/graphql&quot; })
+);
+</code></pre>
+<p>Other uses for the <code>split</code> method include:</p>
+<ul>
+<li>Customizing the number of allowed retry attempts depending on the operation type</li>
+<li>Using different transport methods depending on the operation type (such as HTTP for queries and WebSocket for subscriptions)</li>
+<li>Customizing logic depending on whether a user is logged in</li>
+</ul>
+<h2>Link types</h2>
+<h3>Stateless links</h3>
+<p>Most links perform the same logic for every operation they process, and they don't need to know anything about operations that have been executed previously. These links are <strong>stateless</strong>.</p>
+<p>You can define the request handler for a stateless link in the constructor of an <code>ApolloLink</code> object, like so:</p>
+<pre><code class="language-js">import { ApolloLink } from '@apollo/client';
+
+const consoleLink = new ApolloLink((operation, forward) =&gt; {
+  console.log(`starting request for ${operation.operationName}`);
+  return forward(operation).map((data) =&gt; {
+    console.log(`ending request for ${operation.operationName}`);
+    return data;
+  })
+})
+</code></pre>
+<p>Stateless links are great for implementing middleware and even network requests. The following link adds an <code>Authorization</code> header to every outgoing request:</p>
+<pre><code class="language-js">import { ApolloLink } from '@apollo/client';
+
+const authLink = new ApolloLink((operation, forward) =&gt; {
+  operation.setContext(({ headers }) =&gt; ({ headers: {
+    authorization: Auth.userId(), // however you get your token
+    ...headers
+  }}));
+  return forward(operation);
+});
+</code></pre>
+<p>This style of link also composes well for customization using a function:</p>
+<pre><code class="language-js">import { ApolloLink } from '@apollo/client';
+
+const reportErrors = (errorCallback) =&gt; new ApolloLink((operation, forward) =&gt; {
+  const observable = forward(operation);
+  // errors will be sent to the errorCallback
+  observable.subscribe({ error: errorCallback })
+  return observable;
+});
+
+const link = reportErrors(console.error);
+</code></pre>
+<h4>Extending <code>ApolloLink</code></h4>
+<p>You can also create a stateless link by extending the <code>ApolloLink</code> class and overwriting its constructor and request handler. For example, here's the same <code>reportErrors</code> link written as an extension of <code>ApolloLink</code>:</p>
+<pre><code class="language-js">import { ApolloLink } from '@apollo/client';
+
+class ReportErrorLink extends ApolloLink {
+  constructor(errorCallback) {
+    super();
+    this.errorCallback = errorCallback;
+  }
+  request(operation, forward) {
+    const observable = forward(operation);
+    // errors will be sent to the errorCallback
+    observable.subscribe({ error: this.errorCallback })
+    return observable;
+  }
+}
+
+const link = new ReportErrorLink(console.error);
+</code></pre>
+<h3>Stateful links</h3>
+<p>When it's useful, links can maintain state between operations. These links are <strong>stateful</strong>.</p>
+<p>Stateful links are usually defined as subclasses of <code>ApolloLink</code>. They override the constructor of <code>ApolloLink</code> and implement a <code>request</code> function with the same signature as a stateless link. For example:</p>
+<pre><code class="language-js">import { ApolloLink } from '@apollo/client';
+
+class OperationCountLink extends ApolloLink {
+  constructor() {
+    super();
+    this.operationCount = 0;
+  }
+  request(operation, forward) {
+    this.operationCount += 1;
+    return forward(operation);
+  }
+}
+
+const link = new OperationCountLink();
+</code></pre>
+<p>This stateful link maintains a counter called <code>operationCount</code> as an instance variable. Every time a request is passed through the link, <code>operationCount</code> is incremented.</p>
+<h2>Managing context</h2>
+<p>As an operation moves down your link chain, it maintains a <code>context</code> that each link can read and modify. This allows links to pass metadata down the chain that <em>other</em> links use in their execution logic.</p>
+<ul>
+<li>Obtain the current context object by calling <code>operation.getContext()</code>.</li>
+<li>Modify the context object and then write it back with <code>operation.setContext(newContext)</code> or <code>operation.setContext((prevContext) =&gt; newContext)</code>.</li>
+</ul>
+<p>Note that this context is <em>not</em> included with the operation in the terminating link's request to the GraphQL server or other destination.</p>
+<p>Here's an example:</p>
+<pre><code class="language-js">import { ApolloLink } from '@apollo/client';
+
+const timeStartLink = new ApolloLink((operation, forward) =&gt; {
+  operation.setContext({ start: new Date() });
+  return forward(operation);
+});
+
+const logTimeLink = new ApolloLink((operation, forward) =&gt; {
+  return forward(operation).map((data) =&gt; {
+    // data from a previous link
+    const time = new Date() - operation.getContext().start;
+    console.log(`operation ${operation.operationName} took ${time} to complete`);
+    return data;
+  })
+});
+
+const link = timeStartLink.concat(logTimeLink)
+</code></pre>
+<p>This example defines two links, <code>timeStartLink</code> and <code>logTimeLink</code>. The <code>timeStartLink</code> assigns the current time to the context's <code>start</code> field. When the operation completes, the <code>logTimeLink</code> then subtracts the value of <code>start</code> from the current time to determine the total duration of the operation.</p>
+<p>The context's initial value can be set by Apollo Client before the link chain begins its execution. In this example, a call to <code>client.query</code> adds a <code>saveOffline</code> field to the context, which is then read by the custom link defined at the top:</p>
+<pre><code class="language-js">import { ApolloLink, InMemoryCache } from '@apollo/client';
+
+const link = new ApolloLink((operation, forward) =&gt; {
+  const { saveOffline } = operation.getContext();
+  if (saveOffline) // do offline stuff
+  return forward(operation);
+})
+
+const client = new ApolloClient({
+  cache: new InMemoryCache()
+  link,
+});
+
+// send context to the link
+const query = client.query({ query: MY_GRAPHQL_QUERY, context: { saveOffline: true }});
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Apollo Link overview\ndescription: Customize Apollo Client's data flow\n---\n\n\u003e If your application only needs to send conventional HTTP-based requests to a GraphQL server, you probably don't need to use the Apollo Link API. To learn more, see [Basic HTTP networking](../../networking/basic-http-networking/).\n\nThe **Apollo Link** library helps you customize the flow of data between Apollo Client and your GraphQL server. You can define your client's network behavior as a list of **link** objects that execute in a sequence:\n\n![Visualization of link interaction](../../assets/link/concepts-intro-2.png)\n\n In the above diagram:\n\n 1. The first link might log the details of the operation for debugging purposes.\n 2. The second link might add an HTTP header to the outgoing operation request.\n 3. The third link might then _send_ the request to a GraphQL server over HTTP.\n\n Note that although the figure above shows the rightmost link requesting results from a remote server, it can execute GraphQL operations against any local or remote target that can respond to them.\n\nBy default, Apollo Client uses Apollo Link's `HttpLink` to send GraphQL operations to a remote server over HTTP. Apollo Client takes care of creating this default link, and it covers many use cases without requiring additional customization.\n\nTo extend or replace Apollo Client's default networking layer, you can define one or more _custom_ links and specify their order of execution in the `ApolloClient` constructor.\n\n## The anatomy of a link\n\nA link can be either an instance of the `ApolloLink` class or a subclass of it. Regardless, it must define a method named `request` that:\n\n* Accepts an `Operation` object and a `forward` function\n* Returns an Observable, usually by calling the `forward` function\n\nThis `request` method is known as the link's **request handler**.\n\nHere's an example of a custom link that defines its request handler by passing it as a parameter to the `ApolloLink` constructor:\n\n```js\nimport { ApolloLink } from '@apollo/client';\n\nconst timeStartLink = new ApolloLink((operation, forward) =\u003e {\n  operation.setContext({ start: new Date() });\n  return forward(operation);\n});\n```\n\n\u003e Apollo Link uses the Observables implementation provided by [`zen-observable`](https://github.com/zenparsing/zen-observable). Refer to the `zen-observable` documentation for additional `Observable` API details.\n\n### The request handler\n\nEvery link defines a `request` method, also known as its **request handler**. This method takes the following arguments:\n\n- `operation`: The GraphQL operation that's being passed through the link. For details, see [The `Operation` object](#the-operation-object).\n- `forward`: A function for executing the next link in the chain (unless this is a [terminating link](#the-terminating-link)).\n\nWhenever Apollo Client prepares to execute a GraphQL operation, it calls the request handler on the first link in the chain. It's the responsibility of each link to perform its intended operation and then pass execution along to the next link in the chain by calling the [`forward` function](#the-forward-function).\n\n#### The `Operation` object\n\nThe `Operation` object includes the following fields:\n\n| Name  | Description  |\n|---|---|\n| `query`  | A `DocumentNode` (parsed GraphQL operation) that describes the operation taking place.  |\n| `variables`  | A map of GraphQL variables being sent with the operation.  |\n| `operationName`  | A string name of the query if it is named, otherwise `null`.  |\n| `extensions`  |  A map to store extensions data to be sent to the server. |\n| `getContext`  | A function to return the context of the request. This context can be used by links to determine which actions to perform. See [Managing context](#managing-context). |\n| `setContext`  |  A function that takes either a new context object, or a function which takes in the previous context and returns a new one. See [Managing context](#managing-context). |\n\n#### The `forward` function\n\nWhen a link's request handler is done executing its logic, it should return a call to the `forward` function that's passed to it (unless it's the chain's [terminating link](#the-terminating-link)). Calling the `forward` function passes execution along to the next link in the chain.\n\nYou can use Apollo Link helper functions from the `@apollo/client` package to compose  your links. These functions are members of the `ApolloLink` class itself, and are explained in further detail in [Composing a link chain](#composing-a-link-chain).\n\n## Composing a link chain\n\nEach link should represent a self-contained modification to a GraphQL operation. By composing these links into a chain, you can create an arbitrarily complex model for your client's data flow.\n\nThere are two forms of link composition: **additive** and **directional**.\n\n* Additive composition involves combining a set of links into a serially executed chain.\n* Directional composition involves branching to one of multiple links, depending on the details of an operation.\n\nNote that no matter how you structure your links, the [terminating link](#the-terminating-link) _must_ be last.\n\n### The terminating link\n\nThe **terminating link** is the last link in your composed chain. Instead of calling the `forward` function, it's responsible for sending your composed GraphQL operation to the destination that will execute it (usually a GraphQL server) and returning an `ExecutionResult`.\n\n### Additive composition\n\nIf you have a collection of two or more links that should always be executed in the exact same order, you can use the `ApolloLink.from` helper method to combine those links into a _single_ link, like so:\n\n```js\nimport { from, HttpLink } from '@apollo/client';\nimport { RetryLink } from '@apollo/client/link/retry';\nimport MyAuthLink from '../auth';\n\nconst link = from([\n  new RetryLink(),\n  new MyAuthLink(),\n  new HttpLink({ uri: 'http://localhost:4000/graphql' })\n]);\n```\n\n### Directional composition\n\nYou might want your link chain's execution to branch, depending on the details of the operation being performed. You can define this logic with the `split` method of an `ApolloLink` instance. This method takes three parameters:\n\n| Name  | Description  |\n|---|---|\n| `test`  | A function that takes in the current `Operation` and returns either `true` or `false` depending on its details.  |\n| `left`  | The link to execute next if the `test` function returns `true`.  |\n| `right`  | An **optional** link to execute next if the `test` function returns `false`. If this is not provided, the link's `forward` parameter is used. |\n\nIn the following example, a `RetryLink` passes execution along to one of two different `HttpLink`s depending on the associated context's `version`:\n\n```js\nimport { ApolloLink, HttpLink } from '@apollo/client';\nimport { RetryLink } from '@apollo/client/link/retry';\n\nconst link = new RetryLink().split(\n  (operation) =\u003e operation.getContext().version === 1,\n  new HttpLink({ uri: \"http://localhost:4000/v1/graphql\" }),\n  new HttpLink({ uri: \"http://localhost:4000/v2/graphql\" })\n);\n```\n\nOther uses for the `split` method include:\n\n* Customizing the number of allowed retry attempts depending on the operation type\n* Using different transport methods depending on the operation type (such as HTTP for queries and WebSocket for subscriptions)\n* Customizing logic depending on whether a user is logged in\n\n\n## Link types\n\n\n### Stateless links\n\nMost links perform the same logic for every operation they process, and they don't need to know anything about operations that have been executed previously. These links are **stateless**.\n\nYou can define the request handler for a stateless link in the constructor of an `ApolloLink` object, like so:\n\n```js\nimport { ApolloLink } from '@apollo/client';\n\nconst consoleLink = new ApolloLink((operation, forward) =\u003e {\n  console.log(`starting request for ${operation.operationName}`);\n  return forward(operation).map((data) =\u003e {\n    console.log(`ending request for ${operation.operationName}`);\n    return data;\n  })\n})\n```\n\nStateless links are great for implementing middleware and even network requests. The following link adds an `Authorization` header to every outgoing request:\n\n```js\nimport { ApolloLink } from '@apollo/client';\n\nconst authLink = new ApolloLink((operation, forward) =\u003e {\n  operation.setContext(({ headers }) =\u003e ({ headers: {\n    authorization: Auth.userId(), // however you get your token\n    ...headers\n  }}));\n  return forward(operation);\n});\n```\n\nThis style of link also composes well for customization using a function:\n\n```js\nimport { ApolloLink } from '@apollo/client';\n\nconst reportErrors = (errorCallback) =\u003e new ApolloLink((operation, forward) =\u003e {\n  const observable = forward(operation);\n  // errors will be sent to the errorCallback\n  observable.subscribe({ error: errorCallback })\n  return observable;\n});\n\nconst link = reportErrors(console.error);\n```\n\n#### Extending `ApolloLink`\n\nYou can also create a stateless link by extending the `ApolloLink` class and overwriting its constructor and request handler. For example, here's the same `reportErrors` link written as an extension of `ApolloLink`:\n\n```js\nimport { ApolloLink } from '@apollo/client';\n\nclass ReportErrorLink extends ApolloLink {\n  constructor(errorCallback) {\n    super();\n    this.errorCallback = errorCallback;\n  }\n  request(operation, forward) {\n    const observable = forward(operation);\n    // errors will be sent to the errorCallback\n    observable.subscribe({ error: this.errorCallback })\n    return observable;\n  }\n}\n\nconst link = new ReportErrorLink(console.error);\n```\n\n### Stateful links\n\nWhen it's useful, links can maintain state between operations. These links are **stateful**.\n\nStateful links are usually defined as subclasses of `ApolloLink`. They override the constructor of `ApolloLink` and implement a `request` function with the same signature as a stateless link. For example:\n\n```js\nimport { ApolloLink } from '@apollo/client';\n\nclass OperationCountLink extends ApolloLink {\n  constructor() {\n    super();\n    this.operationCount = 0;\n  }\n  request(operation, forward) {\n    this.operationCount += 1;\n    return forward(operation);\n  }\n}\n\nconst link = new OperationCountLink();\n```\n\nThis stateful link maintains a counter called `operationCount` as an instance variable. Every time a request is passed through the link, `operationCount` is incremented.\n\n## Managing context\n\nAs an operation moves down your link chain, it maintains a `context` that each link can read and modify. This allows links to pass metadata down the chain that _other_ links use in their execution logic.\n\n* Obtain the current context object by calling `operation.getContext()`.\n* Modify the context object and then write it back with `operation.setContext(newContext)` or `operation.setContext((prevContext) =\u003e newContext)`.\n\nNote that this context is *not* included with the operation in the terminating link's request to the GraphQL server or other destination.\n\nHere's an example:\n\n```js\nimport { ApolloLink } from '@apollo/client';\n\nconst timeStartLink = new ApolloLink((operation, forward) =\u003e {\n  operation.setContext({ start: new Date() });\n  return forward(operation);\n});\n\nconst logTimeLink = new ApolloLink((operation, forward) =\u003e {\n  return forward(operation).map((data) =\u003e {\n    // data from a previous link\n    const time = new Date() - operation.getContext().start;\n    console.log(`operation ${operation.operationName} took ${time} to complete`);\n    return data;\n  })\n});\n\nconst link = timeStartLink.concat(logTimeLink)\n```\n\nThis example defines two links, `timeStartLink` and `logTimeLink`. The `timeStartLink` assigns the current time to the context's `start` field. When the operation completes, the `logTimeLink` then subtracts the value of `start` from the current time to determine the total duration of the operation.\n\nThe context's initial value can be set by Apollo Client before the link chain begins its execution. In this example, a call to `client.query` adds a `saveOffline` field to the context, which is then read by the custom link defined at the top:\n\n```js\nimport { ApolloLink, InMemoryCache } from '@apollo/client';\n\nconst link = new ApolloLink((operation, forward) =\u003e {\n  const { saveOffline } = operation.getContext();\n  if (saveOffline) // do offline stuff\n  return forward(operation);\n})\n\nconst client = new ApolloClient({\n  cache: new InMemoryCache()\n  link,\n});\n\n// send context to the link\nconst query = client.query({ query: MY_GRAPHQL_QUERY, context: { saveOffline: true }});\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_api-link_introduction.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

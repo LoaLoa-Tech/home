@@ -1,0 +1,327 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Introduction
+subSection: graphql
+order: 1
+[meta]-->
+<h1>GraphQL API Introduction</h1>
+<p><em>Before you begin:</em> This guide assumes you have a running instance of Keystone with the GraphQL App configured, and a list with some data to query. (Get started in 5min by running <code>npx create-keystone-app</code> and select the <code>Starter</code> project)</p>
+<p>Examples in this guide will refer to a <code>Users</code> list, however the queries, mutations and methods listed here would be the same for any Keystone list.</p>
+<p>For each list, Keystone generates four top level queries. Given the following example:</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+  },
+});
+</code></pre>
+<h2>Queries</h2>
+<p>Keystone would generate the following queries:</p>
+<ul>
+<li><code>allUsers</code></li>
+<li><code>_allUsersMeta</code></li>
+<li><code>User</code></li>
+<li><code>_UsersMeta</code></li>
+</ul>
+<h3><code>allUsers</code></h3>
+<p>Retrieves all items from the <code>User</code> list. The <code>allUsers</code> query also allows you to search, limit and filter results. See: <a href="#filter-limit-and-sorting">Filter, limit and sorting</a>.</p>
+<pre><code class="language-graphql">query {
+  allUsers {
+    id
+  }
+}
+</code></pre>
+<h3><code>_allUsersMeta</code></h3>
+<p>Retrieves meta information about items in the <code>User</code> list such as a <code>count</code> of all items which can be used for pagination. The <code>_allUsersMeta</code> query accepts the same <a href="#filter-limit-and-sorting">filter, limit and sorting</a> parameters as the <code>allUsers</code> query.</p>
+<pre><code class="language-graphql">query {
+  _allUsersMeta {
+    count
+  }
+}
+</code></pre>
+<h3><code>User</code></h3>
+<p>Retrieves a single item from the <code>User</code> list. The single entity query accepts a where parameter which must provide an id.</p>
+<pre><code class="language-graphql">query {
+  User(where: { id: $id }) {
+    name
+  }
+}
+</code></pre>
+<h3><code>_UsersMeta</code></h3>
+<p>Retrieves meta information about the <code>User</code> list itself (i.e. not about items in the list) such as access control information. This query accepts no parameters.</p>
+<h2>Mutations</h2>
+<p>For each list Keystone generates six top level mutations:</p>
+<ul>
+<li><code>createUser</code></li>
+<li><code>createUsers</code></li>
+<li><code>updateUser</code></li>
+<li><code>updateUsers</code></li>
+<li><code>deleteUser</code></li>
+<li><code>deleteUsers</code></li>
+</ul>
+<h3><code>createUser</code></h3>
+<p>Add a single <code>User</code> to the <code>User</code> list. Requires a <code>data</code> parameter that is an object where keys match the field names in the list definition and the values are the data to create.</p>
+<pre><code class="language-graphql">mutation {
+  createUser(data: { name: &quot;Mike&quot; }) {
+    id
+  }
+}
+</code></pre>
+<h3><code>createUsers</code></h3>
+<p>Creates multiple <code>Users</code>. Parameters are the same as <code>createUser</code> except the data parameter should be an array of objects.</p>
+<pre><code class="language-graphql">mutation {
+  createUsers(data: [{ data: { name: &quot;Mike&quot; } }, { data: { name: &quot;Maher&quot; } }]) {
+    id
+    name
+  }
+}
+</code></pre>
+<h3><code>updateUser</code></h3>
+<p>Update a <code>User</code> by ID. Accepts an <code>id</code> parameter that should match the id of a <code>User</code> item. The object should contain keys matching the field definition of the list. <code>updateUser</code> performs a <em>partial update</em>, meaning only keys that you wish to update need to be provided.</p>
+<pre><code class="language-graphql">mutation {
+  updateUser(id: ID, data: { name: &quot;Simon&quot; }) {
+    id
+  }
+}
+</code></pre>
+<h3><code>updateUsers</code></h3>
+<p>Update multiple <code>Users</code> by ID. Accepts a single data parameter that contains an array of objects. The object parameters are the same as <code>createUser</code> and should contain an <code>id</code> and nested <code>data</code> parameter with the field data.</p>
+<pre><code class="language-graphql">mutation {
+  updateUsers(data: [{ id: ID, data: { name: &quot;Simon&quot; } }]) {
+    id
+  }
+}
+</code></pre>
+<h3><code>deleteUser</code></h3>
+<p>Delete a single Entity by ID. Accepts a single parameter where the <code>id</code> matches a <code>User</code> id.</p>
+<pre><code class="language-graphql">mutation {
+  deleteUser(id: ID) {
+    id
+  }
+}
+</code></pre>
+<h3><code>deleteUsers</code></h3>
+<p>Delete multiple entities by ID. Similar to <code>deleteUser</code> where the <code>id</code> parameter is an array of ids.
+You can add more IDs like this <code>[ID1, ID2]</code> and don't forget to write the IDs in string format <code>&quot;&quot;</code> like this <code>[&quot;5f67974b476e6e2d58c2bfb0&quot;, &quot;5f67974b476e6e2d58c2bfb1&quot;]</code></p>
+<pre><code class="language-graphql">mutation {
+  deleteUsers(ids: [ID]) {
+    id
+  }
+}
+</code></pre>
+<h2>Execution</h2>
+<p>Before you begin writing application code, a great place test queries and mutations is the <a href="https://www.apollographql.com/docs/apollo-server/features/graphql-playground/">GraphQL Playground</a>.
+The default path for Keystone' GraphQl Playground is <code>http://localhost:3000/admin/graphql</code>.
+Here you can execute queries and mutations against the Keystone API without writing any JavaScript.</p>
+<p>Once you have determined the correct query or mutation, you can add this to your application. To do this you will need to submit a <code>POST</code> request to Keystone' API. The default API endpoint is: <code>http://localhost:3000/admin/api</code>.</p>
+<p>In our examples we're going to use the browser's <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">Fetch API</a> to make a <code>POST</code> request.</p>
+<p>We're going to write a query and store it in a variable named <code>GET_ALL_USERS</code>. Once you have a query you can execute this query using a <code>POST</code> request:</p>
+<pre><code class="language-javascript">const GET_ALL_USERS = `
+query GetUsers {
+  allUsers {
+    name
+    id
+  }
+}`;
+
+const data = await fetch('/admin/api', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    query: GET_ALL_USERS,
+  }),
+}).then(result =&gt; result.json());
+</code></pre>
+<p>The result should contain a <code>JSON</code> payload with the results from the query.</p>
+<p>Executing mutations is the same, however we need to pass variables along with the mutation. The key for mutations in the post request is still <code>query</code>. Let's write a mutation called <code>ADD_USER</code>, and pass a <code>variables</code> object along with the mutation in the <code>POST</code> request:</p>
+<pre><code class="language-javascript">const ADD_USER = `
+mutation AddUser($name: String!) {
+  createUser(data: { name: $name }) {
+    name
+    id
+  }
+}`;
+
+const data = await fetch('/admin/api', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    query: ADD_USER,
+    variables: { name: 'Mike' },
+  }),
+}).then(result =&gt; result.json());
+</code></pre>
+<p>A good next step is to write an <code>executeQuery</code> function that accepts a query and variables and returns the results from the API. Take a look at the <code>todo</code> sample application in the <code>cli</code> for examples of this.</p>
+<blockquote>
+<p><strong>Note:</strong> If you have configured <a href="/docs/api/access-control.md">Access Control</a> it can effect the result of some queries.</p>
+</blockquote>
+<h2>Execution on the server</h2>
+<p>In addition to executing queries via the API, you can execute queries and mutations on the server using <a href="/docs/discussions/server-side-graphql.md">the <code>keystone.executeGraphQL()</code> method</a>.</p>
+<h2>Filter, limit and sorting</h2>
+<p>When executing queries and mutations there are a number of ways you can filter, limit and sort items. These include:</p>
+<ul>
+<li><code>where</code></li>
+<li><code>search</code></li>
+<li><code>skip</code></li>
+<li><code>first</code></li>
+<li><code>sortBy</code></li>
+</ul>
+<h3><code>where</code></h3>
+<p>Limit results to items matching the where clause. Where clauses are used to query fields in a keystone list before retrieving data.</p>
+<p>The options available in a where clause depend on the field types.</p>
+<pre><code class="language-graphql">query {
+  allUsers(where: { name_starts_with_i: &quot;A&quot; }) {
+    id
+  }
+}
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> The documentation in the GraphQL Playground provides a complete reference of filters for any field type in your application.</p>
+</blockquote>
+<h4>Relationship <code>where</code> filters</h4>
+<ul>
+<li><code>{relatedList}_every</code>: whereInput</li>
+<li><code>{relatedList}_some</code>: whereInput</li>
+<li><code>{relatedList}_none</code>: whereInput</li>
+<li><code>{relatedList}_is_null</code>: Boolean</li>
+</ul>
+<h4>String <code>where</code> filters</h4>
+<ul>
+<li><code>{Field}:</code> String</li>
+<li><code>{Field}_not</code>: String</li>
+<li><code>{Field}_contains</code>: String</li>
+<li><code>{Field}_not_contains</code>: String</li>
+<li><code>{Field}_starts_with</code>: String</li>
+<li><code>{Field}_not_starts_with</code>: String</li>
+<li><code>{Field}_ends_with</code>: String</li>
+<li><code>{Field}_not_ends_with</code>: String</li>
+<li><code>{Field}_i</code>: String</li>
+<li><code>{Field}_not_i</code>: String</li>
+<li><code>{Field}_contains_i</code>: String</li>
+<li><code>{Field}_not_contains_i</code>: String</li>
+<li><code>{Field}_starts_with_i</code>: String</li>
+<li><code>{Field}_not_starts_with_i</code>: String</li>
+<li><code>{Field}_ends_with_i</code>: String</li>
+<li><code>{Field}_not_ends_with_i</code>: String</li>
+<li><code>{Field}_in</code>: [String]</li>
+<li><code>{Field}_not_in</code>: [String]</li>
+</ul>
+<h4>ID <code>where</code> filters</h4>
+<ul>
+<li><code>{Field}</code>: ID</li>
+<li><code>{Field}_not</code>: ID</li>
+<li><code>{Field}_in</code>: [ID!]</li>
+<li><code>{Field}_not_in</code>: [ID!]</li>
+</ul>
+<h4>Integer <code>where</code> filters</h4>
+<ul>
+<li><code>{Field}</code>: Int</li>
+<li><code>{Field}_not</code>: Int</li>
+<li><code>{Field}_lt</code>: Int</li>
+<li><code>{Field}_lte</code>: Int</li>
+<li><code>{Field}_gt</code>: Int</li>
+<li><code>{Field}_gte</code>: Int</li>
+<li><code>{Field}_in</code>: [Int]</li>
+<li><code>{Field}_not_in</code>: [Int]</li>
+</ul>
+<h4>Operators</h4>
+<p>You can combine multiple where clauses with <code>AND</code> or <code>OR</code> operators.</p>
+<ul>
+<li><code>AND</code>: [whereInput]</li>
+<li><code>OR</code>: [whereInput]</li>
+</ul>
+<pre><code class="language-graphql">query {
+  allUsers(where: { OR: [{ name_starts_with_i: &quot;A&quot; }, { email_starts_with_i: &quot;A&quot; }] }) {
+    id
+  }
+}
+</code></pre>
+<h3><code>search</code></h3>
+<p>Will search the list to limit results. For now, it can search only by <code>name</code> field. The <code>name</code> field must be a <code>Text</code> type.</p>
+<pre><code class="language-graphql">query {
+  allUsers(search: &quot;Mike&quot;) {
+    id
+  }
+}
+</code></pre>
+<h3><code>sortBy</code></h3>
+<p>Order results.</p>
+<p>Each list generates a GraphQL enum called <code>Sort{$listQueryName}By</code> containing possible sorting options based on its orderable fields in the format <code>&lt;field&gt;_&lt;ASC|DESC&gt;</code>. For example, a <code>User</code> list with <code>name</code> and <code>email</code> fields would add the following to the schema:</p>
+<pre><code class="language-graphql">enum SortUsersBy {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  email_ASC
+  email_DESC
+}
+</code></pre>
+<p><code>sortBy</code> accepts one or more of these enum values. If a list of values is provided, sorting is evaluated left-to-right.</p>
+<p>Order by name descending (alphabetical order, A -&gt; Z):</p>
+<pre><code class="language-graphql">query {
+  allUsers(sortBy: name_DESC) {
+    id
+  }
+}
+</code></pre>
+<p>Order by name descending then email ascending:</p>
+<pre><code class="language-graphql title=">query {
+  allUsers(sortBy: [name_DESC, email_ASC]) {
+    id
+  }
+}
+</code></pre>
+<h3><code>first</code></h3>
+<p>Limits the number of items returned from the query. Limits will be applied after <code>skip</code>, <code>sortBy</code>, <code>where</code> and <code>search</code> values are applied.</p>
+<p>If fewer results are available, the number of available results will be returned.</p>
+<pre><code class="language-graphql">query {
+  allUsers(first: 10) {
+    id
+  }
+}
+</code></pre>
+<h3><code>skip</code></h3>
+<p>Skip the number of results specified. Is applied before <code>first</code> parameter, but after <code>sortBy</code>, <code>where</code> and <code>search</code> values.</p>
+<p>If the value of <code>skip</code> is greater than the number of available results, zero results will be returned.</p>
+<pre><code class="language-graphql">query {
+  allUsers(skip: 10) {
+    id
+  }
+}
+</code></pre>
+<h2>Combining query arguments</h2>
+<p>When <code>first</code> and <code>skip</code> are used together with the <code>count</code> from <code>_allUsersMeta</code>, this is sufficient to implement pagination on the list.</p>
+<p>It is important to provide the same <code>where</code> and <code>search</code> arguments to both the <code>allUser</code> and <code>_allUserMeta</code> queries. For example:</p>
+<pre><code class="language-graphql">query {
+  allUsers(search: &quot;a&quot;, skip: 10, first: 10) {
+    id
+  }
+  _allUsersMeta(search: &quot;a&quot;) {
+    count
+  }
+}
+</code></pre>
+<p>When <code>first</code> and <code>skip</code> are used together, skip works as an offset for the <code>first</code> argument. For example<code>(skip:10, first:5)</code> selects results 11 through 15.</p>
+<p>Both <code>skip</code> and <code>first</code> respect the values of the <code>where</code>, <code>search</code> and <code>sortBy</code> arguments.</p>
+<h2>Custom queries and mutations</h2>
+<p>You can add to Keystone's generated schema with custom types, queries, and mutations using the <code>keystone.extendGraphQLSchema()</code> method.</p>
+<pre><code class="language-javascript">keystone.extendGraphQLSchema({
+  types: [{ type: 'type FooBar { foo: Int, bar: Float }' }],
+  queries: [
+    {
+      schema: 'double(x: Int): Int',
+      resolver: (_, { x }) =&gt; 2 * x,
+    },
+  ],
+  mutations: [
+    {
+      schema: 'double(x: Int): Int',
+      resolver: (_, { x }) =&gt; 2 * x,
+    },
+  ],
+});
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Introduction\nsubSection: graphql\norder: 1\n[meta]--\u003e\n\n# GraphQL API Introduction\n\n_Before you begin:_ This guide assumes you have a running instance of Keystone with the GraphQL App configured, and a list with some data to query. (Get started in 5min by running `npx create-keystone-app` and select the `Starter` project)\n\nExamples in this guide will refer to a `Users` list, however the queries, mutations and methods listed here would be the same for any Keystone list.\n\nFor each list, Keystone generates four top level queries. Given the following example:\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n  },\n});\n```\n\n## Queries\n\nKeystone would generate the following queries:\n\n- `allUsers`\n- `_allUsersMeta`\n- `User`\n- `_UsersMeta`\n\n### `allUsers`\n\nRetrieves all items from the `User` list. The `allUsers` query also allows you to search, limit and filter results. See: [Filter, limit and sorting](#filter-limit-and-sorting).\n\n```graphql\nquery {\n  allUsers {\n    id\n  }\n}\n```\n\n### `_allUsersMeta`\n\nRetrieves meta information about items in the `User` list such as a `count` of all items which can be used for pagination. The `_allUsersMeta` query accepts the same [filter, limit and sorting](#filter-limit-and-sorting) parameters as the `allUsers` query.\n\n```graphql\nquery {\n  _allUsersMeta {\n    count\n  }\n}\n```\n\n### `User`\n\nRetrieves a single item from the `User` list. The single entity query accepts a where parameter which must provide an id.\n\n```graphql\nquery {\n  User(where: { id: $id }) {\n    name\n  }\n}\n```\n\n### `_UsersMeta`\n\nRetrieves meta information about the `User` list itself (i.e. not about items in the list) such as access control information. This query accepts no parameters.\n\n## Mutations\n\nFor each list Keystone generates six top level mutations:\n\n- `createUser`\n- `createUsers`\n- `updateUser`\n- `updateUsers`\n- `deleteUser`\n- `deleteUsers`\n\n### `createUser`\n\nAdd a single `User` to the `User` list. Requires a `data` parameter that is an object where keys match the field names in the list definition and the values are the data to create.\n\n```graphql\nmutation {\n  createUser(data: { name: \"Mike\" }) {\n    id\n  }\n}\n```\n\n### `createUsers`\n\nCreates multiple `Users`. Parameters are the same as `createUser` except the data parameter should be an array of objects.\n\n```graphql\nmutation {\n  createUsers(data: [{ data: { name: \"Mike\" } }, { data: { name: \"Maher\" } }]) {\n    id\n    name\n  }\n}\n```\n\n### `updateUser`\n\nUpdate a `User` by ID. Accepts an `id` parameter that should match the id of a `User` item. The object should contain keys matching the field definition of the list. `updateUser` performs a _partial update_, meaning only keys that you wish to update need to be provided.\n\n```graphql\nmutation {\n  updateUser(id: ID, data: { name: \"Simon\" }) {\n    id\n  }\n}\n```\n\n### `updateUsers`\n\nUpdate multiple `Users` by ID. Accepts a single data parameter that contains an array of objects. The object parameters are the same as `createUser` and should contain an `id` and nested `data` parameter with the field data.\n\n```graphql\nmutation {\n  updateUsers(data: [{ id: ID, data: { name: \"Simon\" } }]) {\n    id\n  }\n}\n```\n\n### `deleteUser`\n\nDelete a single Entity by ID. Accepts a single parameter where the `id` matches a `User` id.\n\n```graphql\nmutation {\n  deleteUser(id: ID) {\n    id\n  }\n}\n```\n\n### `deleteUsers`\n\nDelete multiple entities by ID. Similar to `deleteUser` where the `id` parameter is an array of ids.\nYou can add more IDs like this `[ID1, ID2]` and don't forget to write the IDs in string format `\"\"` like this `[\"5f67974b476e6e2d58c2bfb0\", \"5f67974b476e6e2d58c2bfb1\"]`\n\n```graphql\nmutation {\n  deleteUsers(ids: [ID]) {\n    id\n  }\n}\n```\n\n## Execution\n\nBefore you begin writing application code, a great place test queries and mutations is the [GraphQL Playground](https://www.apollographql.com/docs/apollo-server/features/graphql-playground/).\nThe default path for Keystone' GraphQl Playground is `http://localhost:3000/admin/graphql`.\nHere you can execute queries and mutations against the Keystone API without writing any JavaScript.\n\nOnce you have determined the correct query or mutation, you can add this to your application. To do this you will need to submit a `POST` request to Keystone' API. The default API endpoint is: `http://localhost:3000/admin/api`.\n\nIn our examples we're going to use the browser's [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) to make a `POST` request.\n\nWe're going to write a query and store it in a variable named `GET_ALL_USERS`. Once you have a query you can execute this query using a `POST` request:\n\n```javascript\nconst GET_ALL_USERS = `\nquery GetUsers {\n  allUsers {\n    name\n    id\n  }\n}`;\n\nconst data = await fetch('/admin/api', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n  },\n  body: JSON.stringify({\n    query: GET_ALL_USERS,\n  }),\n}).then(result =\u003e result.json());\n```\n\nThe result should contain a `JSON` payload with the results from the query.\n\nExecuting mutations is the same, however we need to pass variables along with the mutation. The key for mutations in the post request is still `query`. Let's write a mutation called `ADD_USER`, and pass a `variables` object along with the mutation in the `POST` request:\n\n```javascript\nconst ADD_USER = `\nmutation AddUser($name: String!) {\n  createUser(data: { name: $name }) {\n    name\n    id\n  }\n}`;\n\nconst data = await fetch('/admin/api', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n  },\n  body: JSON.stringify({\n    query: ADD_USER,\n    variables: { name: 'Mike' },\n  }),\n}).then(result =\u003e result.json());\n```\n\nA good next step is to write an `executeQuery` function that accepts a query and variables and returns the results from the API. Take a look at the `todo` sample application in the `cli` for examples of this.\n\n\u003e **Note:** If you have configured [Access Control](/docs/api/access-control.md) it can effect the result of some queries.\n\n## Execution on the server\n\nIn addition to executing queries via the API, you can execute queries and mutations on the server using [the `keystone.executeGraphQL()` method](/docs/discussions/server-side-graphql.md).\n\n## Filter, limit and sorting\n\nWhen executing queries and mutations there are a number of ways you can filter, limit and sort items. These include:\n\n- `where`\n- `search`\n- `skip`\n- `first`\n- `sortBy`\n\n### `where`\n\nLimit results to items matching the where clause. Where clauses are used to query fields in a keystone list before retrieving data.\n\nThe options available in a where clause depend on the field types.\n\n```graphql\nquery {\n  allUsers(where: { name_starts_with_i: \"A\" }) {\n    id\n  }\n}\n```\n\n\u003e **Note:** The documentation in the GraphQL Playground provides a complete reference of filters for any field type in your application.\n\n#### Relationship `where` filters\n\n- `{relatedList}_every`: whereInput\n- `{relatedList}_some`: whereInput\n- `{relatedList}_none`: whereInput\n- `{relatedList}_is_null`: Boolean\n\n#### String `where` filters\n\n- `{Field}:` String\n- `{Field}_not`: String\n- `{Field}_contains`: String\n- `{Field}_not_contains`: String\n- `{Field}_starts_with`: String\n- `{Field}_not_starts_with`: String\n- `{Field}_ends_with`: String\n- `{Field}_not_ends_with`: String\n- `{Field}_i`: String\n- `{Field}_not_i`: String\n- `{Field}_contains_i`: String\n- `{Field}_not_contains_i`: String\n- `{Field}_starts_with_i`: String\n- `{Field}_not_starts_with_i`: String\n- `{Field}_ends_with_i`: String\n- `{Field}_not_ends_with_i`: String\n- `{Field}_in`: [String]\n- `{Field}_not_in`: [String]\n\n#### ID `where` filters\n\n- `{Field}`: ID\n- `{Field}_not`: ID\n- `{Field}_in`: [ID!]\n- `{Field}_not_in`: [ID!]\n\n#### Integer `where` filters\n\n- `{Field}`: Int\n- `{Field}_not`: Int\n- `{Field}_lt`: Int\n- `{Field}_lte`: Int\n- `{Field}_gt`: Int\n- `{Field}_gte`: Int\n- `{Field}_in`: [Int]\n- `{Field}_not_in`: [Int]\n\n#### Operators\n\nYou can combine multiple where clauses with `AND` or `OR` operators.\n\n- `AND`: [whereInput]\n- `OR`: [whereInput]\n\n```graphql\nquery {\n  allUsers(where: { OR: [{ name_starts_with_i: \"A\" }, { email_starts_with_i: \"A\" }] }) {\n    id\n  }\n}\n```\n\n### `search`\n\nWill search the list to limit results. For now, it can search only by `name` field. The `name` field must be a `Text` type.\n\n```graphql\nquery {\n  allUsers(search: \"Mike\") {\n    id\n  }\n}\n```\n\n### `sortBy`\n\nOrder results.\n\nEach list generates a GraphQL enum called `Sort{$listQueryName}By` containing possible sorting options based on its orderable fields in the format `\u003cfield\u003e_\u003cASC|DESC\u003e`. For example, a `User` list with `name` and `email` fields would add the following to the schema:\n\n```graphql\nenum SortUsersBy {\n  id_ASC\n  id_DESC\n  name_ASC\n  name_DESC\n  email_ASC\n  email_DESC\n}\n```\n\n`sortBy` accepts one or more of these enum values. If a list of values is provided, sorting is evaluated left-to-right.\n\nOrder by name descending (alphabetical order, A -\u003e Z):\n\n```graphql\nquery {\n  allUsers(sortBy: name_DESC) {\n    id\n  }\n}\n```\n\nOrder by name descending then email ascending:\n\n```graphql title=\nquery {\n  allUsers(sortBy: [name_DESC, email_ASC]) {\n    id\n  }\n}\n```\n\n### `first`\n\nLimits the number of items returned from the query. Limits will be applied after `skip`, `sortBy`, `where` and `search` values are applied.\n\nIf fewer results are available, the number of available results will be returned.\n\n```graphql\nquery {\n  allUsers(first: 10) {\n    id\n  }\n}\n```\n\n### `skip`\n\nSkip the number of results specified. Is applied before `first` parameter, but after `sortBy`, `where` and `search` values.\n\nIf the value of `skip` is greater than the number of available results, zero results will be returned.\n\n```graphql\nquery {\n  allUsers(skip: 10) {\n    id\n  }\n}\n```\n\n## Combining query arguments\n\nWhen `first` and `skip` are used together with the `count` from `_allUsersMeta`, this is sufficient to implement pagination on the list.\n\nIt is important to provide the same `where` and `search` arguments to both the `allUser` and `_allUserMeta` queries. For example:\n\n```graphql\nquery {\n  allUsers(search: \"a\", skip: 10, first: 10) {\n    id\n  }\n  _allUsersMeta(search: \"a\") {\n    count\n  }\n}\n```\n\nWhen `first` and `skip` are used together, skip works as an offset for the `first` argument. For example`(skip:10, first:5)` selects results 11 through 15.\n\nBoth `skip` and `first` respect the values of the `where`, `search` and `sortBy` arguments.\n\n## Custom queries and mutations\n\nYou can add to Keystone's generated schema with custom types, queries, and mutations using the `keystone.extendGraphQLSchema()` method.\n\n```javascript\nkeystone.extendGraphQLSchema({\n  types: [{ type: 'type FooBar { foo: Int, bar: Float }' }],\n  queries: [\n    {\n      schema: 'double(x: Int): Int',\n      resolver: (_, { x }) =\u003e 2 * x,\n    },\n  ],\n  mutations: [\n    {\n      schema: 'double(x: Int): Int',\n      resolver: (_, { x }) =\u003e 2 * x,\n    },\n  ],\n});\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_intro-to-graphql.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

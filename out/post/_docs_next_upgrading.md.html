@@ -1,0 +1,163 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<h2>description: Learn how to upgrade Next.js.</h2>
+<h1>Upgrade Guide</h1>
+<h2>Upgrading from version 9 to 10</h2>
+<p>There were no breaking changes between version 9 and 10.</p>
+<p>To upgrade run the following command:</p>
+<pre><code>npm install next@latest
+</code></pre>
+<h2>Upgrading from version 8 to 9</h2>
+<h3>Preamble</h3>
+<h4>Production Deployment on Vercel</h4>
+<p>If you previously configured <code>routes</code> in your <code>vercel.json</code> file for dynamic routes, these rules can be removed when leveraging Next.js 9's new <a href="/docs/routing/dynamic-routes.md">Dynamic Routing feature</a>.</p>
+<p>Next.js 9's dynamic routes are <strong>automatically configured on <a href="https://vercel.com/">Vercel</a></strong> and do not require any <code>vercel.json</code> customization.</p>
+<p>You can read more about <a href="/docs/routing/dynamic-routes.md">Dynamic Routing here</a>.</p>
+<h4>Check your Custom <App> (<code>pages/_app.js</code>)</h4>
+<p>If you previously copied the <a href="/docs/advanced-features/custom-app.md">Custom <code>&lt;App&gt;</code></a> example, you may be able to remove your <code>getInitialProps</code>.</p>
+<p>Removing <code>getInitialProps</code> from <code>pages/_app.js</code> (when possible) is important to leverage new Next.js features!</p>
+<p>The following <code>getInitialProps</code> does nothing and may be removed:</p>
+<pre><code class="language-js">class MyApp extends App {
+  // Remove me, I do nothing!
+  static async getInitialProps({ Component, ctx }) {
+    let pageProps = {}
+
+    if (Component.getInitialProps) {
+      pageProps = await Component.getInitialProps(ctx)
+    }
+
+    return { pageProps }
+  }
+
+  render() {
+    // ... etc
+  }
+}
+</code></pre>
+<h3>Breaking Changes</h3>
+<h4><code>@zeit/next-typescript</code> is no longer necessary</h4>
+<p>Next.js will now ignore usage <code>@zeit/next-typescript</code> and warn you to remove it. Please remove this plugin from your <code>next.config.js</code>.</p>
+<p>Remove references to <code>@zeit/next-typescript/babel</code> from your custom <code>.babelrc</code> (if present).</p>
+<p>Usage of <a href="https://github.com/Realytics/fork-ts-checker-webpack-plugin/issues"><code>fork-ts-checker-webpack-plugin</code></a> should also be removed from your <code>next.config.js</code>.</p>
+<p>TypeScript Definitions are published with the <code>next</code> package, so you need to uninstall <code>@types/next</code> as they would conflict.</p>
+<p>The following types are different:</p>
+<blockquote>
+<p>This list was created by the community to help you upgrade, if you find other differences please send a pull-request to this list to help other users.</p>
+</blockquote>
+<p>From:</p>
+<pre><code class="language-tsx">import { NextContext } from 'next'
+import { NextAppContext, DefaultAppIProps } from 'next/app'
+import { NextDocumentContext, DefaultDocumentIProps } from 'next/document'
+</code></pre>
+<p>to</p>
+<pre><code class="language-tsx">import { NextPageContext } from 'next'
+import { AppContext, AppInitialProps } from 'next/app'
+import { DocumentContext, DocumentInitialProps } from 'next/document'
+</code></pre>
+<h4>The <code>config</code> key is now a special export on a page</h4>
+<p>You may no longer export a custom variable named <code>config</code> from a page (i.e. <code>export { config }</code> / <code>export const config ...</code>).
+This exported variable is now used to specify page-level Next.js configuration like Opt-in AMP and API Route features.</p>
+<p>You must rename a non-Next.js-purposed <code>config</code> export to something different.</p>
+<h4><code>next/dynamic</code> no longer renders &quot;loading...&quot; by default while loading</h4>
+<p>Dynamic components will not render anything by default while loading. You can still customize this behavior by setting the <code>loading</code> property:</p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const DynamicComponentWithCustomLoading = dynamic(
+  () =&gt; import('../components/hello2'),
+  {
+    loading: () =&gt; &lt;p&gt;Loading&lt;/p&gt;,
+  }
+)
+</code></pre>
+<h4><code>withAmp</code> has been removed in favor of an exported configuration object</h4>
+<p>Next.js now has the concept of page-level configuration, so the <code>withAmp</code> higher-order component has been removed for consistency.</p>
+<p>This change can be <strong>automatically migrated by running the following commands in the root of your Next.js project:</strong></p>
+<pre><code class="language-bash">curl -L https://github.com/vercel/next-codemod/archive/master.tar.gz | tar -xz --strip=2 next-codemod-master/transforms/withamp-to-config.js npx jscodeshift -t ./withamp-to-config.js pages/**/*.js
+</code></pre>
+<p>To perform this migration by hand, or view what the codemod will produce, see below:</p>
+<p><strong>Before</strong></p>
+<pre><code class="language-jsx">import { withAmp } from 'next/amp'
+
+function Home() {
+  return &lt;h1&gt;My AMP Page&lt;/h1&gt;
+}
+
+export default withAmp(Home)
+// or
+export default withAmp(Home, { hybrid: true })
+</code></pre>
+<p><strong>After</strong></p>
+<pre><code class="language-jsx">export default function Home() {
+  return &lt;h1&gt;My AMP Page&lt;/h1&gt;
+}
+
+export const config = {
+  amp: true,
+  // or
+  amp: 'hybrid',
+}
+</code></pre>
+<h4><code>next export</code> no longer exports pages as <code>index.html</code></h4>
+<p>Previously, exporting <code>pages/about.js</code> would result in <code>out/about/index.html</code>. This behavior has been changed to result in <code>out/about.html</code>.</p>
+<p>You can revert to the previous behavior by creating a <code>next.config.js</code> with the following content:</p>
+<pre><code class="language-js">// next.config.js
+module.exports = {
+  trailingSlash: true,
+}
+</code></pre>
+<h4><code>./pages/api/</code> is treated differently</h4>
+<p>Pages in <code>./pages/api/</code> are now considered <a href="https://nextjs.org/blog/next-9#api-routes">API Routes</a>.
+Pages in this directory will no longer contain a client-side bundle.</p>
+<h2>Deprecated Features</h2>
+<h4><code>next/dynamic</code> has deprecated loading multiple modules at once</h4>
+<p>The ability to load multiple modules at once has been deprecated in <code>next/dynamic</code> to be closer to React's implementation (<code>React.lazy</code> and <code>Suspense</code>).</p>
+<p>Updating code that relies on this behavior is relatively straightforward! We've provided an example of a before/after to help you migrate your application:</p>
+<p><strong>Before</strong></p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const HelloBundle = dynamic({
+  modules: () =&gt; {
+    const components = {
+      Hello1: () =&gt; import('../components/hello1').then((m) =&gt; m.default),
+      Hello2: () =&gt; import('../components/hello2').then((m) =&gt; m.default),
+    }
+
+    return components
+  },
+  render: (props, { Hello1, Hello2 }) =&gt; (
+    &lt;div&gt;
+      &lt;h1&gt;{props.title}&lt;/h1&gt;
+      &lt;Hello1 /&gt;
+      &lt;Hello2 /&gt;
+    &lt;/div&gt;
+  ),
+})
+
+function DynamicBundle() {
+  return &lt;HelloBundle title=&quot;Dynamic Bundle&quot; /&gt;
+}
+
+export default DynamicBundle
+</code></pre>
+<p><strong>After</strong></p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const Hello1 = dynamic(() =&gt; import('../components/hello1'))
+const Hello2 = dynamic(() =&gt; import('../components/hello2'))
+
+function HelloBundle({ title }) {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{title}&lt;/h1&gt;
+      &lt;Hello1 /&gt;
+      &lt;Hello2 /&gt;
+    &lt;/div&gt;
+  )
+}
+
+function DynamicBundle() {
+  return &lt;HelloBundle title=&quot;Dynamic Bundle&quot; /&gt;
+}
+
+export default DynamicBundle
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ndescription: Learn how to upgrade Next.js.\n---\n\n# Upgrade Guide\n\n## Upgrading from version 9 to 10\n\nThere were no breaking changes between version 9 and 10.\n\nTo upgrade run the following command:\n\n```\nnpm install next@latest\n```\n\n## Upgrading from version 8 to 9\n\n### Preamble\n\n#### Production Deployment on Vercel\n\nIf you previously configured `routes` in your `vercel.json` file for dynamic routes, these rules can be removed when leveraging Next.js 9's new [Dynamic Routing feature](/docs/routing/dynamic-routes.md).\n\nNext.js 9's dynamic routes are **automatically configured on [Vercel](https://vercel.com/)** and do not require any `vercel.json` customization.\n\nYou can read more about [Dynamic Routing here](/docs/routing/dynamic-routes.md).\n\n#### Check your Custom \u003cApp\u003e (`pages/_app.js`)\n\nIf you previously copied the [Custom `\u003cApp\u003e`](/docs/advanced-features/custom-app.md) example, you may be able to remove your `getInitialProps`.\n\nRemoving `getInitialProps` from `pages/_app.js` (when possible) is important to leverage new Next.js features!\n\nThe following `getInitialProps` does nothing and may be removed:\n\n```js\nclass MyApp extends App {\n  // Remove me, I do nothing!\n  static async getInitialProps({ Component, ctx }) {\n    let pageProps = {}\n\n    if (Component.getInitialProps) {\n      pageProps = await Component.getInitialProps(ctx)\n    }\n\n    return { pageProps }\n  }\n\n  render() {\n    // ... etc\n  }\n}\n```\n\n### Breaking Changes\n\n#### `@zeit/next-typescript` is no longer necessary\n\nNext.js will now ignore usage `@zeit/next-typescript` and warn you to remove it. Please remove this plugin from your `next.config.js`.\n\nRemove references to `@zeit/next-typescript/babel` from your custom `.babelrc` (if present).\n\nUsage of [`fork-ts-checker-webpack-plugin`](https://github.com/Realytics/fork-ts-checker-webpack-plugin/issues) should also be removed from your `next.config.js`.\n\nTypeScript Definitions are published with the `next` package, so you need to uninstall `@types/next` as they would conflict.\n\nThe following types are different:\n\n\u003e This list was created by the community to help you upgrade, if you find other differences please send a pull-request to this list to help other users.\n\nFrom:\n\n```tsx\nimport { NextContext } from 'next'\nimport { NextAppContext, DefaultAppIProps } from 'next/app'\nimport { NextDocumentContext, DefaultDocumentIProps } from 'next/document'\n```\n\nto\n\n```tsx\nimport { NextPageContext } from 'next'\nimport { AppContext, AppInitialProps } from 'next/app'\nimport { DocumentContext, DocumentInitialProps } from 'next/document'\n```\n\n#### The `config` key is now a special export on a page\n\nYou may no longer export a custom variable named `config` from a page (i.e. `export { config }` / `export const config ...`).\nThis exported variable is now used to specify page-level Next.js configuration like Opt-in AMP and API Route features.\n\nYou must rename a non-Next.js-purposed `config` export to something different.\n\n#### `next/dynamic` no longer renders \"loading...\" by default while loading\n\nDynamic components will not render anything by default while loading. You can still customize this behavior by setting the `loading` property:\n\n```jsx\nimport dynamic from 'next/dynamic'\n\nconst DynamicComponentWithCustomLoading = dynamic(\n  () =\u003e import('../components/hello2'),\n  {\n    loading: () =\u003e \u003cp\u003eLoading\u003c/p\u003e,\n  }\n)\n```\n\n#### `withAmp` has been removed in favor of an exported configuration object\n\nNext.js now has the concept of page-level configuration, so the `withAmp` higher-order component has been removed for consistency.\n\nThis change can be **automatically migrated by running the following commands in the root of your Next.js project:**\n\n```bash\ncurl -L https://github.com/vercel/next-codemod/archive/master.tar.gz | tar -xz --strip=2 next-codemod-master/transforms/withamp-to-config.js npx jscodeshift -t ./withamp-to-config.js pages/**/*.js\n```\n\nTo perform this migration by hand, or view what the codemod will produce, see below:\n\n**Before**\n\n```jsx\nimport { withAmp } from 'next/amp'\n\nfunction Home() {\n  return \u003ch1\u003eMy AMP Page\u003c/h1\u003e\n}\n\nexport default withAmp(Home)\n// or\nexport default withAmp(Home, { hybrid: true })\n```\n\n**After**\n\n```jsx\nexport default function Home() {\n  return \u003ch1\u003eMy AMP Page\u003c/h1\u003e\n}\n\nexport const config = {\n  amp: true,\n  // or\n  amp: 'hybrid',\n}\n```\n\n#### `next export` no longer exports pages as `index.html`\n\nPreviously, exporting `pages/about.js` would result in `out/about/index.html`. This behavior has been changed to result in `out/about.html`.\n\nYou can revert to the previous behavior by creating a `next.config.js` with the following content:\n\n```js\n// next.config.js\nmodule.exports = {\n  trailingSlash: true,\n}\n```\n\n#### `./pages/api/` is treated differently\n\nPages in `./pages/api/` are now considered [API Routes](https://nextjs.org/blog/next-9#api-routes).\nPages in this directory will no longer contain a client-side bundle.\n\n## Deprecated Features\n\n#### `next/dynamic` has deprecated loading multiple modules at once\n\nThe ability to load multiple modules at once has been deprecated in `next/dynamic` to be closer to React's implementation (`React.lazy` and `Suspense`).\n\nUpdating code that relies on this behavior is relatively straightforward! We've provided an example of a before/after to help you migrate your application:\n\n**Before**\n\n```jsx\nimport dynamic from 'next/dynamic'\n\nconst HelloBundle = dynamic({\n  modules: () =\u003e {\n    const components = {\n      Hello1: () =\u003e import('../components/hello1').then((m) =\u003e m.default),\n      Hello2: () =\u003e import('../components/hello2').then((m) =\u003e m.default),\n    }\n\n    return components\n  },\n  render: (props, { Hello1, Hello2 }) =\u003e (\n    \u003cdiv\u003e\n      \u003ch1\u003e{props.title}\u003c/h1\u003e\n      \u003cHello1 /\u003e\n      \u003cHello2 /\u003e\n    \u003c/div\u003e\n  ),\n})\n\nfunction DynamicBundle() {\n  return \u003cHelloBundle title=\"Dynamic Bundle\" /\u003e\n}\n\nexport default DynamicBundle\n```\n\n**After**\n\n```jsx\nimport dynamic from 'next/dynamic'\n\nconst Hello1 = dynamic(() =\u003e import('../components/hello1'))\nconst Hello2 = dynamic(() =\u003e import('../components/hello2'))\n\nfunction HelloBundle({ title }) {\n  return (\n    \u003cdiv\u003e\n      \u003ch1\u003e{title}\u003c/h1\u003e\n      \u003cHello1 /\u003e\n      \u003cHello2 /\u003e\n    \u003c/div\u003e\n  )\n}\n\nfunction DynamicBundle() {\n  return \u003cHelloBundle title=\"Dynamic Bundle\" /\u003e\n}\n\nexport default DynamicBundle\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_next_upgrading.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

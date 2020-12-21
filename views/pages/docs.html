@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <%- include('../partials/head.html') %>
+    <title>Tạo Cửa Hàng Bán Lẻ Online</title>
+    <meta
+      name="description"
+      content="Làm hài lòng khách hàng của bạn. Đơn giản để tạo lập và phát triển."
+    />
+    <meta
+      property="og:image"
+      content="/assets/img/Personal%20site-cuate.svg?h=8c2ed189e86078111fc282bd9a3c5f7e"
+    />
+  </head>
+
+  <body>
+    <%- include('../partials/header.html') %>
+    <main>
+      <section class="container">
+        <div class="row">
+          <%tree.map(platform => {%>
+          <div class="col-12 col-md-3">
+            <h4  class="text-primary"><%=platform.name%></h4>
+            <%platform.categories.map(category => {%>
+            <h5><%=category.name%></h5>
+            <ul class="list-unstyled">
+              <%category.posts.map(post => {%>
+              <li>
+                <h6 class="ml-3">
+                  <a
+                    href="<%=post.url%>"
+                    class="<%=post.isActive?`text-primary`:``%> text-body"
+                    ><%=post.name%></a
+                  >
+                </h6>
+              </li>
+              <%})%>
+            </ul>
+            <%})%>
+          </div>
+          <%})%>
+        </div>
+      </section>
+    </main>
+    <%- include('../partials/footer.html') %>
+  </body>
+</html>

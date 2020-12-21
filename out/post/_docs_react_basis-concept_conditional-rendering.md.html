@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: conditional-rendering
+title: Conditional Rendering
+permalink: docs/conditional-rendering.html
+prev: handling-events.html
+next: lists-and-keys.html
+redirect_from:</p>
+<ul>
+<li>&quot;tips/false-in-jsx.html&quot;</li>
+</ul>
+<hr>
+<p>In React, you can create distinct components that encapsulate behavior you need. Then, you can render only some of them, depending on the state of your application.</p>
+<p>Conditional rendering in React works the same way conditions work in JavaScript. Use JavaScript operators like <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else"><code>if</code></a> or the <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Conditional_Operator">conditional operator</a> to create elements representing the current state, and let React update the UI to match them.</p>
+<p>Consider these two components:</p>
+<pre><code class="language-js">function UserGreeting(props) {
+  return &lt;h1&gt;Welcome back!&lt;/h1&gt;;
+}
+
+function GuestGreeting(props) {
+  return &lt;h1&gt;Please sign up.&lt;/h1&gt;;
+}
+</code></pre>
+<p>We'll create a <code>Greeting</code> component that displays either of these components depending on whether a user is logged in:</p>
+<pre><code class="language-javascript{3-7,11,12}">function Greeting(props) {
+  const isLoggedIn = props.isLoggedIn;
+  if (isLoggedIn) {
+    return &lt;UserGreeting /&gt;;
+  }
+  return &lt;GuestGreeting /&gt;;
+}
+
+ReactDOM.render(
+  // Try changing to isLoggedIn={true}:
+  &lt;Greeting isLoggedIn={false} /&gt;,
+  document.getElementById('root')
+);
+</code></pre>
+<p><a href="https://codepen.io/gaearon/pen/ZpVxNq?editors=0011"><strong>Try it on CodePen</strong></a></p>
+<p>This example renders a different greeting depending on the value of <code>isLoggedIn</code> prop.</p>
+<h3>Element Variables {#element-variables}</h3>
+<p>You can use variables to store elements. This can help you conditionally render a part of the component while the rest of the output doesn't change.</p>
+<p>Consider these two new components representing Logout and Login buttons:</p>
+<pre><code class="language-js">function LoginButton(props) {
+  return (
+    &lt;button onClick={props.onClick}&gt;
+      Login
+    &lt;/button&gt;
+  );
+}
+
+function LogoutButton(props) {
+  return (
+    &lt;button onClick={props.onClick}&gt;
+      Logout
+    &lt;/button&gt;
+  );
+}
+</code></pre>
+<p>In the example below, we will create a <a href="/docs/state-and-lifecycle.html#adding-local-state-to-a-class">stateful component</a> called <code>LoginControl</code>.</p>
+<p>It will render either <code>&lt;LoginButton /&gt;</code> or <code>&lt;LogoutButton /&gt;</code> depending on its current state. It will also render a <code>&lt;Greeting /&gt;</code> from the previous example:</p>
+<pre><code class="language-javascript{20-25,29,30}">class LoginControl extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleLoginClick = this.handleLoginClick.bind(this);
+    this.handleLogoutClick = this.handleLogoutClick.bind(this);
+    this.state = {isLoggedIn: false};
+  }
+
+  handleLoginClick() {
+    this.setState({isLoggedIn: true});
+  }
+
+  handleLogoutClick() {
+    this.setState({isLoggedIn: false});
+  }
+
+  render() {
+    const isLoggedIn = this.state.isLoggedIn;
+    let button;
+
+    if (isLoggedIn) {
+      button = &lt;LogoutButton onClick={this.handleLogoutClick} /&gt;;
+    } else {
+      button = &lt;LoginButton onClick={this.handleLoginClick} /&gt;;
+    }
+
+    return (
+      &lt;div&gt;
+        &lt;Greeting isLoggedIn={isLoggedIn} /&gt;
+        {button}
+      &lt;/div&gt;
+    );
+  }
+}
+
+ReactDOM.render(
+  &lt;LoginControl /&gt;,
+  document.getElementById('root')
+);
+</code></pre>
+<p><a href="https://codepen.io/gaearon/pen/QKzAgB?editors=0010"><strong>Try it on CodePen</strong></a></p>
+<p>While declaring a variable and using an <code>if</code> statement is a fine way to conditionally render a component, sometimes you might want to use a shorter syntax. There are a few ways to inline conditions in JSX, explained below.</p>
+<h3>Inline If with Logical &amp;&amp; Operator {#inline-if-with-logical--operator}</h3>
+<p>You may <a href="/docs/introducing-jsx.html#embedding-expressions-in-jsx">embed expressions in JSX</a> by wrapping them in curly braces. This includes the JavaScript logical <code>&amp;&amp;</code> operator. It can be handy for conditionally including an element:</p>
+<pre><code class="language-js{6-10}">function Mailbox(props) {
+  const unreadMessages = props.unreadMessages;
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Hello!&lt;/h1&gt;
+      {unreadMessages.length &gt; 0 &amp;&amp;
+        &lt;h2&gt;
+          You have {unreadMessages.length} unread messages.
+        &lt;/h2&gt;
+      }
+    &lt;/div&gt;
+  );
+}
+
+const messages = ['React', 'Re: React', 'Re:Re: React'];
+ReactDOM.render(
+  &lt;Mailbox unreadMessages={messages} /&gt;,
+  document.getElementById('root')
+);
+</code></pre>
+<p><a href="https://codepen.io/gaearon/pen/ozJddz?editors=0010"><strong>Try it on CodePen</strong></a></p>
+<p>It works because in JavaScript, <code>true &amp;&amp; expression</code> always evaluates to <code>expression</code>, and <code>false &amp;&amp; expression</code> always evaluates to <code>false</code>.</p>
+<p>Therefore, if the condition is <code>true</code>, the element right after <code>&amp;&amp;</code> will appear in the output. If it is <code>false</code>, React will ignore and skip it.</p>
+<p>Note that returning a falsy expression will still cause the element after <code>&amp;&amp;</code> to be skipped but will return the falsy expression. In the example below, <code>&lt;div&gt;0&lt;/div&gt;</code> will be returned by the render method.</p>
+<pre><code class="language-javascript{2,5}">render() {
+  const count = 0;
+  return (
+    &lt;div&gt;
+      { count &amp;&amp; &lt;h1&gt;Messages: {count}&lt;/h1&gt;}
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h3>Inline If-Else with Conditional Operator {#inline-if-else-with-conditional-operator}</h3>
+<p>Another method for conditionally rendering elements inline is to use the JavaScript conditional operator <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Conditional_Operator"><code>condition ? true : false</code></a>.</p>
+<p>In the example below, we use it to conditionally render a small block of text.</p>
+<pre><code class="language-javascript{5}">render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  return (
+    &lt;div&gt;
+      The user is &lt;b&gt;{isLoggedIn ? 'currently' : 'not'}&lt;/b&gt; logged in.
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>It can also be used for larger expressions although it is less obvious what's going on:</p>
+<pre><code class="language-js{5,7,9}">render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  return (
+    &lt;div&gt;
+      {isLoggedIn
+        ? &lt;LogoutButton onClick={this.handleLogoutClick} /&gt;
+        : &lt;LoginButton onClick={this.handleLoginClick} /&gt;
+      }
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>Just like in JavaScript, it is up to you to choose an appropriate style based on what you and your team consider more readable. Also remember that whenever conditions become too complex, it might be a good time to <a href="/docs/components-and-props.html#extracting-components">extract a component</a>.</p>
+<h3>Preventing Component from Rendering {#preventing-component-from-rendering}</h3>
+<p>In rare cases you might want a component to hide itself even though it was rendered by another component. To do this return <code>null</code> instead of its render output.</p>
+<p>In the example below, the <code>&lt;WarningBanner /&gt;</code> is rendered depending on the value of the prop called <code>warn</code>. If the value of the prop is <code>false</code>, then the component does not render:</p>
+<pre><code class="language-javascript{2-4,29}">function WarningBanner(props) {
+  if (!props.warn) {
+    return null;
+  }
+
+  return (
+    &lt;div className=&quot;warning&quot;&gt;
+      Warning!
+    &lt;/div&gt;
+  );
+}
+
+class Page extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {showWarning: true};
+    this.handleToggleClick = this.handleToggleClick.bind(this);
+  }
+
+  handleToggleClick() {
+    this.setState(state =&gt; ({
+      showWarning: !state.showWarning
+    }));
+  }
+
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;WarningBanner warn={this.state.showWarning} /&gt;
+        &lt;button onClick={this.handleToggleClick}&gt;
+          {this.state.showWarning ? 'Hide' : 'Show'}
+        &lt;/button&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+
+ReactDOM.render(
+  &lt;Page /&gt;,
+  document.getElementById('root')
+);
+</code></pre>
+<p><a href="https://codepen.io/gaearon/pen/Xjoqwm?editors=0010"><strong>Try it on CodePen</strong></a></p>
+<p>Returning <code>null</code> from a component's <code>render</code> method does not affect the firing of the component's lifecycle methods. For instance <code>componentDidUpdate</code> will still be called.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: conditional-rendering\ntitle: Conditional Rendering\npermalink: docs/conditional-rendering.html\nprev: handling-events.html\nnext: lists-and-keys.html\nredirect_from:\n  - \"tips/false-in-jsx.html\"\n---\n\nIn React, you can create distinct components that encapsulate behavior you need. Then, you can render only some of them, depending on the state of your application.\n\nConditional rendering in React works the same way conditions work in JavaScript. Use JavaScript operators like [`if`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else) or the [conditional operator](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Conditional_Operator) to create elements representing the current state, and let React update the UI to match them.\n\nConsider these two components:\n\n```js\nfunction UserGreeting(props) {\n  return \u003ch1\u003eWelcome back!\u003c/h1\u003e;\n}\n\nfunction GuestGreeting(props) {\n  return \u003ch1\u003ePlease sign up.\u003c/h1\u003e;\n}\n```\n\nWe'll create a `Greeting` component that displays either of these components depending on whether a user is logged in:\n\n```javascript{3-7,11,12}\nfunction Greeting(props) {\n  const isLoggedIn = props.isLoggedIn;\n  if (isLoggedIn) {\n    return \u003cUserGreeting /\u003e;\n  }\n  return \u003cGuestGreeting /\u003e;\n}\n\nReactDOM.render(\n  // Try changing to isLoggedIn={true}:\n  \u003cGreeting isLoggedIn={false} /\u003e,\n  document.getElementById('root')\n);\n```\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/ZpVxNq?editors=0011)\n\nThis example renders a different greeting depending on the value of `isLoggedIn` prop.\n\n### Element Variables {#element-variables}\n\nYou can use variables to store elements. This can help you conditionally render a part of the component while the rest of the output doesn't change.\n\nConsider these two new components representing Logout and Login buttons:\n\n```js\nfunction LoginButton(props) {\n  return (\n    \u003cbutton onClick={props.onClick}\u003e\n      Login\n    \u003c/button\u003e\n  );\n}\n\nfunction LogoutButton(props) {\n  return (\n    \u003cbutton onClick={props.onClick}\u003e\n      Logout\n    \u003c/button\u003e\n  );\n}\n```\n\nIn the example below, we will create a [stateful component](/docs/state-and-lifecycle.html#adding-local-state-to-a-class) called `LoginControl`.\n\nIt will render either `\u003cLoginButton /\u003e` or `\u003cLogoutButton /\u003e` depending on its current state. It will also render a `\u003cGreeting /\u003e` from the previous example:\n\n```javascript{20-25,29,30}\nclass LoginControl extends React.Component {\n  constructor(props) {\n    super(props);\n    this.handleLoginClick = this.handleLoginClick.bind(this);\n    this.handleLogoutClick = this.handleLogoutClick.bind(this);\n    this.state = {isLoggedIn: false};\n  }\n\n  handleLoginClick() {\n    this.setState({isLoggedIn: true});\n  }\n\n  handleLogoutClick() {\n    this.setState({isLoggedIn: false});\n  }\n\n  render() {\n    const isLoggedIn = this.state.isLoggedIn;\n    let button;\n\n    if (isLoggedIn) {\n      button = \u003cLogoutButton onClick={this.handleLogoutClick} /\u003e;\n    } else {\n      button = \u003cLoginButton onClick={this.handleLoginClick} /\u003e;\n    }\n\n    return (\n      \u003cdiv\u003e\n        \u003cGreeting isLoggedIn={isLoggedIn} /\u003e\n        {button}\n      \u003c/div\u003e\n    );\n  }\n}\n\nReactDOM.render(\n  \u003cLoginControl /\u003e,\n  document.getElementById('root')\n);\n```\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/QKzAgB?editors=0010)\n\nWhile declaring a variable and using an `if` statement is a fine way to conditionally render a component, sometimes you might want to use a shorter syntax. There are a few ways to inline conditions in JSX, explained below.\n\n### Inline If with Logical \u0026\u0026 Operator {#inline-if-with-logical--operator}\n\nYou may [embed expressions in JSX](/docs/introducing-jsx.html#embedding-expressions-in-jsx) by wrapping them in curly braces. This includes the JavaScript logical `\u0026\u0026` operator. It can be handy for conditionally including an element:\n\n```js{6-10}\nfunction Mailbox(props) {\n  const unreadMessages = props.unreadMessages;\n  return (\n    \u003cdiv\u003e\n      \u003ch1\u003eHello!\u003c/h1\u003e\n      {unreadMessages.length \u003e 0 \u0026\u0026\n        \u003ch2\u003e\n          You have {unreadMessages.length} unread messages.\n        \u003c/h2\u003e\n      }\n    \u003c/div\u003e\n  );\n}\n\nconst messages = ['React', 'Re: React', 'Re:Re: React'];\nReactDOM.render(\n  \u003cMailbox unreadMessages={messages} /\u003e,\n  document.getElementById('root')\n);\n```\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/ozJddz?editors=0010)\n\nIt works because in JavaScript, `true \u0026\u0026 expression` always evaluates to `expression`, and `false \u0026\u0026 expression` always evaluates to `false`.\n\nTherefore, if the condition is `true`, the element right after `\u0026\u0026` will appear in the output. If it is `false`, React will ignore and skip it.\n\nNote that returning a falsy expression will still cause the element after `\u0026\u0026` to be skipped but will return the falsy expression. In the example below, `\u003cdiv\u003e0\u003c/div\u003e` will be returned by the render method.\n\n```javascript{2,5}\nrender() {\n  const count = 0;\n  return (\n    \u003cdiv\u003e\n      { count \u0026\u0026 \u003ch1\u003eMessages: {count}\u003c/h1\u003e}\n    \u003c/div\u003e\n  );\n}\n```\n\n### Inline If-Else with Conditional Operator {#inline-if-else-with-conditional-operator}\n\nAnother method for conditionally rendering elements inline is to use the JavaScript conditional operator [`condition ? true : false`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Conditional_Operator).\n\nIn the example below, we use it to conditionally render a small block of text.\n\n```javascript{5}\nrender() {\n  const isLoggedIn = this.state.isLoggedIn;\n  return (\n    \u003cdiv\u003e\n      The user is \u003cb\u003e{isLoggedIn ? 'currently' : 'not'}\u003c/b\u003e logged in.\n    \u003c/div\u003e\n  );\n}\n```\n\nIt can also be used for larger expressions although it is less obvious what's going on:\n\n```js{5,7,9}\nrender() {\n  const isLoggedIn = this.state.isLoggedIn;\n  return (\n    \u003cdiv\u003e\n      {isLoggedIn\n        ? \u003cLogoutButton onClick={this.handleLogoutClick} /\u003e\n        : \u003cLoginButton onClick={this.handleLoginClick} /\u003e\n      }\n    \u003c/div\u003e\n  );\n}\n```\n\nJust like in JavaScript, it is up to you to choose an appropriate style based on what you and your team consider more readable. Also remember that whenever conditions become too complex, it might be a good time to [extract a component](/docs/components-and-props.html#extracting-components).\n\n### Preventing Component from Rendering {#preventing-component-from-rendering}\n\nIn rare cases you might want a component to hide itself even though it was rendered by another component. To do this return `null` instead of its render output.\n\nIn the example below, the `\u003cWarningBanner /\u003e` is rendered depending on the value of the prop called `warn`. If the value of the prop is `false`, then the component does not render:\n\n```javascript{2-4,29}\nfunction WarningBanner(props) {\n  if (!props.warn) {\n    return null;\n  }\n\n  return (\n    \u003cdiv className=\"warning\"\u003e\n      Warning!\n    \u003c/div\u003e\n  );\n}\n\nclass Page extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = {showWarning: true};\n    this.handleToggleClick = this.handleToggleClick.bind(this);\n  }\n\n  handleToggleClick() {\n    this.setState(state =\u003e ({\n      showWarning: !state.showWarning\n    }));\n  }\n\n  render() {\n    return (\n      \u003cdiv\u003e\n        \u003cWarningBanner warn={this.state.showWarning} /\u003e\n        \u003cbutton onClick={this.handleToggleClick}\u003e\n          {this.state.showWarning ? 'Hide' : 'Show'}\n        \u003c/button\u003e\n      \u003c/div\u003e\n    );\n  }\n}\n\nReactDOM.render(\n  \u003cPage /\u003e,\n  document.getElementById('root')\n);\n```\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/Xjoqwm?editors=0010)\n\nReturning `null` from a component's `render` method does not affect the firing of the component's lifecycle methods. For instance `componentDidUpdate` will still be called.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_conditional-rendering.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

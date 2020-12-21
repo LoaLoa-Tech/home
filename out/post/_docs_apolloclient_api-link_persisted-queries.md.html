@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Persisted Queries Link
+description: Replace full queries with generated ID's to reduce bandwidth.</p>
+<hr>
+<h2>Problem to solve</h2>
+<p>Unlike REST APIs that use a fixed URL to load data, GraphQL provides a rich query language that can be used to express the shape of application data requirements. This is a marvelous advancement in technology, but it comes at a cost: GraphQL query strings are often much longer than REST URLS — in some cases by many kilobytes.</p>
+<p>In practice we've seen GraphQL query sizes ranging well above 10 KB <em>just for the query text</em>. This is significant overhead when compared with a simple URL of 50-100 characters. When paired with the fact that the uplink speed from the client is typically the most bandwidth-constrained part of the chain, large queries can become bottlenecks for client performance.</p>
+<p>Automatic Persisted Queries solves this problem by sending a generated ID instead of the query text as the request.</p>
+<p>For more information about this solution, read <a href="https://www.apollographql.com/blog/improve-graphql-performance-with-automatic-persisted-queries-c31d27b8e6ea/">this article announcing Automatic Persisted Queries</a>.</p>
+<h2>How it works</h2>
+<ol>
+<li>When the client makes a query, it will optimistically send a short (64-byte) cryptographic hash instead of the full query text.</li>
+<li>If the backend recognizes the hash, it will retrieve the full text of the query and execute it.</li>
+<li>If the backend doesn't recognize the hash, it will ask the client to send the hash and the query text so it can store them mapped together for future lookups. During this request, the backend will also fulfill the data request.</li>
+</ol>
+<p>This library is a client implementation for use with Apollo Client by using custom Apollo Link.</p>
+<h2>Installation</h2>
+<p>This link is included in the <code>@apollo/client</code> package:</p>
+<p><code>npm install @apollo/client</code></p>
+<p>If you do not already have a SHA-256 based hashing function available in your application, you will need to install one separately. For example:</p>
+<p><code>npm install crypto-hash</code></p>
+<p>This link doesn't include a SHA-256 hash function by default, to avoid forcing one as a dependency. Developers should pick the most appropriate SHA-256 function (sync or async) for their needs/environment.</p>
+<h2>Usage</h2>
+<p>The persisted query link requires using the <code>HttpLink</code>. The easiest way to use them together is to <code>concat</code> them into a single link.</p>
+<pre><code class="language-js">import { HttpLink, InMemoryCache, ApolloClient } from &quot;@apollo/client&quot;;
+import { createPersistedQueryLink } from &quot;@apollo/client/link/persisted-queries&quot;;
+import { sha256 } from 'crypto-hash';
+
+const httpLink = new HttpLink({ uri: &quot;/graphql&quot; });
+const persistedQueriesLink = createPersistedQueryLink({ sha256 });
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: persistedQueriesLink.concat(httpLink);
+});
+</code></pre>
+<p>Thats it! Now your client will start sending query signatures instead of the full text resulting in improved network performance!</p>
+<h4>Options</h4>
+<p>The <code>createPersistedQueryLink</code> function takes a configuration object:</p>
+<ul>
+<li><code>sha256</code>: a SHA-256 hashing function. Can be sync or async. Providing a SHA-256 hashing function is required, unless you're defining a fully custom hashing approach via <code>generateHash</code>.</li>
+<li><code>generateHash</code>: an optional function that takes the query document and returns the hash. If provided this custom function will override the default hashing approach that uses the supplied <code>sha256</code> function. If not provided, the persisted queries link will use a fallback hashing approach leveraging the <code>sha256</code> function.</li>
+<li><code>useGETForHashedQueries</code>: set to <code>true</code> to use the HTTP <code>GET</code> method when sending the hashed version of queries (but not for mutations). <code>GET</code> requests are not compatible with <code>@apollo/client/link/batch-http</code>.</li>
+</ul>
+<blockquote>
+<p>If you want to use <code>GET</code> for non-mutation queries whether or not they are hashed, pass <code>useGETForQueries: true</code> option to <code>HttpLink</code> instead. If you want to use <code>GET</code> for all requests, pass <code>fetchOptions: {method: 'GET'}</code> to <code>HttpLink</code>.</p>
+</blockquote>
+<ul>
+<li><code>disable</code>: a function which takes an <code>ErrorResponse</code> (see below) and returns a boolean to disable any future persisted queries for that session. This defaults to disabling on <code>PersistedQueryNotSupported</code> or a 400 or 500 http error.</li>
+</ul>
+<p><strong>ErrorResponse</strong></p>
+<p>The argument that the optional <code>disable</code> function is given is an object with the following keys:</p>
+<ul>
+<li><code>operation</code>: The Operation that encountered an error (contains <code>query</code>, <code>variables</code>, <code>operationName</code>, and <code>context</code>).</li>
+<li><code>response</code>: The Execution of the response (contains <code>data</code> and <code>errors</code> as well <code>extensions</code> if sent from the server).</li>
+<li><code>graphQLErrors</code>: An array of errors from the GraphQL endpoint.</li>
+<li><code>networkError</code>: Any error during the link execution or server response.</li>
+</ul>
+<p><em>Note</em>: <code>networkError</code> is the value from the downlink's <code>error</code> callback. In most cases, <code>graphQLErrors</code> is the <code>errors</code> field of the result from the last <code>next</code> call. A <code>networkError</code> can contain additional fields, such as a GraphQL object in the case of a failing HTTP status code from <code>@apollo/link/http</code>. In this situation, <code>graphQLErrors</code> is an alias for <code>networkError.result.errors</code> if the property exists.</p>
+<h2>Apollo Studio</h2>
+<p>Apollo Studio supports receiving and fulfilling Automatic Persisted Queries. Simply adding this link into your client app will improve your network response times when using Apollo Studio.</p>
+<h3>Protocol</h3>
+<p>Automatic Persisted Queries are made up of three parts: the query signature, error responses, and the negotiation protocol.</p>
+<p><strong>Query Signature</strong></p>
+<p>The query signature for Automatic Persisted Queries is sent through the <code>extensions</code> field of a request from the client. This is a transport independent way to send extra information along with the operation.</p>
+<pre><code class="language-js">{
+  operationName: 'MyQuery',
+  variables: null,
+  extensions: {
+    persistedQuery: {
+      version: 1,
+      sha256Hash: hashOfQuery
+    }
+  }
+}
+</code></pre>
+<p>When sending an Automatic Persisted Query, the client omits the <code>query</code> field normally present, and instead sends an extension field with a <code>persistedQuery</code> object as shown above. The hash algorithm defaults to a <code>sha256</code> hash of the query string.</p>
+<p>If the client needs to register the hash, the query signature will be the same but include the full query text like so:</p>
+<pre><code class="language-js">{
+  operationName: 'MyQuery',
+  variables: null,
+  query: `query MyQuery { id }`,
+  extensions: {
+    persistedQuery: {
+      version: 1,
+      sha256Hash: hashOfQuery
+    }
+  }
+}
+</code></pre>
+<p>This should only happen once across all clients when a new query is introduced into your application.</p>
+<p><strong>Error Responses</strong></p>
+<p>When the initial query signature is received by a backend, if it is unable to find the hash previously stored, it will send back the following response signature:</p>
+<pre><code class="language-js">{
+  errors: [
+    { message: 'PersistedQueryNotFound' }
+  ]
+}
+</code></pre>
+<p>If the backend doesn't support Automatic Persisted Queries, or does not want to support it for that particular client, it can send back the following which will tell the client to stop trying to send hashes:</p>
+<pre><code>{
+  errors: [
+    { message: 'PersistedQueryNotSupported' }
+  ]
+}
+</code></pre>
+<p><strong>Negotiation Protocol</strong></p>
+<p>In order to support Automatic Persisted Queries, the client and server must follow the negotiation steps as outlined here:</p>
+<p><em>Happy Path</em></p>
+<ol>
+<li>Client sends query signature with no <code>query</code> field</li>
+<li>Server looks up query based on hash, if found, it resolves the data</li>
+<li>Client receives data and completes request</li>
+</ol>
+<p><em>Missing hash path</em></p>
+<ol>
+<li>Client sends query signature with no <code>query</code> field</li>
+<li>Server looks up query based on hash, none is found</li>
+<li>Server responds with NotFound error response</li>
+<li>Client sends both hash and query string to Server</li>
+<li>Server fulfills response and saves query string + hash for future lookup</li>
+<li>Client receives data and completes request</li>
+</ol>
+<h3>Build time generation</h3>
+<p>If you want to avoid hashing in the browser, you can use a build script to include the hash as part of the request, then pass a function to retrieve that hash when the operation is run. This works well with projects like <a href="https://github.com/leoasis/graphql-persisted-document-loader">GraphQL Persisted Document Loader</a> which uses webpack to generate hashes at build time.</p>
+<p>If you use the above loader, you can pass <code>{ generateHash: ({ documentId }) =&gt; documentId }</code> to the <code>createPersistedQueryLink</code> call.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Persisted Queries Link\ndescription: Replace full queries with generated ID's to reduce bandwidth.\n---\n\n## Problem to solve\n\nUnlike REST APIs that use a fixed URL to load data, GraphQL provides a rich query language that can be used to express the shape of application data requirements. This is a marvelous advancement in technology, but it comes at a cost: GraphQL query strings are often much longer than REST URLS — in some cases by many kilobytes.\n\nIn practice we've seen GraphQL query sizes ranging well above 10 KB *just for the query text*. This is significant overhead when compared with a simple URL of 50-100 characters. When paired with the fact that the uplink speed from the client is typically the most bandwidth-constrained part of the chain, large queries can become bottlenecks for client performance.\n\nAutomatic Persisted Queries solves this problem by sending a generated ID instead of the query text as the request.\n\nFor more information about this solution, read [this article announcing Automatic Persisted Queries](https://www.apollographql.com/blog/improve-graphql-performance-with-automatic-persisted-queries-c31d27b8e6ea/).\n\n## How it works\n\n1. When the client makes a query, it will optimistically send a short (64-byte) cryptographic hash instead of the full query text.\n2. If the backend recognizes the hash, it will retrieve the full text of the query and execute it.\n3. If the backend doesn't recognize the hash, it will ask the client to send the hash and the query text so it can store them mapped together for future lookups. During this request, the backend will also fulfill the data request.\n\nThis library is a client implementation for use with Apollo Client by using custom Apollo Link.\n\n## Installation\n\nThis link is included in the `@apollo/client` package:\n\n`npm install @apollo/client`\n\nIf you do not already have a SHA-256 based hashing function available in your application, you will need to install one separately. For example:\n\n`npm install crypto-hash`\n\nThis link doesn't include a SHA-256 hash function by default, to avoid forcing one as a dependency. Developers should pick the most appropriate SHA-256 function (sync or async) for their needs/environment.\n\n## Usage\n\nThe persisted query link requires using the `HttpLink`. The easiest way to use them together is to `concat` them into a single link.\n\n```js\nimport { HttpLink, InMemoryCache, ApolloClient } from \"@apollo/client\";\nimport { createPersistedQueryLink } from \"@apollo/client/link/persisted-queries\";\nimport { sha256 } from 'crypto-hash';\n\nconst httpLink = new HttpLink({ uri: \"/graphql\" });\nconst persistedQueriesLink = createPersistedQueryLink({ sha256 });\nconst client = new ApolloClient({\n  cache: new InMemoryCache(),\n  link: persistedQueriesLink.concat(httpLink);\n});\n```\n\nThats it! Now your client will start sending query signatures instead of the full text resulting in improved network performance!\n\n#### Options\n\nThe `createPersistedQueryLink` function takes a configuration object:\n\n- `sha256`: a SHA-256 hashing function. Can be sync or async. Providing a SHA-256 hashing function is required, unless you're defining a fully custom hashing approach via `generateHash`.\n- `generateHash`: an optional function that takes the query document and returns the hash. If provided this custom function will override the default hashing approach that uses the supplied `sha256` function. If not provided, the persisted queries link will use a fallback hashing approach leveraging the `sha256` function.\n- `useGETForHashedQueries`: set to `true` to use the HTTP `GET` method when sending the hashed version of queries (but not for mutations). `GET` requests are not compatible with `@apollo/client/link/batch-http`.\n\u003e If you want to use `GET` for non-mutation queries whether or not they are hashed, pass `useGETForQueries: true` option to `HttpLink` instead. If you want to use `GET` for all requests, pass `fetchOptions: {method: 'GET'}` to `HttpLink`.\n- `disable`: a function which takes an `ErrorResponse` (see below) and returns a boolean to disable any future persisted queries for that session. This defaults to disabling on `PersistedQueryNotSupported` or a 400 or 500 http error.\n\n**ErrorResponse**\n\nThe argument that the optional `disable` function is given is an object with the following keys:\n\n- `operation`: The Operation that encountered an error (contains `query`, `variables`, `operationName`, and `context`).\n- `response`: The Execution of the response (contains `data` and `errors` as well `extensions` if sent from the server).\n- `graphQLErrors`: An array of errors from the GraphQL endpoint.\n- `networkError`: Any error during the link execution or server response.\n\n*Note*: `networkError` is the value from the downlink's `error` callback. In most cases, `graphQLErrors` is the `errors` field of the result from the last `next` call. A `networkError` can contain additional fields, such as a GraphQL object in the case of a failing HTTP status code from `@apollo/link/http`. In this situation, `graphQLErrors` is an alias for `networkError.result.errors` if the property exists.\n\n## Apollo Studio\n\nApollo Studio supports receiving and fulfilling Automatic Persisted Queries. Simply adding this link into your client app will improve your network response times when using Apollo Studio.\n\n### Protocol\n\nAutomatic Persisted Queries are made up of three parts: the query signature, error responses, and the negotiation protocol.\n\n**Query Signature**\n\nThe query signature for Automatic Persisted Queries is sent through the `extensions` field of a request from the client. This is a transport independent way to send extra information along with the operation.\n\n```js\n{\n  operationName: 'MyQuery',\n  variables: null,\n  extensions: {\n    persistedQuery: {\n      version: 1,\n      sha256Hash: hashOfQuery\n    }\n  }\n}\n```\n\nWhen sending an Automatic Persisted Query, the client omits the `query` field normally present, and instead sends an extension field with a `persistedQuery` object as shown above. The hash algorithm defaults to a `sha256` hash of the query string.\n\nIf the client needs to register the hash, the query signature will be the same but include the full query text like so:\n\n```js\n{\n  operationName: 'MyQuery',\n  variables: null,\n  query: `query MyQuery { id }`,\n  extensions: {\n    persistedQuery: {\n      version: 1,\n      sha256Hash: hashOfQuery\n    }\n  }\n}\n```\n\nThis should only happen once across all clients when a new query is introduced into your application.\n\n**Error Responses**\n\nWhen the initial query signature is received by a backend, if it is unable to find the hash previously stored, it will send back the following response signature:\n\n```js\n{\n  errors: [\n    { message: 'PersistedQueryNotFound' }\n  ]\n}\n```\n\nIf the backend doesn't support Automatic Persisted Queries, or does not want to support it for that particular client, it can send back the following which will tell the client to stop trying to send hashes:\n\n```\n{\n  errors: [\n    { message: 'PersistedQueryNotSupported' }\n  ]\n}\n```\n\n**Negotiation Protocol**\n\nIn order to support Automatic Persisted Queries, the client and server must follow the negotiation steps as outlined here:\n\n*Happy Path*\n1. Client sends query signature with no `query` field\n2. Server looks up query based on hash, if found, it resolves the data\n3. Client receives data and completes request\n\n*Missing hash path*\n1. Client sends query signature with no `query` field\n2. Server looks up query based on hash, none is found\n3. Server responds with NotFound error response\n4. Client sends both hash and query string to Server\n5. Server fulfills response and saves query string + hash for future lookup\n6. Client receives data and completes request\n\n### Build time generation\n\nIf you want to avoid hashing in the browser, you can use a build script to include the hash as part of the request, then pass a function to retrieve that hash when the operation is run. This works well with projects like [GraphQL Persisted Document Loader](https://github.com/leoasis/graphql-persisted-document-loader) which uses webpack to generate hashes at build time.\n\nIf you use the above loader, you can pass `{ generateHash: ({ documentId }) =\u003e documentId }` to the `createPersistedQueryLink` call.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_api-link_persisted-queries.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

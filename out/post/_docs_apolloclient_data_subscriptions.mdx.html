@@ -1,0 +1,226 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Subscriptions
+description: Get real-time updates from your GraphQL server</p>
+<hr>
+<p>import SubscriptionOptions from '../../shared/subscription-options.mdx';
+import SubscriptionResult from '../../shared/subscription-result.mdx';</p>
+<p>In addition to <a href="./queries/">queries</a> and <a href="./mutations/">mutations</a>, GraphQL supports a third operation type: <strong>subscriptions</strong>.</p>
+<p>Like queries, subscriptions enable you to fetch data. <em>Unlike</em> queries, subscriptions maintain an active connection to your GraphQL server (most commonly via WebSocket). This enables your server to push updates to the subscription's result over time.</p>
+<p>Subscriptions are useful for notifying your client in real time about changes to back-end data, such as the creation of a new object or updates to an important field.</p>
+<h2>When to use subscriptions</h2>
+<p>In the majority of cases, your client should <em>not</em> use subscriptions to stay up to date with your backend. Instead, you should <a href="./queries/#polling">poll intermittently</a> with queries, or <a href="./queries/#refetching">re-execute queries on demand</a> when a user performs a relevant action.</p>
+<p>You <em>should</em> use subscriptions for the following:</p>
+<ul>
+<li><p><strong>Small, incremental changes to large objects</strong>. Repeatedly polling for a large object is expensive, especially when most of the object's fields rarely change. Instead, you can fetch the object's initial state with a query, and your server can proactively push updates to individual fields as they occur.</p></li>
+<li><p><strong>Low-latency, real-time updates</strong>. For example, a chat application's client wants to receive new messages as soon as they're available.</p></li>
+</ul>
+<h2>Defining a subscription</h2>
+<p>You define a subscription on both the server side and the client side, just like you do for queries and mutations.</p>
+<h3>Server side</h3>
+<p>You define available subscriptions in your <a href="https://www.apollographql.com/docs/apollo-server/schema/schema/#supported-types">GraphQL schema</a> as fields of the <code>Subscription</code> type. The following <code>commentAdded</code> subscription notifies a subscribing client whenever a new comment is added to a particular blog post (specified by <code>postID</code>):</p>
+<pre><code class="language-graphql">type Subscription {
+  commentAdded(postID: ID!): Comment
+}
+</code></pre>
+<p>For more information on implementing support for subscriptions on the server side, see the <a href="https://www.apollographql.com/docs/apollo-server/data/subscriptions/">Apollo Server documentation for subscriptions</a>.</p>
+<h3>Client side</h3>
+<p>In your application's client, you define the shape of each subscription you want Apollo Client to execute, like so:</p>
+<pre><code class="language-js">const COMMENTS_SUBSCRIPTION = gql`
+  subscription OnCommentAdded($repoFullName: String!) {
+    commentAdded(repoFullName: $repoFullName) {
+      id
+      content
+    }
+  }
+`;
+</code></pre>
+<p>When Apollo Client executes the <code>onCommentAdded</code> subscription, it establishes a connection to your GraphQL server and listens for response data. Unlike with a query, there is no expectation that the server will immediately process and return a response. Instead, your server only pushes data to your client when a particular event occurs on your backend.</p>
+<p>Whenever your GraphQL server <em>does</em> push data to a subscribing client, that data conforms to the structure of the executed subscription, just like it does for a query:</p>
+<pre><code class="language-json">{
+  &quot;data&quot;: {
+    &quot;commentAdded&quot;: {
+      &quot;id&quot;: &quot;123&quot;,
+      &quot;content&quot;: &quot;What a thoughtful and well written post!&quot;
+    }
+  }
+}
+</code></pre>
+<h2>Setting up the transport</h2>
+<p>Because subscriptions maintain a persistent connection, they can't use the default HTTP transport that Apollo Client uses for queries and mutations. Instead, Apollo Client subscriptions most commonly communicate over WebSocket, via the community-maintained <a href="https://github.com/apollographql/subscriptions-transport-ws"><code>subscriptions-transport-ws</code></a> library.</p>
+<h3>1. Install required libraries</h3>
+<p><strong>Apollo Link</strong> is a collection of libraries that help you customize Apollo Client's network communication. One of these libraries is <code>@apollo/client/link/ws</code>, which enables communication over WebSocket.</p>
+<p>Install both <code>@apollo/client/link/ws</code> and <code>subscriptions-transport-ws</code> in your project, like so:</p>
+<pre><code class="language-bash">npm install @apollo/client subscriptions-transport-ws
+</code></pre>
+<h3>2. Initialize a <code>WebSocketLink</code></h3>
+<p>Import and initialize a <code>WebSocketLink</code> object in the same project file where you initialize <code>ApolloClient</code>:</p>
+<pre><code class="language-js">import { WebSocketLink } from '@apollo/client/link/ws';
+
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:5000/`,
+  options: {
+    reconnect: true
+  }
+});
+</code></pre>
+<p>Replace the value of the <code>uri</code> option with the URL of your GraphQL server. This is often a <code>localhost</code> URL during development.</p>
+<h3>3. Use different transports for different operations</h3>
+<p>Apollo Client should use your <code>WebSocketLink</code> for subscriptions, but it <em>shouldn't</em> use it for queries or mutations. For those operations, Apollo Client should use HTTP as usual. To support this, the <code>@apollo/client</code> library provides a <code>split</code> function that lets you use one of two different <code>Link</code>s, according to the result of a boolean check.</p>
+<p>The following example expands on the previous one by initializing both a <code>WebSocketLink</code> <em>and</em> an <code>HttpLink</code>. It then uses the <code>split</code> function to combine those two <code>Link</code>s into a <em>single</em> <code>Link</code> that uses one or the other according to the type of operation being executed.</p>
+<pre><code class="language-js">import { split, HttpLink } from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { WebSocketLink } from '@apollo/client/link/ws';
+
+const httpLink = new HttpLink({
+  uri: 'http://localhost:3000/'
+});
+
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:5000/`,
+  options: {
+    reconnect: true
+  }
+});
+
+// The split function takes three parameters:
+//
+// * A function that's called for each operation to execute
+// * The Link to use for an operation if the function returns a &quot;truthy&quot; value
+// * The Link to use for an operation if the function returns a &quot;falsy&quot; value
+const splitLink = split(
+  ({ query }) =&gt; {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &amp;&amp;
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  httpLink,
+);
+</code></pre>
+<p>Using this logic, queries and mutations will use HTTP as normal, and subscriptions will use WebSocket.</p>
+<h3>4. Authenticate over WebSocket (optional)</h3>
+<p>It is often necessary to authenticate a client before allowing it to receive subscription results. To do this, you can provide a <code>connectionParams</code> option to the <code>WebSocketLink</code> constructor, like so:</p>
+<pre><code class="language-js{7-9}">import { WebSocketLink } from '@apollo/client/link/ws';
+
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:5000/`,
+  options: {
+    reconnect: true,
+    connectionParams: {
+      authToken: user.authToken,
+    },
+  },
+});
+</code></pre>
+<p>Your <code>WebSocketLink</code> passes the <code>connectionParams</code> object to your server whenever it connects. If your server has a <a href="https://www.apollographql.com/docs/graphql-subscriptions/authentication">SubscriptionsServer</a> object that's listening for WebSocket connections, it receives the <code>connectionParams</code> object and can use it to perform authentication, along with any other connection-related tasks.</p>
+<h2>Executing a subscription</h2>
+<p>You use Apollo Client's <code>useSubscription</code> Hook to execute a subscription from React. Like <a href="./queries/#executing-a-query"><code>useQuery</code></a>, <code>useSubscription</code> returns an object from Apollo Client that contains <code>loading</code>, <code>error</code>, and <code>data</code> properties you can use to render your UI.</p>
+<p>The following example component uses the subscription we defined earlier to render the most recent comment that's been added to a specified blog post. Whenever the GraphQL server pushes a new comment to the client, the component re-renders with the new comment.</p>
+<pre><code class="language-jsx">const COMMENTS_SUBSCRIPTION = gql`
+  subscription OnCommentAdded($postID: ID!) {
+    commentAdded(postID: $postID) {
+      id
+      content
+    }
+  }
+`;
+
+function LatestComment({ postID }) {
+  const { data: { commentAdded }, loading } = useSubscription(
+    COMMENTS_SUBSCRIPTION,
+    { variables: { postID } }
+  );
+  return &lt;h4&gt;New comment: {!loading &amp;&amp; commentAdded.content}&lt;/h4&gt;;
+}
+</code></pre>
+<h2>Subscribing to updates for a query</h2>
+<p>Whenever a query returns a result in Apollo Client, that result includes a <code>subscribeToMore</code> function. You can use this function to execute a followup subscription that pushes updates to the query's original result.</p>
+<blockquote>
+<p>The <code>subscribeToMore</code> function is similar in structure to the <a href="../caching/advanced-topics/#incremental-loading-fetchmore"><code>fetchMore</code></a> function that's commonly used for handling pagination. The primary difference is that <code>fetchMore</code> executes a followup <em>query</em>, whereas <code>subscribeToMore</code> executes a subscription.</p>
+</blockquote>
+<p>As an example, let's start with a standard query that fetches all of the existing comments for a given blog post:</p>
+<pre><code class="language-jsx">const COMMENTS_QUERY = gql`
+  query CommentsForPost($postID: ID!) {
+    post(postID: $postID) {
+      comments {
+        id
+        content
+      }
+    }
+  }
+`;
+
+function CommentsPageWithData({ params }) {
+  const result = useQuery(
+    COMMENTS_QUERY,
+    { variables: { postID: params.postID } }
+  );
+  return &lt;CommentsPage {...result} /&gt;;
+}
+</code></pre>
+<p>Let's say we want our GraphQL server to push an update to our client as soon as a <em>new</em> comment is added to the post. First we need to define the subscription that Apollo Client will execute when the <code>COMMENTS_QUERY</code> returns:</p>
+<pre><code class="language-jsx">const COMMENTS_SUBSCRIPTION = gql`
+  subscription OnCommentAdded($postID: ID!) {
+    commentAdded(postID: $postID) {
+      id
+      content
+    }
+  }
+`;
+</code></pre>
+<p>Next, we modify our <code>CommentsPageWithData</code> function to add a <code>subscribeToNewComments</code> property to the <code>CommentsPage</code> component it returns. This property is a function that will be responsible for calling <code>subscribeToMore</code> after the component mounts.</p>
+<pre><code class="language-jsx{10-25}">function CommentsPageWithData({ params }) {
+  const { subscribeToMore, ...result } = useQuery(
+    COMMENT_QUERY,
+    { variables: { postID: params.postID } }
+  );
+
+  return (
+    &lt;CommentsPage
+      {...result}
+      subscribeToNewComments={() =&gt;
+        subscribeToMore({
+          document: COMMENTS_SUBSCRIPTION,
+          variables: { postID: params.postID },
+          updateQuery: (prev, { subscriptionData }) =&gt; {
+            if (!subscriptionData.data) return prev;
+            const newFeedItem = subscriptionData.data.commentAdded;
+
+            return Object.assign({}, prev, {
+              post: {
+                comments: [newFeedItem, ...prev.post.comments]
+              }
+            });
+          }
+        })
+      }
+    /&gt;
+  );
+}
+</code></pre>
+<p>In the example above, we pass three options to <code>subscribeToMore</code>:</p>
+<ul>
+<li><code>document</code> indicates the subscription to execute.</li>
+<li><code>variables</code> indicates the variables to include when executing the subscription.</li>
+<li><code>updateQuery</code> is a function that tells Apollo Client how to combine the query's currently cached result (<code>prev</code>) with the <code>subscriptionData</code> that's pushed by our GraphQL server. The return value of this function <strong>completely replaces</strong> the current cached result for the query.</li>
+</ul>
+<p>Finally, in our definition of <code>CommentsPage</code>, we tell the component to <code>subscribeToNewComments</code> when it mounts:</p>
+<pre><code class="language-js">export class CommentsPage extends Component {
+  componentDidMount() {
+    this.props.subscribeToNewComments();
+  }
+}
+</code></pre>
+<h2><code>useSubscription</code> API reference</h2>
+<blockquote>
+<p><strong>Note:</strong> If you're using React Apollo's <code>Subscription</code> render prop component, the option/result details listed below are still valid (options are component props and results are passed into the render prop function). The only difference is that a <code>subscription</code> prop (which holds a GraphQL subscription document parsed into an AST by <code>gql</code>) is also required.</p>
+</blockquote>
+<h3>Options</h3>
+<p>The <code>useSubscription</code> Hook accepts the following options:</p>
+<p><SubscriptionOptions /></p>
+<h3>Result</h3>
+<p>After being called, the <code>useSubscription</code> Hook returns a result object with the following properties:</p>
+<p><SubscriptionResult /></p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Subscriptions\ndescription: Get real-time updates from your GraphQL server\n---\n\nimport SubscriptionOptions from '../../shared/subscription-options.mdx';\nimport SubscriptionResult from '../../shared/subscription-result.mdx';\n\nIn addition to [queries](./queries/) and [mutations](./mutations/), GraphQL supports a third operation type: **subscriptions**.\n\nLike queries, subscriptions enable you to fetch data. _Unlike_ queries, subscriptions maintain an active connection to your GraphQL server (most commonly via WebSocket). This enables your server to push updates to the subscription's result over time.\n\nSubscriptions are useful for notifying your client in real time about changes to back-end data, such as the creation of a new object or updates to an important field.\n\n## When to use subscriptions\n\nIn the majority of cases, your client should _not_ use subscriptions to stay up to date with your backend. Instead, you should [poll intermittently](./queries/#polling) with queries, or [re-execute queries on demand](./queries/#refetching) when a user performs a relevant action.\n\nYou _should_ use subscriptions for the following:\n\n* **Small, incremental changes to large objects**. Repeatedly polling for a large object is expensive, especially when most of the object's fields rarely change. Instead, you can fetch the object's initial state with a query, and your server can proactively push updates to individual fields as they occur.\n\n* **Low-latency, real-time updates**. For example, a chat application's client wants to receive new messages as soon as they're available.\n\n## Defining a subscription\n\nYou define a subscription on both the server side and the client side, just like you do for queries and mutations.\n\n### Server side\n\nYou define available subscriptions in your [GraphQL schema](https://www.apollographql.com/docs/apollo-server/schema/schema/#supported-types) as fields of the `Subscription` type. The following `commentAdded` subscription notifies a subscribing client whenever a new comment is added to a particular blog post (specified by `postID`):\n\n```graphql\ntype Subscription {\n  commentAdded(postID: ID!): Comment\n}\n```\n\nFor more information on implementing support for subscriptions on the server side, see the [Apollo Server documentation for subscriptions](https://www.apollographql.com/docs/apollo-server/data/subscriptions/).\n\n### Client side\n\nIn your application's client, you define the shape of each subscription you want Apollo Client to execute, like so:\n\n```js\nconst COMMENTS_SUBSCRIPTION = gql`\n  subscription OnCommentAdded($repoFullName: String!) {\n    commentAdded(repoFullName: $repoFullName) {\n      id\n      content\n    }\n  }\n`;\n```\n\nWhen Apollo Client executes the `onCommentAdded` subscription, it establishes a connection to your GraphQL server and listens for response data. Unlike with a query, there is no expectation that the server will immediately process and return a response. Instead, your server only pushes data to your client when a particular event occurs on your backend.\n\nWhenever your GraphQL server _does_ push data to a subscribing client, that data conforms to the structure of the executed subscription, just like it does for a query:\n\n```json\n{\n  \"data\": {\n    \"commentAdded\": {\n      \"id\": \"123\",\n      \"content\": \"What a thoughtful and well written post!\"\n    }\n  }\n}\n```\n\n## Setting up the transport\n\nBecause subscriptions maintain a persistent connection, they can't use the default HTTP transport that Apollo Client uses for queries and mutations. Instead, Apollo Client subscriptions most commonly communicate over WebSocket, via the community-maintained [`subscriptions-transport-ws`](https://github.com/apollographql/subscriptions-transport-ws) library.\n\n### 1. Install required libraries\n\n**Apollo Link** is a collection of libraries that help you customize Apollo Client's network communication. One of these libraries is `@apollo/client/link/ws`, which enables communication over WebSocket.\n\nInstall both `@apollo/client/link/ws` and `subscriptions-transport-ws` in your project, like so:\n\n```bash\nnpm install @apollo/client subscriptions-transport-ws\n```\n\n### 2. Initialize a `WebSocketLink`\n\nImport and initialize a `WebSocketLink` object in the same project file where you initialize `ApolloClient`:\n\n```js\nimport { WebSocketLink } from '@apollo/client/link/ws';\n\nconst wsLink = new WebSocketLink({\n  uri: `ws://localhost:5000/`,\n  options: {\n    reconnect: true\n  }\n});\n```\n\nReplace the value of the `uri` option with the URL of your GraphQL server. This is often a `localhost` URL during development.\n\n### 3. Use different transports for different operations\n\nApollo Client should use your `WebSocketLink` for subscriptions, but it _shouldn't_ use it for queries or mutations. For those operations, Apollo Client should use HTTP as usual. To support this, the `@apollo/client` library provides a `split` function that lets you use one of two different `Link`s, according to the result of a boolean check.\n\nThe following example expands on the previous one by initializing both a `WebSocketLink` _and_ an `HttpLink`. It then uses the `split` function to combine those two `Link`s into a _single_ `Link` that uses one or the other according to the type of operation being executed.\n\n```js\nimport { split, HttpLink } from '@apollo/client';\nimport { getMainDefinition } from '@apollo/client/utilities';\nimport { WebSocketLink } from '@apollo/client/link/ws';\n\nconst httpLink = new HttpLink({\n  uri: 'http://localhost:3000/'\n});\n\nconst wsLink = new WebSocketLink({\n  uri: `ws://localhost:5000/`,\n  options: {\n    reconnect: true\n  }\n});\n\n// The split function takes three parameters:\n//\n// * A function that's called for each operation to execute\n// * The Link to use for an operation if the function returns a \"truthy\" value\n// * The Link to use for an operation if the function returns a \"falsy\" value\nconst splitLink = split(\n  ({ query }) =\u003e {\n    const definition = getMainDefinition(query);\n    return (\n      definition.kind === 'OperationDefinition' \u0026\u0026\n      definition.operation === 'subscription'\n    );\n  },\n  wsLink,\n  httpLink,\n);\n```\n\nUsing this logic, queries and mutations will use HTTP as normal, and subscriptions will use WebSocket.\n\n### 4. Authenticate over WebSocket (optional)\n\nIt is often necessary to authenticate a client before allowing it to receive subscription results. To do this, you can provide a `connectionParams` option to the `WebSocketLink` constructor, like so:\n\n```js{7-9}\nimport { WebSocketLink } from '@apollo/client/link/ws';\n\nconst wsLink = new WebSocketLink({\n  uri: `ws://localhost:5000/`,\n  options: {\n    reconnect: true,\n    connectionParams: {\n      authToken: user.authToken,\n    },\n  },\n});\n```\n\nYour `WebSocketLink` passes the `connectionParams` object to your server whenever it connects. If your server has a [SubscriptionsServer](https://www.apollographql.com/docs/graphql-subscriptions/authentication) object that's listening for WebSocket connections, it receives the `connectionParams` object and can use it to perform authentication, along with any other connection-related tasks.\n\n\n## Executing a subscription\n\nYou use Apollo Client's `useSubscription` Hook to execute a subscription from React. Like [`useQuery`](./queries/#executing-a-query), `useSubscription` returns an object from Apollo Client that contains `loading`, `error`, and `data` properties you can use to render your UI.\n\nThe following example component uses the subscription we defined earlier to render the most recent comment that's been added to a specified blog post. Whenever the GraphQL server pushes a new comment to the client, the component re-renders with the new comment.\n\n```jsx\nconst COMMENTS_SUBSCRIPTION = gql`\n  subscription OnCommentAdded($postID: ID!) {\n    commentAdded(postID: $postID) {\n      id\n      content\n    }\n  }\n`;\n\nfunction LatestComment({ postID }) {\n  const { data: { commentAdded }, loading } = useSubscription(\n    COMMENTS_SUBSCRIPTION,\n    { variables: { postID } }\n  );\n  return \u003ch4\u003eNew comment: {!loading \u0026\u0026 commentAdded.content}\u003c/h4\u003e;\n}\n```\n\n## Subscribing to updates for a query\n\nWhenever a query returns a result in Apollo Client, that result includes a `subscribeToMore` function. You can use this function to execute a followup subscription that pushes updates to the query's original result.\n\n\u003e The `subscribeToMore` function is similar in structure to the [`fetchMore`](../caching/advanced-topics/#incremental-loading-fetchmore) function that's commonly used for handling pagination. The primary difference is that `fetchMore` executes a followup _query_, whereas `subscribeToMore` executes a subscription.\n\nAs an example, let's start with a standard query that fetches all of the existing comments for a given blog post:\n\n```jsx\nconst COMMENTS_QUERY = gql`\n  query CommentsForPost($postID: ID!) {\n    post(postID: $postID) {\n      comments {\n        id\n        content\n      }\n    }\n  }\n`;\n\nfunction CommentsPageWithData({ params }) {\n  const result = useQuery(\n    COMMENTS_QUERY,\n    { variables: { postID: params.postID } }\n  );\n  return \u003cCommentsPage {...result} /\u003e;\n}\n```\n\nLet's say we want our GraphQL server to push an update to our client as soon as a _new_ comment is added to the post. First we need to define the subscription that Apollo Client will execute when the `COMMENTS_QUERY` returns:\n\n```jsx\nconst COMMENTS_SUBSCRIPTION = gql`\n  subscription OnCommentAdded($postID: ID!) {\n    commentAdded(postID: $postID) {\n      id\n      content\n    }\n  }\n`;\n```\n\nNext, we modify our `CommentsPageWithData` function to add a `subscribeToNewComments` property to the `CommentsPage` component it returns. This property is a function that will be responsible for calling `subscribeToMore` after the component mounts.\n\n```jsx{10-25}\nfunction CommentsPageWithData({ params }) {\n  const { subscribeToMore, ...result } = useQuery(\n    COMMENT_QUERY,\n    { variables: { postID: params.postID } }\n  );\n\n  return (\n    \u003cCommentsPage\n      {...result}\n      subscribeToNewComments={() =\u003e\n        subscribeToMore({\n          document: COMMENTS_SUBSCRIPTION,\n          variables: { postID: params.postID },\n          updateQuery: (prev, { subscriptionData }) =\u003e {\n            if (!subscriptionData.data) return prev;\n            const newFeedItem = subscriptionData.data.commentAdded;\n\n            return Object.assign({}, prev, {\n              post: {\n                comments: [newFeedItem, ...prev.post.comments]\n              }\n            });\n          }\n        })\n      }\n    /\u003e\n  );\n}\n```\n\nIn the example above, we pass three options to `subscribeToMore`:\n\n* `document` indicates the subscription to execute.\n* `variables` indicates the variables to include when executing the subscription.\n* `updateQuery` is a function that tells Apollo Client how to combine the query's currently cached result (`prev`) with the `subscriptionData` that's pushed by our GraphQL server. The return value of this function **completely replaces** the current cached result for the query.\n\nFinally, in our definition of `CommentsPage`, we tell the component to `subscribeToNewComments` when it mounts:\n\n```js\nexport class CommentsPage extends Component {\n  componentDidMount() {\n    this.props.subscribeToNewComments();\n  }\n}\n```\n\n## `useSubscription` API reference\n\n\u003e **Note:** If you're using React Apollo's `Subscription` render prop component, the option/result details listed below are still valid (options are component props and results are passed into the render prop function). The only difference is that a `subscription` prop (which holds a GraphQL subscription document parsed into an AST by `gql`) is also required.\n\n### Options\n\nThe `useSubscription` Hook accepts the following options:\n\n\u003cSubscriptionOptions /\u003e\n\n### Result\n\nAfter being called, the `useSubscription` Hook returns a result object with the following properties:\n\n\u003cSubscriptionResult /\u003e\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_data_subscriptions.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

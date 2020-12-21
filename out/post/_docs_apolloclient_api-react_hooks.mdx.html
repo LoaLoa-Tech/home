@@ -1,0 +1,283 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>title: Hooks
+description: Apollo Client react hooks API reference</p>
+<hr>
+<p>import QueryOptions from '../../../shared/query-options.mdx';
+import QueryResult from '../../../shared/query-result.mdx';
+import MutationOptions from '../../../shared/mutation-options.mdx';
+import MutationResult from '../../../shared/mutation-result.mdx';
+import SubscriptionOptions from '../../../shared/subscription-options.mdx';
+import SubscriptionResult from '../../../shared/subscription-result.mdx';</p>
+<h2>Installation</h2>
+<p>Apollo Client &gt;= 3 includes React hooks functionality out of the box. You don't need to install any additional packages.</p>
+<h2>The <code>ApolloProvider</code> component</h2>
+<p>The <code>ApolloProvider</code> component leverages <a href="https://reactjs.org/docs/context.html">React's Context API</a> to make a configured Apollo Client instance available throughout a React component tree. This component can be imported directly from the <code>@apollo/client</code> package.</p>
+<pre><code class="language-js">import { ApolloProvider } from '@apollo/client';
+</code></pre>
+<h3>Props</h3>
+<table>
+<thead>
+<tr><th>Option</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>client</code></td><td>ApolloClient&lt;TCache&gt;</td><td>An <code>ApolloClient</code> instance.</td></tr>
+</tbody>
+</table>
+<h3>Example</h3>
+<pre><code class="language-jsx{7-9}">const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  uri: &quot;http://localhost:4000/graphql&quot;
+});
+
+ReactDOM.render(
+  &lt;ApolloProvider client={client}&gt;
+    &lt;MyRootComponent /&gt;
+  &lt;/ApolloProvider&gt;,
+  document.getElementById('root'),
+);
+</code></pre>
+<h2>The <code>ApolloConsumer</code> component</h2>
+<p>One way to access the configured Apollo Client instance directly is to create an <code>ApolloConsumer</code> component and provide a render prop function as its child. The render prop function will be called with your <code>ApolloClient</code> instance as its only argument. You can think of the <code>ApolloConsumer</code> component as similar to the <code>Consumer</code> component from the <a href="https://reactjs.org/docs/context.html">React Context API</a>.</p>
+<h3>Example</h3>
+<pre><code class="language-jsx">import React from 'react';
+import { ApolloConsumer } from '@apollo/client';
+
+const WithApolloClient = () =&gt; (
+  &lt;ApolloConsumer&gt;
+    {client =&gt; 'We have access to the client!' /* do stuff here */}
+  &lt;/ApolloConsumer&gt;
+);
+</code></pre>
+<h2><code>useQuery</code></h2>
+<h3>Example</h3>
+<pre><code class="language-jsx">import { gql, useQuery } from '@apollo/client';
+
+const GET_GREETING = gql`
+  query GetGreeting($language: String!) {
+    greeting(language: $language) {
+      message
+    }
+  }
+`;
+
+function Hello() {
+  const { loading, error, data } = useQuery(GET_GREETING, {
+    variables: { language: 'english' },
+  });
+  if (loading) return &lt;p&gt;Loading ...&lt;/p&gt;;
+  return &lt;h1&gt;Hello {data.greeting.message}!&lt;/h1&gt;;
+}
+</code></pre>
+<blockquote>
+<p>Refer to the <a href="../../data/queries/">Queries</a> section for a more in-depth overview of <code>useQuery</code>.</p>
+</blockquote>
+<h3>Function Signature</h3>
+<pre><code class="language-ts">function useQuery&lt;TData = any, TVariables = OperationVariables&gt;(
+  query: DocumentNode,
+  options?: QueryHookOptions&lt;TData, TVariables&gt;,
+): QueryResult&lt;TData, TVariables&gt; {}
+</code></pre>
+<h3>Params</h3>
+<h4><code>query</code></h4>
+<table>
+<thead>
+<tr><th>Param</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>query</code></td><td>DocumentNode</td><td>A GraphQL query document parsed into an AST by <code>gql</code>.</td></tr>
+</tbody>
+</table>
+<h4><code>options</code></h4>
+<p><QueryOptions /></p>
+<h3>Result</h3>
+<p><QueryResult /></p>
+<h2><code>useLazyQuery</code></h2>
+<h3>Example</h3>
+<pre><code class="language-jsx">import { gql, useLazyQuery } from &quot;@apollo/client&quot;;
+
+const GET_GREETING = gql`
+  query GetGreeting($language: String!) {
+    greeting(language: $language) {
+      message
+    }
+  }
+`;
+
+function Hello() {
+  const [loadGreeting, { called, loading, data }] = useLazyQuery(
+    GET_GREETING,
+    { variables: { language: &quot;english&quot; } }
+  );
+  if (called &amp;&amp; loading) return &lt;p&gt;Loading ...&lt;/p&gt;
+  if (!called) {
+    return &lt;button onClick={() =&gt; loadGreeting()}&gt;Load greeting&lt;/button&gt;
+  }
+  return &lt;h1&gt;Hello {data.greeting.message}!&lt;/h1&gt;;
+}
+</code></pre>
+<blockquote>
+<p>Refer to the <a href="../../data/queries/">Queries</a> section for a more in-depth overview of <code>useLazyQuery</code>.</p>
+</blockquote>
+<h3>Function Signature</h3>
+<pre><code class="language-ts">function useLazyQuery&lt;TData = any, TVariables = OperationVariables&gt;(
+  query: DocumentNode,
+  options?: LazyQueryHookOptions&lt;TData, TVariables&gt;,
+): [
+  (options?: QueryLazyOptions&lt;TVariables&gt;) =&gt; void,
+  QueryResult&lt;TData, TVariables&gt;
+] {}
+</code></pre>
+<h3>Params</h3>
+<h4><code>query</code></h4>
+<table>
+<thead>
+<tr><th>Param</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>query</code></td><td>DocumentNode</td><td>A GraphQL query document parsed into an AST by <code>gql</code>.</td></tr>
+</tbody>
+</table>
+<h4><code>options</code></h4>
+<p><QueryOptions /></p>
+<h3>Result</h3>
+<p><strong>Execute function</strong></p>
+<table>
+<thead>
+<tr><th>Param</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>Execute function</td><td>options?: QueryLazyOptions&lt;TVariables&gt;) =&gt; void</td><td>Function that can be triggered to execute the suspended query. After being called, <code>useLazyQuery</code> behaves just like <code>useQuery</code>.</td></tr>
+</tbody>
+</table>
+<p><strong>Result object</strong></p>
+<p><QueryResult /></p>
+<h2><code>useMutation</code></h2>
+<h3>Example</h3>
+<pre><code class="language-jsx">import { gql, useMutation } from '@apollo/client';
+
+const ADD_TODO = gql`
+  mutation AddTodo($type: String!) {
+    addTodo(type: $type) {
+      id
+      type
+    }
+  }
+`;
+
+function AddTodo() {
+  let input;
+  const [addTodo, { data }] = useMutation(ADD_TODO);
+
+  return (
+    &lt;div&gt;
+      &lt;form
+        onSubmit={e =&gt; {
+          e.preventDefault();
+          addTodo({ variables: { type: input.value } });
+          input.value = '';
+        }}
+      &gt;
+        &lt;input
+          ref={node =&gt; {
+            input = node;
+          }}
+        /&gt;
+        &lt;button type=&quot;submit&quot;&gt;Add Todo&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<blockquote>
+<p>Refer to the <a href="../../data/mutations/">Mutations</a> section for a more in-depth overview of <code>useMutation</code>.</p>
+</blockquote>
+<h3>Function Signature</h3>
+<pre><code class="language-ts">function useMutation&lt;TData = any, TVariables = OperationVariables&gt;(
+  mutation: DocumentNode,
+  options?: MutationHookOptions&lt;TData, TVariables&gt;,
+): MutationTuple&lt;TData, TVariables&gt; {}
+</code></pre>
+<h3>Params</h3>
+<h4><code>mutation</code></h4>
+<table>
+<thead>
+<tr><th>Param</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>mutation</code></td><td>DocumentNode</td><td>A GraphQL mutation document parsed into an AST by <code>gql</code>.</td></tr>
+</tbody>
+</table>
+<h4><code>options</code></h4>
+<p><MutationOptions /></p>
+<h3>Result</h3>
+<p><MutationResult /></p>
+<h2><code>useSubscription</code></h2>
+<h3>Example</h3>
+<pre><code class="language-jsx">const COMMENTS_SUBSCRIPTION = gql`
+  subscription OnCommentAdded($repoFullName: String!) {
+    commentAdded(repoFullName: $repoFullName) {
+      id
+      content
+    }
+  }
+`;
+
+function DontReadTheComments({ repoFullName }) {
+  const {
+    data: { commentAdded },
+    loading,
+  } = useSubscription(COMMENTS_SUBSCRIPTION, { variables: { repoFullName } });
+  return &lt;h4&gt;New comment: {!loading &amp;&amp; commentAdded.content}&lt;/h4&gt;;
+}
+</code></pre>
+<blockquote>
+<p>Refer to the <a href="../../data/subscriptions/">Subscriptions</a> section for a more in-depth overview of <code>useSubscription</code>.</p>
+</blockquote>
+<h3>Function Signature</h3>
+<pre><code class="language-ts">function useSubscription&lt;TData = any, TVariables = OperationVariables&gt;(
+  subscription: DocumentNode,
+  options?: SubscriptionHookOptions&lt;TData, TVariables&gt;,
+): {
+  variables: TVariables;
+  loading: boolean;
+  data?: TData;
+  error?: ApolloError;
+} {}
+</code></pre>
+<h3>Params</h3>
+<h4><code>subscription</code></h4>
+<table>
+<thead>
+<tr><th>Param</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>subscription</code></td><td>DocumentNode</td><td>A GraphQL subscription document parsed into an AST by <code>gql</code>.</td></tr>
+</tbody>
+</table>
+<h4><code>options</code></h4>
+<p><SubscriptionOptions /></p>
+<h3>Result</h3>
+<p><SubscriptionResult /></p>
+<h2><code>useApolloClient</code></h2>
+<h3>Example</h3>
+<pre><code class="language-jsx">import { useApolloClient } from '@apollo/client';
+
+function SomeComponent() {
+  const client = useApolloClient();
+  // `client` is now set to the `ApolloClient` instance being used by the
+  // application (that was configured using something like `ApolloProvider`)
+}
+</code></pre>
+<h3>Function Signature</h3>
+<pre><code class="language-ts">function useApolloClient(): ApolloClient&lt;object&gt; {}
+</code></pre>
+<h3>Result</h3>
+<table>
+<thead>
+<tr><th>Param</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>Apollo Client instance</td><td>ApolloClient&lt;object&gt;</td><td>The <code>ApolloClient</code> instance being used by the application.</td></tr>
+</tbody>
+</table>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ntitle: Hooks\ndescription: Apollo Client react hooks API reference\n---\n\nimport QueryOptions from '../../../shared/query-options.mdx';\nimport QueryResult from '../../../shared/query-result.mdx';\nimport MutationOptions from '../../../shared/mutation-options.mdx';\nimport MutationResult from '../../../shared/mutation-result.mdx';\nimport SubscriptionOptions from '../../../shared/subscription-options.mdx';\nimport SubscriptionResult from '../../../shared/subscription-result.mdx';\n\n## Installation\n\nApollo Client \u003e= 3 includes React hooks functionality out of the box. You don't need to install any additional packages.\n\n## The `ApolloProvider` component\n\nThe `ApolloProvider` component leverages [React's Context API](https://reactjs.org/docs/context.html) to make a configured Apollo Client instance available throughout a React component tree. This component can be imported directly from the `@apollo/client` package.\n\n```js\nimport { ApolloProvider } from '@apollo/client';\n```\n\n### Props\n\n| Option   | Type                       | Description                 |\n| -------- | -------------------------- | --------------------------- |\n| `client` | ApolloClient\u0026lt;TCache\u0026gt; | An `ApolloClient` instance. |\n\n### Example\n\n```jsx{7-9}\nconst client = new ApolloClient({\n  cache: new InMemoryCache(),\n  uri: \"http://localhost:4000/graphql\"\n});\n\nReactDOM.render(\n  \u003cApolloProvider client={client}\u003e\n    \u003cMyRootComponent /\u003e\n  \u003c/ApolloProvider\u003e,\n  document.getElementById('root'),\n);\n```\n\n## The `ApolloConsumer` component\n\nOne way to access the configured Apollo Client instance directly is to create an `ApolloConsumer` component and provide a render prop function as its child. The render prop function will be called with your `ApolloClient` instance as its only argument. You can think of the `ApolloConsumer` component as similar to the `Consumer` component from the [React Context API](https://reactjs.org/docs/context.html).\n\n### Example\n\n```jsx\nimport React from 'react';\nimport { ApolloConsumer } from '@apollo/client';\n\nconst WithApolloClient = () =\u003e (\n  \u003cApolloConsumer\u003e\n    {client =\u003e 'We have access to the client!' /* do stuff here */}\n  \u003c/ApolloConsumer\u003e\n);\n```\n\n## `useQuery`\n\n### Example\n\n```jsx\nimport { gql, useQuery } from '@apollo/client';\n\nconst GET_GREETING = gql`\n  query GetGreeting($language: String!) {\n    greeting(language: $language) {\n      message\n    }\n  }\n`;\n\nfunction Hello() {\n  const { loading, error, data } = useQuery(GET_GREETING, {\n    variables: { language: 'english' },\n  });\n  if (loading) return \u003cp\u003eLoading ...\u003c/p\u003e;\n  return \u003ch1\u003eHello {data.greeting.message}!\u003c/h1\u003e;\n}\n```\n\n\u003e Refer to the [Queries](../../data/queries/) section for a more in-depth overview of `useQuery`.\n\n### Function Signature\n\n```ts\nfunction useQuery\u003cTData = any, TVariables = OperationVariables\u003e(\n  query: DocumentNode,\n  options?: QueryHookOptions\u003cTData, TVariables\u003e,\n): QueryResult\u003cTData, TVariables\u003e {}\n```\n\n### Params\n\n#### `query`\n\n| Param   | Type         | Description                                                   |\n| ------- | ------------ | ------------------------------------------------------------- |\n| `query` | DocumentNode | A GraphQL query document parsed into an AST by `gql`. |\n\n#### `options`\n\n\u003cQueryOptions /\u003e\n\n### Result\n\n\u003cQueryResult /\u003e\n\n## `useLazyQuery`\n\n### Example\n\n```jsx\nimport { gql, useLazyQuery } from \"@apollo/client\";\n\nconst GET_GREETING = gql`\n  query GetGreeting($language: String!) {\n    greeting(language: $language) {\n      message\n    }\n  }\n`;\n\nfunction Hello() {\n  const [loadGreeting, { called, loading, data }] = useLazyQuery(\n    GET_GREETING,\n    { variables: { language: \"english\" } }\n  );\n  if (called \u0026\u0026 loading) return \u003cp\u003eLoading ...\u003c/p\u003e\n  if (!called) {\n    return \u003cbutton onClick={() =\u003e loadGreeting()}\u003eLoad greeting\u003c/button\u003e\n  }\n  return \u003ch1\u003eHello {data.greeting.message}!\u003c/h1\u003e;\n}\n```\n\n\u003e Refer to the [Queries](../../data/queries/) section for a more in-depth overview of `useLazyQuery`.\n\n### Function Signature\n\n```ts\nfunction useLazyQuery\u003cTData = any, TVariables = OperationVariables\u003e(\n  query: DocumentNode,\n  options?: LazyQueryHookOptions\u003cTData, TVariables\u003e,\n): [\n  (options?: QueryLazyOptions\u003cTVariables\u003e) =\u003e void,\n  QueryResult\u003cTData, TVariables\u003e\n] {}\n```\n\n### Params\n\n#### `query`\n\n| Param   | Type         | Description                                                   |\n| ------- | ------------ | ------------------------------------------------------------- |\n| `query` | DocumentNode | A GraphQL query document parsed into an AST by `gql`. |\n\n#### `options`\n\n\u003cQueryOptions /\u003e\n\n### Result\n\n**Execute function**\n\n| Param            | Type                                                  | Description                                                                                                                     |\n| ---------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |\n| Execute function | options?: QueryLazyOptions\u0026lt;TVariables\u0026gt;) =\u003e void | Function that can be triggered to execute the suspended query. After being called, `useLazyQuery` behaves just like `useQuery`. |\n\n**Result object**\n\n\u003cQueryResult /\u003e\n\n## `useMutation`\n\n### Example\n\n```jsx\nimport { gql, useMutation } from '@apollo/client';\n\nconst ADD_TODO = gql`\n  mutation AddTodo($type: String!) {\n    addTodo(type: $type) {\n      id\n      type\n    }\n  }\n`;\n\nfunction AddTodo() {\n  let input;\n  const [addTodo, { data }] = useMutation(ADD_TODO);\n\n  return (\n    \u003cdiv\u003e\n      \u003cform\n        onSubmit={e =\u003e {\n          e.preventDefault();\n          addTodo({ variables: { type: input.value } });\n          input.value = '';\n        }}\n      \u003e\n        \u003cinput\n          ref={node =\u003e {\n            input = node;\n          }}\n        /\u003e\n        \u003cbutton type=\"submit\"\u003eAdd Todo\u003c/button\u003e\n      \u003c/form\u003e\n    \u003c/div\u003e\n  );\n}\n```\n\n\u003e Refer to the [Mutations](../../data/mutations/) section for a more in-depth overview of `useMutation`.\n\n### Function Signature\n\n```ts\nfunction useMutation\u003cTData = any, TVariables = OperationVariables\u003e(\n  mutation: DocumentNode,\n  options?: MutationHookOptions\u003cTData, TVariables\u003e,\n): MutationTuple\u003cTData, TVariables\u003e {}\n```\n\n### Params\n\n#### `mutation`\n\n| Param      | Type         | Description                                                      |\n| ---------- | ------------ | ---------------------------------------------------------------- |\n| `mutation` | DocumentNode | A GraphQL mutation document parsed into an AST by `gql`. |\n\n#### `options`\n\n\u003cMutationOptions /\u003e\n\n### Result\n\n\u003cMutationResult /\u003e\n\n## `useSubscription`\n\n### Example\n\n```jsx\nconst COMMENTS_SUBSCRIPTION = gql`\n  subscription OnCommentAdded($repoFullName: String!) {\n    commentAdded(repoFullName: $repoFullName) {\n      id\n      content\n    }\n  }\n`;\n\nfunction DontReadTheComments({ repoFullName }) {\n  const {\n    data: { commentAdded },\n    loading,\n  } = useSubscription(COMMENTS_SUBSCRIPTION, { variables: { repoFullName } });\n  return \u003ch4\u003eNew comment: {!loading \u0026\u0026 commentAdded.content}\u003c/h4\u003e;\n}\n```\n\n\u003e Refer to the [Subscriptions](../../data/subscriptions/) section for a more in-depth overview of `useSubscription`.\n\n### Function Signature\n\n```ts\nfunction useSubscription\u003cTData = any, TVariables = OperationVariables\u003e(\n  subscription: DocumentNode,\n  options?: SubscriptionHookOptions\u003cTData, TVariables\u003e,\n): {\n  variables: TVariables;\n  loading: boolean;\n  data?: TData;\n  error?: ApolloError;\n} {}\n```\n\n### Params\n\n#### `subscription`\n\n| Param          | Type         | Description                                                          |\n| -------------- | ------------ | -------------------------------------------------------------------- |\n| `subscription` | DocumentNode | A GraphQL subscription document parsed into an AST by `gql`. |\n\n#### `options`\n\n\u003cSubscriptionOptions /\u003e\n\n### Result\n\n\u003cSubscriptionResult /\u003e\n\n## `useApolloClient`\n\n### Example\n\n```jsx\nimport { useApolloClient } from '@apollo/client';\n\nfunction SomeComponent() {\n  const client = useApolloClient();\n  // `client` is now set to the `ApolloClient` instance being used by the\n  // application (that was configured using something like `ApolloProvider`)\n}\n```\n\n### Function Signature\n\n```ts\nfunction useApolloClient(): ApolloClient\u003cobject\u003e {}\n```\n\n### Result\n\n| Param                  | Type                       | Description                                                |\n| ---------------------- | -------------------------- | ---------------------------------------------------------- |\n| Apollo Client instance | ApolloClient\u0026lt;object\u0026gt; | The `ApolloClient` instance being used by the application. |\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_apolloclient_api-react_hooks.mdx"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

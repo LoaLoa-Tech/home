@@ -1,0 +1,306 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: events
+title: SyntheticEvent
+permalink: docs/events.html
+layout: docs
+category: Reference</p>
+<hr>
+<p>This reference guide documents the <code>SyntheticEvent</code> wrapper that forms part of React's Event System. See the <a href="/docs/handling-events.html">Handling Events</a> guide to learn more.</p>
+<h2>Overview {#overview}</h2>
+<p>Your event handlers will be passed instances of <code>SyntheticEvent</code>, a cross-browser wrapper around the browser's native event. It has the same interface as the browser's native event, including <code>stopPropagation()</code> and <code>preventDefault()</code>, except the events work identically across all browsers.</p>
+<p>If you find that you need the underlying browser event for some reason, simply use the <code>nativeEvent</code> attribute to get it. The synthetic events are different from, and do not map directly to, the browser's native events. For example in <code>onMouseLeave</code> <code>event.nativeEvent</code> will point to a <code>mouseout</code> event. The specific mapping is not part of the public API and may change at any time. Every <code>SyntheticEvent</code> object has the following attributes:</p>
+<pre><code class="language-javascript">boolean bubbles
+boolean cancelable
+DOMEventTarget currentTarget
+boolean defaultPrevented
+number eventPhase
+boolean isTrusted
+DOMEvent nativeEvent
+void preventDefault()
+boolean isDefaultPrevented()
+void stopPropagation()
+boolean isPropagationStopped()
+void persist()
+DOMEventTarget target
+number timeStamp
+string type
+</code></pre>
+<blockquote>
+<p>Note:</p>
+<p>As of v17, <code>e.persist()</code> doesn't do anything because the <code>SyntheticEvent</code> is no longer <a href="/docs/legacy-event-pooling.html">pooled</a>.</p>
+</blockquote>
+<blockquote>
+<p>Note:</p>
+<p>As of v0.14, returning <code>false</code> from an event handler will no longer stop event propagation. Instead, <code>e.stopPropagation()</code> or <code>e.preventDefault()</code> should be triggered manually, as appropriate.</p>
+</blockquote>
+<h2>Supported Events {#supported-events}</h2>
+<p>React normalizes events so that they have consistent properties across different browsers.</p>
+<p>The event handlers below are triggered by an event in the bubbling phase. To register an event handler for the capture phase, append <code>Capture</code> to the event name; for example, instead of using <code>onClick</code>, you would use <code>onClickCapture</code> to handle the click event in the capture phase.</p>
+<ul>
+<li><a href="#clipboard-events">Clipboard Events</a></li>
+<li><a href="#composition-events">Composition Events</a></li>
+<li><a href="#keyboard-events">Keyboard Events</a></li>
+<li><a href="#focus-events">Focus Events</a></li>
+<li><a href="#form-events">Form Events</a></li>
+<li><a href="#generic-events">Generic Events</a></li>
+<li><a href="#mouse-events">Mouse Events</a></li>
+<li><a href="#pointer-events">Pointer Events</a></li>
+<li><a href="#selection-events">Selection Events</a></li>
+<li><a href="#touch-events">Touch Events</a></li>
+<li><a href="#ui-events">UI Events</a></li>
+<li><a href="#wheel-events">Wheel Events</a></li>
+<li><a href="#media-events">Media Events</a></li>
+<li><a href="#image-events">Image Events</a></li>
+<li><a href="#animation-events">Animation Events</a></li>
+<li><a href="#transition-events">Transition Events</a></li>
+<li><a href="#other-events">Other Events</a></li>
+</ul>
+<hr>
+<h2>Reference {#reference}</h2>
+<h3>Clipboard Events {#clipboard-events}</h3>
+<p>Event names:</p>
+<pre><code>onCopy onCut onPaste
+</code></pre>
+<p>Properties:</p>
+<pre><code class="language-javascript">DOMDataTransfer clipboardData
+</code></pre>
+<hr>
+<h3>Composition Events {#composition-events}</h3>
+<p>Event names:</p>
+<pre><code>onCompositionEnd onCompositionStart onCompositionUpdate
+</code></pre>
+<p>Properties:</p>
+<pre><code class="language-javascript">string data
+
+</code></pre>
+<hr>
+<h3>Keyboard Events {#keyboard-events}</h3>
+<p>Event names:</p>
+<pre><code>onKeyDown onKeyPress onKeyUp
+</code></pre>
+<p>Properties:</p>
+<pre><code class="language-javascript">boolean altKey
+number charCode
+boolean ctrlKey
+boolean getModifierState(key)
+string key
+number keyCode
+string locale
+number location
+boolean metaKey
+boolean repeat
+boolean shiftKey
+number which
+</code></pre>
+<p>The <code>key</code> property can take any of the values documented in the <a href="https://www.w3.org/TR/uievents-key/#named-key-attribute-values">DOM Level 3 Events spec</a>.</p>
+<hr>
+<h3>Focus Events {#focus-events}</h3>
+<p>Event names:</p>
+<pre><code>onFocus onBlur
+</code></pre>
+<p>These focus events work on all elements in the React DOM, not just form elements.</p>
+<p>Properties:</p>
+<pre><code class="language-js">DOMEventTarget relatedTarget
+</code></pre>
+<h4>onFocus {#onfocus}</h4>
+<p>The <code>onFocus</code> event is called when the element (or some element inside of it) receives focus. For example, it's called when the user clicks on a text input.</p>
+<pre><code class="language-javascript">function Example() {
+  return (
+    &lt;input
+      onFocus={(e) =&gt; {
+        console.log('Focused on input');
+      }}
+      placeholder=&quot;onFocus is triggered when you click this input.&quot;
+    /&gt;
+  )
+}
+</code></pre>
+<h4>onBlur {#onblur}</h4>
+<p>The <code>onBlur</code> event handler is called when focus has left the element (or left some element inside of it). For example, it's called when the user clicks outside of a focused text input.</p>
+<pre><code class="language-javascript">function Example() {
+  return (
+    &lt;input
+      onBlur={(e) =&gt; {
+        console.log('Triggered because this input lost focus');
+      }}
+      placeholder=&quot;onBlur is triggered when you click this input and then you click outside of it.&quot;
+    /&gt;
+  )
+}
+</code></pre>
+<h4>Detecting Focus Entering and Leaving {#detecting-focus-entering-and-leaving}</h4>
+<p>You can use the <code>currentTarget</code> and <code>relatedTarget</code> to differentiate if the focusing or blurring events originated from <em>outside</em> of the parent element. Here is a demo you can copy and paste that shows how to detect focusing a child, focusing the element itself, and focus entering or leaving the whole subtree.</p>
+<pre><code class="language-javascript">function Example() {
+  return (
+    &lt;div
+      tabIndex={1}
+      onFocus={(e) =&gt; {
+        if (e.currentTarget === e.target) {
+          console.log('focused self');
+        } else {
+          console.log('focused child', e.target);
+        }
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          // Not triggered when swapping focus between children
+          console.log('focus entered self');
+        }
+      }}
+      onBlur={(e) =&gt; {
+        if (e.currentTarget === e.target) {
+          console.log('unfocused self');
+        } else {
+          console.log('unfocused child', e.target);
+        }
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          // Not triggered when swapping focus between children
+          console.log('focus left self');
+        }
+      }}
+    &gt;
+      &lt;input id=&quot;1&quot; /&gt;
+      &lt;input id=&quot;2&quot; /&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<hr>
+<h3>Form Events {#form-events}</h3>
+<p>Event names:</p>
+<pre><code>onChange onInput onInvalid onReset onSubmit 
+</code></pre>
+<p>For more information about the onChange event, see <a href="/docs/forms.html">Forms</a>.</p>
+<hr>
+<h3>Generic Events {#generic-events}</h3>
+<p>Event names:</p>
+<pre><code>onError onLoad
+</code></pre>
+<hr>
+<h3>Mouse Events {#mouse-events}</h3>
+<p>Event names:</p>
+<pre><code>onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
+onDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave
+onMouseMove onMouseOut onMouseOver onMouseUp
+</code></pre>
+<p>The <code>onMouseEnter</code> and <code>onMouseLeave</code> events propagate from the element being left to the one being entered instead of ordinary bubbling and do not have a capture phase.</p>
+<p>Properties:</p>
+<pre><code class="language-javascript">boolean altKey
+number button
+number buttons
+number clientX
+number clientY
+boolean ctrlKey
+boolean getModifierState(key)
+boolean metaKey
+number pageX
+number pageY
+DOMEventTarget relatedTarget
+number screenX
+number screenY
+boolean shiftKey
+</code></pre>
+<hr>
+<h3>Pointer Events {#pointer-events}</h3>
+<p>Event names:</p>
+<pre><code>onPointerDown onPointerMove onPointerUp onPointerCancel onGotPointerCapture
+onLostPointerCapture onPointerEnter onPointerLeave onPointerOver onPointerOut
+</code></pre>
+<p>The <code>onPointerEnter</code> and <code>onPointerLeave</code> events propagate from the element being left to the one being entered instead of ordinary bubbling and do not have a capture phase.</p>
+<p>Properties:</p>
+<p>As defined in the <a href="https://www.w3.org/TR/pointerevents/">W3 spec</a>, pointer events extend <a href="#mouse-events">Mouse Events</a> with the following properties:</p>
+<pre><code class="language-javascript">number pointerId
+number width
+number height
+number pressure
+number tangentialPressure
+number tiltX
+number tiltY
+number twist
+string pointerType
+boolean isPrimary
+</code></pre>
+<p>A note on cross-browser support:</p>
+<p>Pointer events are not yet supported in every browser (at the time of writing this article, supported browsers include: Chrome, Firefox, Edge, and Internet Explorer). React deliberately does not polyfill support for other browsers because a standard-conform polyfill would significantly increase the bundle size of <code>react-dom</code>.</p>
+<p>If your application requires pointer events, we recommend adding a third party pointer event polyfill.</p>
+<hr>
+<h3>Selection Events {#selection-events}</h3>
+<p>Event names:</p>
+<pre><code>onSelect
+</code></pre>
+<hr>
+<h3>Touch Events {#touch-events}</h3>
+<p>Event names:</p>
+<pre><code>onTouchCancel onTouchEnd onTouchMove onTouchStart
+</code></pre>
+<p>Properties:</p>
+<pre><code class="language-javascript">boolean altKey
+DOMTouchList changedTouches
+boolean ctrlKey
+boolean getModifierState(key)
+boolean metaKey
+boolean shiftKey
+DOMTouchList targetTouches
+DOMTouchList touches
+</code></pre>
+<hr>
+<h3>UI Events {#ui-events}</h3>
+<p>Event names:</p>
+<pre><code>onScroll
+</code></pre>
+<blockquote>
+<p>Note</p>
+<p>Starting with React 17, the <code>onScroll</code> event <strong>does not bubble</strong> in React. This matches the browser behavior and prevents the confusion when a nested scrollable element fires events on a distant parent.</p>
+</blockquote>
+<p>Properties:</p>
+<pre><code class="language-javascript">number detail
+DOMAbstractView view
+</code></pre>
+<hr>
+<h3>Wheel Events {#wheel-events}</h3>
+<p>Event names:</p>
+<pre><code>onWheel
+</code></pre>
+<p>Properties:</p>
+<pre><code class="language-javascript">number deltaMode
+number deltaX
+number deltaY
+number deltaZ
+</code></pre>
+<hr>
+<h3>Media Events {#media-events}</h3>
+<p>Event names:</p>
+<pre><code>onAbort onCanPlay onCanPlayThrough onDurationChange onEmptied onEncrypted
+onEnded onError onLoadedData onLoadedMetadata onLoadStart onPause onPlay
+onPlaying onProgress onRateChange onSeeked onSeeking onStalled onSuspend
+onTimeUpdate onVolumeChange onWaiting
+</code></pre>
+<hr>
+<h3>Image Events {#image-events}</h3>
+<p>Event names:</p>
+<pre><code>onLoad onError
+</code></pre>
+<hr>
+<h3>Animation Events {#animation-events}</h3>
+<p>Event names:</p>
+<pre><code>onAnimationStart onAnimationEnd onAnimationIteration
+</code></pre>
+<p>Properties:</p>
+<pre><code class="language-javascript">string animationName
+string pseudoElement
+float elapsedTime
+</code></pre>
+<hr>
+<h3>Transition Events {#transition-events}</h3>
+<p>Event names:</p>
+<pre><code>onTransitionEnd
+</code></pre>
+<p>Properties:</p>
+<pre><code class="language-javascript">string propertyName
+string pseudoElement
+float elapsedTime
+</code></pre>
+<hr>
+<h3>Other Events {#other-events}</h3>
+<p>Event names:</p>
+<pre><code>onToggle
+</code></pre>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: events\ntitle: SyntheticEvent\npermalink: docs/events.html\nlayout: docs\ncategory: Reference\n---\n\nThis reference guide documents the `SyntheticEvent` wrapper that forms part of React's Event System. See the [Handling Events](/docs/handling-events.html) guide to learn more.\n\n## Overview {#overview}\n\nYour event handlers will be passed instances of `SyntheticEvent`, a cross-browser wrapper around the browser's native event. It has the same interface as the browser's native event, including `stopPropagation()` and `preventDefault()`, except the events work identically across all browsers. \n\nIf you find that you need the underlying browser event for some reason, simply use the `nativeEvent` attribute to get it. The synthetic events are different from, and do not map directly to, the browser's native events. For example in `onMouseLeave` `event.nativeEvent` will point to a `mouseout` event. The specific mapping is not part of the public API and may change at any time. Every `SyntheticEvent` object has the following attributes:\n\n```javascript\nboolean bubbles\nboolean cancelable\nDOMEventTarget currentTarget\nboolean defaultPrevented\nnumber eventPhase\nboolean isTrusted\nDOMEvent nativeEvent\nvoid preventDefault()\nboolean isDefaultPrevented()\nvoid stopPropagation()\nboolean isPropagationStopped()\nvoid persist()\nDOMEventTarget target\nnumber timeStamp\nstring type\n```\n\n\u003e Note:\n\u003e\n\u003e As of v17, `e.persist()` doesn't do anything because the `SyntheticEvent` is no longer [pooled](/docs/legacy-event-pooling.html).\n\n\u003e Note:\n\u003e\n\u003e As of v0.14, returning `false` from an event handler will no longer stop event propagation. Instead, `e.stopPropagation()` or `e.preventDefault()` should be triggered manually, as appropriate.\n\n## Supported Events {#supported-events}\n\nReact normalizes events so that they have consistent properties across different browsers.\n\nThe event handlers below are triggered by an event in the bubbling phase. To register an event handler for the capture phase, append `Capture` to the event name; for example, instead of using `onClick`, you would use `onClickCapture` to handle the click event in the capture phase.\n\n- [Clipboard Events](#clipboard-events)\n- [Composition Events](#composition-events)\n- [Keyboard Events](#keyboard-events)\n- [Focus Events](#focus-events)\n- [Form Events](#form-events)\n- [Generic Events](#generic-events)\n- [Mouse Events](#mouse-events)\n- [Pointer Events](#pointer-events)\n- [Selection Events](#selection-events)\n- [Touch Events](#touch-events)\n- [UI Events](#ui-events)\n- [Wheel Events](#wheel-events)\n- [Media Events](#media-events)\n- [Image Events](#image-events)\n- [Animation Events](#animation-events)\n- [Transition Events](#transition-events)\n- [Other Events](#other-events)\n\n* * *\n\n## Reference {#reference}\n\n### Clipboard Events {#clipboard-events}\n\nEvent names:\n\n```\nonCopy onCut onPaste\n```\n\nProperties:\n\n```javascript\nDOMDataTransfer clipboardData\n```\n\n* * *\n\n### Composition Events {#composition-events}\n\nEvent names:\n\n```\nonCompositionEnd onCompositionStart onCompositionUpdate\n```\n\nProperties:\n\n```javascript\nstring data\n\n```\n\n* * *\n\n### Keyboard Events {#keyboard-events}\n\nEvent names:\n\n```\nonKeyDown onKeyPress onKeyUp\n```\n\nProperties:\n\n```javascript\nboolean altKey\nnumber charCode\nboolean ctrlKey\nboolean getModifierState(key)\nstring key\nnumber keyCode\nstring locale\nnumber location\nboolean metaKey\nboolean repeat\nboolean shiftKey\nnumber which\n```\n\nThe `key` property can take any of the values documented in the [DOM Level 3 Events spec](https://www.w3.org/TR/uievents-key/#named-key-attribute-values).\n\n* * *\n\n### Focus Events {#focus-events}\n\nEvent names:\n\n```\nonFocus onBlur\n```\n\nThese focus events work on all elements in the React DOM, not just form elements.\n\nProperties:\n\n```js\nDOMEventTarget relatedTarget\n```\n\n#### onFocus {#onfocus}\n\nThe `onFocus` event is called when the element (or some element inside of it) receives focus. For example, it's called when the user clicks on a text input.\n\n```javascript\nfunction Example() {\n  return (\n    \u003cinput\n      onFocus={(e) =\u003e {\n        console.log('Focused on input');\n      }}\n      placeholder=\"onFocus is triggered when you click this input.\"\n    /\u003e\n  )\n}\n```\n\n#### onBlur {#onblur}\n\nThe `onBlur` event handler is called when focus has left the element (or left some element inside of it). For example, it's called when the user clicks outside of a focused text input.\n\n```javascript\nfunction Example() {\n  return (\n    \u003cinput\n      onBlur={(e) =\u003e {\n        console.log('Triggered because this input lost focus');\n      }}\n      placeholder=\"onBlur is triggered when you click this input and then you click outside of it.\"\n    /\u003e\n  )\n}\n```\n\n#### Detecting Focus Entering and Leaving {#detecting-focus-entering-and-leaving}\n\nYou can use the `currentTarget` and `relatedTarget` to differentiate if the focusing or blurring events originated from _outside_ of the parent element. Here is a demo you can copy and paste that shows how to detect focusing a child, focusing the element itself, and focus entering or leaving the whole subtree.\n\n```javascript\nfunction Example() {\n  return (\n    \u003cdiv\n      tabIndex={1}\n      onFocus={(e) =\u003e {\n        if (e.currentTarget === e.target) {\n          console.log('focused self');\n        } else {\n          console.log('focused child', e.target);\n        }\n        if (!e.currentTarget.contains(e.relatedTarget)) {\n          // Not triggered when swapping focus between children\n          console.log('focus entered self');\n        }\n      }}\n      onBlur={(e) =\u003e {\n        if (e.currentTarget === e.target) {\n          console.log('unfocused self');\n        } else {\n          console.log('unfocused child', e.target);\n        }\n        if (!e.currentTarget.contains(e.relatedTarget)) {\n          // Not triggered when swapping focus between children\n          console.log('focus left self');\n        }\n      }}\n    \u003e\n      \u003cinput id=\"1\" /\u003e\n      \u003cinput id=\"2\" /\u003e\n    \u003c/div\u003e\n  );\n}\n```\n\n* * *\n\n### Form Events {#form-events}\n\nEvent names:\n\n```\nonChange onInput onInvalid onReset onSubmit \n```\n\nFor more information about the onChange event, see [Forms](/docs/forms.html).\n\n* * *\n\n### Generic Events {#generic-events}\n\nEvent names:\n\n```\nonError onLoad\n```\n\n* * *\n\n### Mouse Events {#mouse-events}\n\nEvent names:\n\n```\nonClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit\nonDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave\nonMouseMove onMouseOut onMouseOver onMouseUp\n```\n\nThe `onMouseEnter` and `onMouseLeave` events propagate from the element being left to the one being entered instead of ordinary bubbling and do not have a capture phase.\n\nProperties:\n\n```javascript\nboolean altKey\nnumber button\nnumber buttons\nnumber clientX\nnumber clientY\nboolean ctrlKey\nboolean getModifierState(key)\nboolean metaKey\nnumber pageX\nnumber pageY\nDOMEventTarget relatedTarget\nnumber screenX\nnumber screenY\nboolean shiftKey\n```\n\n* * *\n\n### Pointer Events {#pointer-events}\n\nEvent names:\n\n```\nonPointerDown onPointerMove onPointerUp onPointerCancel onGotPointerCapture\nonLostPointerCapture onPointerEnter onPointerLeave onPointerOver onPointerOut\n```\n\nThe `onPointerEnter` and `onPointerLeave` events propagate from the element being left to the one being entered instead of ordinary bubbling and do not have a capture phase.\n\nProperties:\n\nAs defined in the [W3 spec](https://www.w3.org/TR/pointerevents/), pointer events extend [Mouse Events](#mouse-events) with the following properties:\n\n```javascript\nnumber pointerId\nnumber width\nnumber height\nnumber pressure\nnumber tangentialPressure\nnumber tiltX\nnumber tiltY\nnumber twist\nstring pointerType\nboolean isPrimary\n```\n\nA note on cross-browser support:\n\nPointer events are not yet supported in every browser (at the time of writing this article, supported browsers include: Chrome, Firefox, Edge, and Internet Explorer). React deliberately does not polyfill support for other browsers because a standard-conform polyfill would significantly increase the bundle size of `react-dom`.\n\nIf your application requires pointer events, we recommend adding a third party pointer event polyfill.\n\n* * *\n\n### Selection Events {#selection-events}\n\nEvent names:\n\n```\nonSelect\n```\n\n* * *\n\n### Touch Events {#touch-events}\n\nEvent names:\n\n```\nonTouchCancel onTouchEnd onTouchMove onTouchStart\n```\n\nProperties:\n\n```javascript\nboolean altKey\nDOMTouchList changedTouches\nboolean ctrlKey\nboolean getModifierState(key)\nboolean metaKey\nboolean shiftKey\nDOMTouchList targetTouches\nDOMTouchList touches\n```\n\n* * *\n\n### UI Events {#ui-events}\n\nEvent names:\n\n```\nonScroll\n```\n\n\u003eNote\n\u003e\n\u003eStarting with React 17, the `onScroll` event **does not bubble** in React. This matches the browser behavior and prevents the confusion when a nested scrollable element fires events on a distant parent.\n\nProperties:\n\n```javascript\nnumber detail\nDOMAbstractView view\n```\n\n* * *\n\n### Wheel Events {#wheel-events}\n\nEvent names:\n\n```\nonWheel\n```\n\nProperties:\n\n```javascript\nnumber deltaMode\nnumber deltaX\nnumber deltaY\nnumber deltaZ\n```\n\n* * *\n\n### Media Events {#media-events}\n\nEvent names:\n\n```\nonAbort onCanPlay onCanPlayThrough onDurationChange onEmptied onEncrypted\nonEnded onError onLoadedData onLoadedMetadata onLoadStart onPause onPlay\nonPlaying onProgress onRateChange onSeeked onSeeking onStalled onSuspend\nonTimeUpdate onVolumeChange onWaiting\n```\n\n* * *\n\n### Image Events {#image-events}\n\nEvent names:\n\n```\nonLoad onError\n```\n\n* * *\n\n### Animation Events {#animation-events}\n\nEvent names:\n\n```\nonAnimationStart onAnimationEnd onAnimationIteration\n```\n\nProperties:\n\n```javascript\nstring animationName\nstring pseudoElement\nfloat elapsedTime\n```\n\n* * *\n\n### Transition Events {#transition-events}\n\nEvent names:\n\n```\nonTransitionEnd\n```\n\nProperties:\n\n```javascript\nstring propertyName\nstring pseudoElement\nfloat elapsedTime\n```\n\n* * *\n\n### Other Events {#other-events}\n\nEvent names:\n\n```\nonToggle\n```\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_reference-events.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

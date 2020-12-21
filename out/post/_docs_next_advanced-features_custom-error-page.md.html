@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<h2>description: Override and extend the built-in Error page to handle custom errors.</h2>
+<h1>Custom Error Page</h1>
+<h2>404 Page</h2>
+<p>A 404 page may be accessed very often. Server-rendering an error page for every visit increases the load of the Next.js server. This can result in increased costs and slow experiences.</p>
+<p>To avoid the above pitfalls, Next.js provides a static 404 page by default without having to add any additional files.</p>
+<h3>Customizing The 404 Page</h3>
+<p>To create a custom 404 page you can create a <code>pages/404.js</code> file. This file is statically generated at build time.</p>
+<pre><code class="language-jsx">// pages/404.js
+export default function Custom404() {
+  return &lt;h1&gt;404 - Page Not Found&lt;/h1&gt;
+}
+</code></pre>
+<h2>500 Page</h2>
+<p>By default Next.js provides a 500 error page that matches the default 404 page’s style. This page is not statically optimized as it allows server-side errors to be reported. This is why 404 and 500 (other errors) are separated.</p>
+<h3>Customizing The Error Page</h3>
+<p>500 errors are handled both client-side and server-side by the <code>Error</code> component. If you wish to override it, define the file <code>pages/_error.js</code> and add the following code:</p>
+<pre><code class="language-jsx">function Error({ statusCode }) {
+  return (
+    &lt;p&gt;
+      {statusCode
+        ? `An error ${statusCode} occurred on server`
+        : 'An error occurred on client'}
+    &lt;/p&gt;
+  )
+}
+
+Error.getInitialProps = ({ res, err }) =&gt; {
+  const statusCode = res ? res.statusCode : err ? err.statusCode : 404
+  return { statusCode }
+}
+
+export default Error
+</code></pre>
+<blockquote>
+<p><code>pages/_error.js</code> is only used in production. In development you’ll get an error with the call stack to know where the error originated from.</p>
+</blockquote>
+<h3>Reusing the built-in error page</h3>
+<p>If you want to render the built-in error page you can by importing the <code>Error</code> component:</p>
+<pre><code class="language-jsx">import Error from 'next/error'
+
+export async function getServerSideProps() {
+  const res = await fetch('https://api.github.com/repos/vercel/next.js')
+  const errorCode = res.ok ? false : res.statusCode
+  const json = await res.json()
+
+  return {
+    props: { errorCode, stars: json.stargazers_count },
+  }
+}
+
+export default function Page({ errorCode, stars }) {
+  if (errorCode) {
+    return &lt;Error statusCode={errorCode} /&gt;
+  }
+
+  return &lt;div&gt;Next stars: {stars}&lt;/div&gt;
+}
+</code></pre>
+<p>The <code>Error</code> component also takes <code>title</code> as a property if you want to pass in a text message along with a <code>statusCode</code>.</p>
+<p>If you have a custom <code>Error</code> component be sure to import that one instead. <code>next/error</code> exports the default component used by Next.js.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ndescription: Override and extend the built-in Error page to handle custom errors.\n---\n\n# Custom Error Page\n\n## 404 Page\n\nA 404 page may be accessed very often. Server-rendering an error page for every visit increases the load of the Next.js server. This can result in increased costs and slow experiences.\n\nTo avoid the above pitfalls, Next.js provides a static 404 page by default without having to add any additional files.\n\n### Customizing The 404 Page\n\nTo create a custom 404 page you can create a `pages/404.js` file. This file is statically generated at build time.\n\n```jsx\n// pages/404.js\nexport default function Custom404() {\n  return \u003ch1\u003e404 - Page Not Found\u003c/h1\u003e\n}\n```\n\n## 500 Page\n\nBy default Next.js provides a 500 error page that matches the default 404 page’s style. This page is not statically optimized as it allows server-side errors to be reported. This is why 404 and 500 (other errors) are separated.\n\n### Customizing The Error Page\n\n500 errors are handled both client-side and server-side by the `Error` component. If you wish to override it, define the file `pages/_error.js` and add the following code:\n\n```jsx\nfunction Error({ statusCode }) {\n  return (\n    \u003cp\u003e\n      {statusCode\n        ? `An error ${statusCode} occurred on server`\n        : 'An error occurred on client'}\n    \u003c/p\u003e\n  )\n}\n\nError.getInitialProps = ({ res, err }) =\u003e {\n  const statusCode = res ? res.statusCode : err ? err.statusCode : 404\n  return { statusCode }\n}\n\nexport default Error\n```\n\n\u003e `pages/_error.js` is only used in production. In development you’ll get an error with the call stack to know where the error originated from.\n\n### Reusing the built-in error page\n\nIf you want to render the built-in error page you can by importing the `Error` component:\n\n```jsx\nimport Error from 'next/error'\n\nexport async function getServerSideProps() {\n  const res = await fetch('https://api.github.com/repos/vercel/next.js')\n  const errorCode = res.ok ? false : res.statusCode\n  const json = await res.json()\n\n  return {\n    props: { errorCode, stars: json.stargazers_count },\n  }\n}\n\nexport default function Page({ errorCode, stars }) {\n  if (errorCode) {\n    return \u003cError statusCode={errorCode} /\u003e\n  }\n\n  return \u003cdiv\u003eNext stars: {stars}\u003c/div\u003e\n}\n```\n\nThe `Error` component also takes `title` as a property if you want to pass in a text message along with a `statusCode`.\n\nIf you have a custom `Error` component be sure to import that one instead. `next/error` exports the default component used by Next.js.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_next_advanced-features_custom-error-page.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

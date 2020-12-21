@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<h2>description: You can add the dynamic routes used for pages to API Routes too. Learn how it works here.</h2>
+<h1>Dynamic API Routes</h1>
+<p><details open>
+<summary><b>Examples</b></summary></p>
+  <ul>
+    <li><a href="https://github.com/vercel/next.js/tree/canary/examples/api-routes">Basic API Routes</a></li>
+  </ul>
+</details>
+<p>API routes support <a href="/docs/routing/dynamic-routes.md">dynamic routes</a>, and follow the same file naming rules used for <code>pages</code>.</p>
+<p>For example, the API route <code>pages/api/post/[pid].js</code> has the following code:</p>
+<pre><code class="language-js">export default function handler(req, res) {
+  const {
+    query: { pid },
+  } = req
+
+  res.end(`Post: ${pid}`)
+}
+</code></pre>
+<p>Now, a request to <code>/api/post/abc</code> will respond with the text: <code>Post: abc</code>.</p>
+<h3>Index routes and Dynamic API routes</h3>
+<p>A very common RESTful pattern is to set up routes like this:</p>
+<ul>
+<li><code>GET api/posts</code> - gets a list of posts, probably paginated</li>
+<li><code>GET api/posts/12345</code> - gets post id 12345</li>
+</ul>
+<p>We can model this in two ways:</p>
+<ul>
+<li>Option 1:
+<ul>
+<li><code>/api/posts.js</code></li>
+<li><code>/api/posts/[postId].js</code></li>
+</ul></li>
+<li>Option 2:
+<ul>
+<li><code>/api/posts/index.js</code></li>
+<li><code>/api/posts/[postId].js</code></li>
+</ul></li>
+</ul>
+<p>Both are equivalent. A third option of only using <code>/api/posts/[postId].js</code> is not valid because Dynamic Routes (including Catch-all routes - see below) do not have an <code>undefined</code> state and <code>GET api/posts</code> will not match <code>/api/posts/[postId].js</code> under any circumstances.</p>
+<h3>Catch all API routes</h3>
+<p>API Routes can be extended to catch all paths by adding three dots (<code>...</code>) inside the brackets. For example:</p>
+<ul>
+<li><code>pages/api/post/[...slug].js</code> matches <code>/api/post/a</code>, but also <code>/api/post/a/b</code>, <code>/api/post/a/b/c</code> and so on.</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: You can use names other than <code>slug</code>, such as: <code>[...param]</code></p>
+</blockquote>
+<p>Matched parameters will be sent as a query parameter (<code>slug</code> in the example) to the page, and it will always be an array, so, the path <code>/api/post/a</code> will have the following <code>query</code> object:</p>
+<pre><code class="language-json">{ &quot;slug&quot;: [&quot;a&quot;] }
+</code></pre>
+<p>And in the case of <code>/api/post/a/b</code>, and any other matching path, new parameters will be added to the array, like so:</p>
+<pre><code class="language-json">{ &quot;slug&quot;: [&quot;a&quot;, &quot;b&quot;] }
+</code></pre>
+<p>An API route for <code>pages/api/post/[...slug].js</code> could look like this:</p>
+<pre><code class="language-js">export default function handler(req, res) {
+  const {
+    query: { slug },
+  } = req
+
+  res.end(`Post: ${slug.join(', ')}`)
+}
+</code></pre>
+<p>Now, a request to <code>/api/post/a/b/c</code> will respond with the text: <code>Post: a, b, c</code>.</p>
+<h3>Optional catch all API routes</h3>
+<p>Catch all routes can be made optional by including the parameter in double brackets (<code>[[...slug]]</code>).</p>
+<p>For example, <code>pages/api/post/[[...slug]].js</code> will match <code>/api/post</code>, <code>/api/post/a</code>, <code>/api/post/a/b</code>, and so on.</p>
+<p>The main difference between catch all and optional catch all routes is that with optional, the route without the parameter is also matched (<code>/api/post</code> in the example above).</p>
+<p>The <code>query</code> objects are as follows:</p>
+<pre><code class="language-json">{ } // GET `/api/post` (empty object)
+{ &quot;slug&quot;: [&quot;a&quot;] } // `GET /api/post/a` (single-element array)
+{ &quot;slug&quot;: [&quot;a&quot;, &quot;b&quot;] } // `GET /api/post/a/b` (multi-element array)
+</code></pre>
+<h2>Caveats</h2>
+<ul>
+<li>Predefined API routes take precedence over dynamic API routes, and dynamic API routes over catch all API routes. Take a look at the following examples:
+<ul>
+<li><code>pages/api/post/create.js</code> - Will match <code>/api/post/create</code></li>
+<li><code>pages/api/post/[pid].js</code> - Will match <code>/api/post/1</code>, <code>/api/post/abc</code>, etc. But not <code>/api/post/create</code></li>
+<li><code>pages/api/post/[...slug].js</code> - Will match <code>/api/post/1/2</code>, <code>/api/post/a/b/c</code>, etc. But not <code>/api/post/create</code>, <code>/api/post/abc</code></li>
+</ul></li>
+</ul>
+<h2>Related</h2>
+<p>For more information on what to do next, we recommend the following sections:</p>
+<div class="card">
+  <a href="/docs/routing/dynamic-routes.md">
+    <b>Dynamic Routes:</b>
+    <small>Learn more about the built-in dynamic routes.</small>
+  </a>
+</div>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\ndescription: You can add the dynamic routes used for pages to API Routes too. Learn how it works here.\n---\n\n# Dynamic API Routes\n\n\u003cdetails open\u003e\n  \u003csummary\u003e\u003cb\u003eExamples\u003c/b\u003e\u003c/summary\u003e\n  \u003cul\u003e\n    \u003cli\u003e\u003ca href=\"https://github.com/vercel/next.js/tree/canary/examples/api-routes\"\u003eBasic API Routes\u003c/a\u003e\u003c/li\u003e\n  \u003c/ul\u003e\n\u003c/details\u003e\n\nAPI routes support [dynamic routes](/docs/routing/dynamic-routes.md), and follow the same file naming rules used for `pages`.\n\nFor example, the API route `pages/api/post/[pid].js` has the following code:\n\n```js\nexport default function handler(req, res) {\n  const {\n    query: { pid },\n  } = req\n\n  res.end(`Post: ${pid}`)\n}\n```\n\nNow, a request to `/api/post/abc` will respond with the text: `Post: abc`.\n\n### Index routes and Dynamic API routes\n\nA very common RESTful pattern is to set up routes like this:\n\n- `GET api/posts` - gets a list of posts, probably paginated\n- `GET api/posts/12345` - gets post id 12345\n\nWe can model this in two ways:\n\n- Option 1:\n  - `/api/posts.js`\n  - `/api/posts/[postId].js`\n- Option 2:\n  - `/api/posts/index.js`\n  - `/api/posts/[postId].js`\n\nBoth are equivalent. A third option of only using `/api/posts/[postId].js` is not valid because Dynamic Routes (including Catch-all routes - see below) do not have an `undefined` state and `GET api/posts` will not match `/api/posts/[postId].js` under any circumstances.\n\n### Catch all API routes\n\nAPI Routes can be extended to catch all paths by adding three dots (`...`) inside the brackets. For example:\n\n- `pages/api/post/[...slug].js` matches `/api/post/a`, but also `/api/post/a/b`, `/api/post/a/b/c` and so on.\n\n\u003e **Note**: You can use names other than `slug`, such as: `[...param]`\n\nMatched parameters will be sent as a query parameter (`slug` in the example) to the page, and it will always be an array, so, the path `/api/post/a` will have the following `query` object:\n\n```json\n{ \"slug\": [\"a\"] }\n```\n\nAnd in the case of `/api/post/a/b`, and any other matching path, new parameters will be added to the array, like so:\n\n```json\n{ \"slug\": [\"a\", \"b\"] }\n```\n\nAn API route for `pages/api/post/[...slug].js` could look like this:\n\n```js\nexport default function handler(req, res) {\n  const {\n    query: { slug },\n  } = req\n\n  res.end(`Post: ${slug.join(', ')}`)\n}\n```\n\nNow, a request to `/api/post/a/b/c` will respond with the text: `Post: a, b, c`.\n\n### Optional catch all API routes\n\nCatch all routes can be made optional by including the parameter in double brackets (`[[...slug]]`).\n\nFor example, `pages/api/post/[[...slug]].js` will match `/api/post`, `/api/post/a`, `/api/post/a/b`, and so on.\n\nThe main difference between catch all and optional catch all routes is that with optional, the route without the parameter is also matched (`/api/post` in the example above).\n\nThe `query` objects are as follows:\n\n```json\n{ } // GET `/api/post` (empty object)\n{ \"slug\": [\"a\"] } // `GET /api/post/a` (single-element array)\n{ \"slug\": [\"a\", \"b\"] } // `GET /api/post/a/b` (multi-element array)\n```\n\n## Caveats\n\n- Predefined API routes take precedence over dynamic API routes, and dynamic API routes over catch all API routes. Take a look at the following examples:\n  - `pages/api/post/create.js` - Will match `/api/post/create`\n  - `pages/api/post/[pid].js` - Will match `/api/post/1`, `/api/post/abc`, etc. But not `/api/post/create`\n  - `pages/api/post/[...slug].js` - Will match `/api/post/1/2`, `/api/post/a/b/c`, etc. But not `/api/post/create`, `/api/post/abc`\n\n## Related\n\nFor more information on what to do next, we recommend the following sections:\n\n\u003cdiv class=\"card\"\u003e\n  \u003ca href=\"/docs/routing/dynamic-routes.md\"\u003e\n    \u003cb\u003eDynamic Routes:\u003c/b\u003e\n    \u003csmall\u003eLearn more about the built-in dynamic routes.\u003c/small\u003e\n  \u003c/a\u003e\n\u003c/div\u003e\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_next_api-routes_dynamic-api-routes.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

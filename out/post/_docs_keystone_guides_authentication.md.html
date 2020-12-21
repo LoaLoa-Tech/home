@@ -1,0 +1,143 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Authentication
+subSection: advanced
+[meta]-->
+<h1>Authentication</h1>
+<p>A note on terminology:</p>
+<ul>
+<li><strong>Authentication</strong> refers to a user identifying themselves.
+Within this document, we abbreviate <em>Authentication</em> to <em>Auth</em>.</li>
+<li><strong>Access control</strong> refers to the specific actions an authenticated or anonymous
+user can take. Often referred to as <em>authorization</em> elsewhere.
+The specifics of how this is done is outside the scope of this document.
+See <a href="/docs/guides/access-control.md">access control</a> for more.</li>
+</ul>
+<h2>Admin UI</h2>
+<p>Username / Password authentication can be enabled on the Admin UI.</p>
+<blockquote>
+<p><strong>Important:</strong> Admin Authentication will only restrict access to the Admin <em>UI</em>. It <em>will not</em> restrict API access. To also restrict access to the API, you must set up <a href="/docs/guides/access-control.md">Access controls</a>.</p>
+</blockquote>
+<p>To setup authentication, you must instantiate an <em>Auth Strategy</em>, and create a
+list used for authentication in <code>index.js</code>. Here, we will setup a
+<code>PasswordAuthStrategy</code> instance:</p>
+<pre><code class="language-javascript">const { Keystone } = require('@keystonejs/keystone');
+const { Text, Password } = require('@keystonejs/fields');
+const { PasswordAuthStrategy } = require('@keystonejs/auth-password');
+const { AdminUIApp } = require('@keystonejs/app-admin-ui');
+
+const keystone = new Keystone();
+
+keystone.createList('User', {
+  fields: {
+    username: { type: Text },
+    password: { type: Password },
+  },
+});
+
+const authStrategy = keystone.createAuthStrategy({
+  type: PasswordAuthStrategy,
+  list: 'User',
+  config: {
+    identityField: 'username', // default: 'email'
+    secretField: 'password', // default: 'password'
+  },
+});
+
+// Enable Admin UI login by adding the authentication strategy
+const admin = new AdminUIApp({ authStrategy });
+</code></pre>
+<p>Once your Keystone server is restarted, the Admin UI will now enforce
+authentication.</p>
+<h3>Logging in to the Admin UI</h3>
+<p>The first time you setup authentication, you may not be able to login. This is
+because there are no <code>User</code>s who can do the logging in.</p>
+<p>First, disable authentication on the Admin UI by removing <code>authStrategy</code> from
+the <code>new AdminUIApp()</code> call:</p>
+<pre><code class="language-diff">- const admin = new AdminUIApp({ authStrategy });
++ const admin = new AdminUIApp();
+</code></pre>
+<p>Second, disable access control by removing <code>access</code> from the
+<code>keystone.createList('User', ...</code> call:</p>
+<pre><code class="language-diff">-  access: {
+-    read: access.userIsAdminOrOwner,
+-    update: access.userIsAdminOrOwner,
+-    create: access.userIsAdmin,
+-    delete: access.userIsAdmin,
+-    auth: true,
+-  },
+</code></pre>
+<p>Restart your Keystone App, and visit <a href="http://localhost:3000/admin/users">http://localhost:3000/admin/users</a> - you should now be able to access the Admin UI without logging in.</p>
+<p>Next, create a User (be sure to set both a username and password).</p>
+<p>Add the <code>authStrategy</code> config back to the <code>new AdminUIApp()</code> call</p>
+<pre><code class="language-diff">- const admin = new AdminUIApp();
++ const admin = new AdminUIApp({ authStrategy });
+</code></pre>
+<p>Restart your Keystone App once more, and try to visit <a href="http://localhost:3000/admin/users">http://localhost:3000/admin/users</a>; you will be presented with the login screen.</p>
+<p>Finally; login with the newly created <code>User</code>'s credentials.</p>
+<h3>Programmatic authentication</h3>
+<p>Each list associated with an auth strategy creates corresponding queries and mutations you can use for programmatic authentication. For a <code>List</code> called <code>User</code> using the <code>Password</code> auth strategy, the following operations are made available:</p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>authenticatedUser</code></td><td>Query</td><td>Returns the currently authenticated list item.</td></tr>
+<tr><td><code>authenticateUserWithPassword</code></td><td>Mutation</td><td>Authenticates a user.</td></tr>
+<tr><td><code>unauthenticateUser</code></td><td>Mutation</td><td>Unauthenticates the authenticated user.</td></tr>
+</tbody>
+</table>
+<p><em>NOTE:</em> these operations may be named differently if the <code>List.itemQueryName</code> config option is set.</p>
+<h4>GraphQL</h4>
+<p>The above configuration would also add the following types to the GraphQL schema:</p>
+<pre><code class="language-graphql">type authenticateUserOutput {
+  &quot;&quot;&quot;
+  Used to make subsequent authenticated requests by setting this token in a header: 'Authorization: Bearer &lt;token&gt;'.
+  &quot;&quot;&quot;
+  token: String
+  &quot;&quot;&quot;
+  Retrieve information on the newly authenticated User here.
+  &quot;&quot;&quot;
+  item: User
+}
+
+type unauthenticateUserOutput {
+  &quot;&quot;&quot;
+  \`true\` when unauthentication succeeds.
+  NOTE: unauthentication always succeeds when the request has an invalid or missing authentication token.
+  &quot;&quot;&quot;
+  success: Boolean
+}
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> The exact schema will depend on your chosen list and authentication strategy.</p>
+</blockquote>
+<h4>Usage</h4>
+<p>Authenticate and return the ID of the newly authenticated user:</p>
+<pre><code class="language-graphql">mutation signin($identity: String, $secret: String) {
+  authenticate: authenticateUserWithPassword(email: $identity, password: $secret) {
+    item {
+      id
+    }
+  }
+}
+</code></pre>
+<p>Unauthenticate the currently authenticated user:</p>
+<pre><code class="language-graphql">mutation {
+  unauthenticate: unauthenticateUser {
+    success
+  }
+}
+</code></pre>
+<h3>Controlling access to the Admin UI</h3>
+<p>By default, any <em>authenticated</em> user will be able to access the Admin UI. To restrict access, use the <code>isAccessAllowed</code> config option.</p>
+<p>See the <a href="https://www.keystonejs.com/keystonejs/app-admin-ui/">Admin UI app</a> docs for more details.</p>
+<h2>API access control</h2>
+<p>Adding Authentication as shown above will only enable login to the Admin UI. It <em>will not</em> restrict API access.</p>
+<blockquote>
+<p><strong>Note:</strong> To restrict API access, you must set up <a href="/docs/guides/access-control.md">Access controls</a></p>
+</blockquote>
+<h2>Hooks</h2>
+<p>Keystone provides a collection of hooks to allow you to customise the behaviour of the authentication mutations.
+Please see the <a href="/docs/api/hooks.md">hooks API docs</a> for details on how to use authentication hooks.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Authentication\nsubSection: advanced\n[meta]--\u003e\n\n# Authentication\n\nA note on terminology:\n\n- **Authentication** refers to a user identifying themselves.\n  Within this document, we abbreviate _Authentication_ to _Auth_.\n- **Access control** refers to the specific actions an authenticated or anonymous\n  user can take. Often referred to as _authorization_ elsewhere.\n  The specifics of how this is done is outside the scope of this document.\n  See [access control](/docs/guides/access-control.md) for more.\n\n## Admin UI\n\nUsername / Password authentication can be enabled on the Admin UI.\n\n\u003e **Important:** Admin Authentication will only restrict access to the Admin _UI_. It _will not_ restrict API access. To also restrict access to the API, you must set up [Access controls](/docs/guides/access-control.md).\n\nTo setup authentication, you must instantiate an _Auth Strategy_, and create a\nlist used for authentication in `index.js`. Here, we will setup a\n`PasswordAuthStrategy` instance:\n\n```javascript\nconst { Keystone } = require('@keystonejs/keystone');\nconst { Text, Password } = require('@keystonejs/fields');\nconst { PasswordAuthStrategy } = require('@keystonejs/auth-password');\nconst { AdminUIApp } = require('@keystonejs/app-admin-ui');\n\nconst keystone = new Keystone();\n\nkeystone.createList('User', {\n  fields: {\n    username: { type: Text },\n    password: { type: Password },\n  },\n});\n\nconst authStrategy = keystone.createAuthStrategy({\n  type: PasswordAuthStrategy,\n  list: 'User',\n  config: {\n    identityField: 'username', // default: 'email'\n    secretField: 'password', // default: 'password'\n  },\n});\n\n// Enable Admin UI login by adding the authentication strategy\nconst admin = new AdminUIApp({ authStrategy });\n```\n\nOnce your Keystone server is restarted, the Admin UI will now enforce\nauthentication.\n\n### Logging in to the Admin UI\n\nThe first time you setup authentication, you may not be able to login. This is\nbecause there are no `User`s who can do the logging in.\n\nFirst, disable authentication on the Admin UI by removing `authStrategy` from\nthe `new AdminUIApp()` call:\n\n```diff\n- const admin = new AdminUIApp({ authStrategy });\n+ const admin = new AdminUIApp();\n```\n\nSecond, disable access control by removing `access` from the\n`keystone.createList('User', ...` call:\n\n```diff\n-  access: {\n-    read: access.userIsAdminOrOwner,\n-    update: access.userIsAdminOrOwner,\n-    create: access.userIsAdmin,\n-    delete: access.userIsAdmin,\n-    auth: true,\n-  },\n```\n\nRestart your Keystone App, and visit \u003chttp://localhost:3000/admin/users\u003e - you should now be able to access the Admin UI without logging in.\n\nNext, create a User (be sure to set both a username and password).\n\nAdd the `authStrategy` config back to the `new AdminUIApp()` call\n\n```diff\n- const admin = new AdminUIApp();\n+ const admin = new AdminUIApp({ authStrategy });\n```\n\nRestart your Keystone App once more, and try to visit \u003chttp://localhost:3000/admin/users\u003e; you will be presented with the login screen.\n\nFinally; login with the newly created `User`'s credentials.\n\n### Programmatic authentication\n\nEach list associated with an auth strategy creates corresponding queries and mutations you can use for programmatic authentication. For a `List` called `User` using the `Password` auth strategy, the following operations are made available:\n\n| Name                           | Type     | Description                                    |\n| ------------------------------ | -------- | ---------------------------------------------- |\n| `authenticatedUser`            | Query    | Returns the currently authenticated list item. |\n| `authenticateUserWithPassword` | Mutation | Authenticates a user.                          |\n| `unauthenticateUser`           | Mutation | Unauthenticates the authenticated user.        |\n\n_NOTE:_ these operations may be named differently if the `List.itemQueryName` config option is set.\n\n#### GraphQL\n\nThe above configuration would also add the following types to the GraphQL schema:\n\n```graphql\ntype authenticateUserOutput {\n  \"\"\"\n  Used to make subsequent authenticated requests by setting this token in a header: 'Authorization: Bearer \u003ctoken\u003e'.\n  \"\"\"\n  token: String\n  \"\"\"\n  Retrieve information on the newly authenticated User here.\n  \"\"\"\n  item: User\n}\n\ntype unauthenticateUserOutput {\n  \"\"\"\n  \\`true\\` when unauthentication succeeds.\n  NOTE: unauthentication always succeeds when the request has an invalid or missing authentication token.\n  \"\"\"\n  success: Boolean\n}\n```\n\n\u003e **Remember:** The exact schema will depend on your chosen list and authentication strategy.\n\n#### Usage\n\nAuthenticate and return the ID of the newly authenticated user:\n\n```graphql\nmutation signin($identity: String, $secret: String) {\n  authenticate: authenticateUserWithPassword(email: $identity, password: $secret) {\n    item {\n      id\n    }\n  }\n}\n```\n\nUnauthenticate the currently authenticated user:\n\n```graphql\nmutation {\n  unauthenticate: unauthenticateUser {\n    success\n  }\n}\n```\n\n### Controlling access to the Admin UI\n\nBy default, any _authenticated_ user will be able to access the Admin UI. To restrict access, use the `isAccessAllowed` config option.\n\nSee the [Admin UI app](https://www.keystonejs.com/keystonejs/app-admin-ui/) docs for more details.\n\n## API access control\n\nAdding Authentication as shown above will only enable login to the Admin UI. It _will not_ restrict API access.\n\n\u003e **Note:** To restrict API access, you must set up [Access controls](/docs/guides/access-control.md)\n\n## Hooks\n\nKeystone provides a collection of hooks to allow you to customise the behaviour of the authentication mutations.\nPlease see the [hooks API docs](/docs/api/hooks.md) for details on how to use authentication hooks.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_authentication.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: portals
+title: Portals
+permalink: docs/portals.html</p>
+<hr>
+<p>Portals provide a first-class way to render children into a DOM node that exists outside the DOM hierarchy of the parent component.</p>
+<pre><code class="language-js">ReactDOM.createPortal(child, container)
+</code></pre>
+<p>The first argument (<code>child</code>) is any <a href="/docs/react-component.html#render">renderable React child</a>, such as an element, string, or fragment. The second argument (<code>container</code>) is a DOM element.</p>
+<h2>Usage {#usage}</h2>
+<p>Normally, when you return an element from a component's render method, it's mounted into the DOM as a child of the nearest parent node:</p>
+<pre><code class="language-js{4,6}">render() {
+  // React mounts a new div and renders the children into it
+  return (
+    &lt;div&gt;
+      {this.props.children}
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>However, sometimes it's useful to insert a child into a different location in the DOM:</p>
+<pre><code class="language-js{6}">render() {
+  // React does *not* create a new div. It renders the children into `domNode`.
+  // `domNode` is any valid DOM node, regardless of its location in the DOM.
+  return ReactDOM.createPortal(
+    this.props.children,
+    domNode
+  );
+}
+</code></pre>
+<p>A typical use case for portals is when a parent component has an <code>overflow: hidden</code> or <code>z-index</code> style, but you need the child to visually &quot;break out&quot; of its container. For example, dialogs, hovercards, and tooltips.</p>
+<blockquote>
+<p>Note:</p>
+<p>When working with portals, remember that <a href="/docs/accessibility.html#programmatically-managing-focus">managing keyboard focus</a> becomes very important.</p>
+<p>For modal dialogs, ensure that everyone can interact with them by following the <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal">WAI-ARIA Modal Authoring Practices</a>.</p>
+</blockquote>
+<p><a href="https://codepen.io/gaearon/pen/yzMaBd"><strong>Try it on CodePen</strong></a></p>
+<h2>Event Bubbling Through Portals {#event-bubbling-through-portals}</h2>
+<p>Even though a portal can be anywhere in the DOM tree, it behaves like a normal React child in every other way. Features like context work exactly the same regardless of whether the child is a portal, as the portal still exists in the <em>React tree</em> regardless of position in the <em>DOM tree</em>.</p>
+<p>This includes event bubbling. An event fired from inside a portal will propagate to ancestors in the containing <em>React tree</em>, even if those elements are not ancestors in the <em>DOM tree</em>. Assuming the following HTML structure:</p>
+<pre><code class="language-html">&lt;html&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;app-root&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;modal-root&quot;&gt;&lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>A <code>Parent</code> component in <code>#app-root</code> would be able to catch an uncaught, bubbling event from the sibling node <code>#modal-root</code>.</p>
+<pre><code class="language-js{28-31,42-49,53,61-63,70-71,74}">// These two containers are siblings in the DOM
+const appRoot = document.getElementById('app-root');
+const modalRoot = document.getElementById('modal-root');
+
+class Modal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.el = document.createElement('div');
+  }
+
+  componentDidMount() {
+    // The portal element is inserted in the DOM tree after
+    // the Modal's children are mounted, meaning that children
+    // will be mounted on a detached DOM node. If a child
+    // component requires to be attached to the DOM tree
+    // immediately when mounted, for example to measure a
+    // DOM node, or uses 'autoFocus' in a descendant, add
+    // state to Modal and only render the children when Modal
+    // is inserted in the DOM tree.
+    modalRoot.appendChild(this.el);
+  }
+
+  componentWillUnmount() {
+    modalRoot.removeChild(this.el);
+  }
+
+  render() {
+    return ReactDOM.createPortal(
+      this.props.children,
+      this.el
+    );
+  }
+}
+
+class Parent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {clicks: 0};
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    // This will fire when the button in Child is clicked,
+    // updating Parent's state, even though button
+    // is not direct descendant in the DOM.
+    this.setState(state =&gt; ({
+      clicks: state.clicks + 1
+    }));
+  }
+
+  render() {
+    return (
+      &lt;div onClick={this.handleClick}&gt;
+        &lt;p&gt;Number of clicks: {this.state.clicks}&lt;/p&gt;
+        &lt;p&gt;
+          Open up the browser DevTools
+          to observe that the button
+          is not a child of the div
+          with the onClick handler.
+        &lt;/p&gt;
+        &lt;Modal&gt;
+          &lt;Child /&gt;
+        &lt;/Modal&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+
+function Child() {
+  // The click event on this button will bubble up to parent,
+  // because there is no 'onClick' attribute defined
+  return (
+    &lt;div className=&quot;modal&quot;&gt;
+      &lt;button&gt;Click&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+ReactDOM.render(&lt;Parent /&gt;, appRoot);
+</code></pre>
+<p><a href="https://codepen.io/gaearon/pen/jGBWpE"><strong>Try it on CodePen</strong></a></p>
+<p>Catching an event bubbling up from a portal in a parent component allows the development of more flexible abstractions that are not inherently reliant on portals. For example, if you render a <code>&lt;Modal /&gt;</code> component, the parent can capture its events regardless of whether it's implemented using portals.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: portals\ntitle: Portals\npermalink: docs/portals.html\n---\n\nPortals provide a first-class way to render children into a DOM node that exists outside the DOM hierarchy of the parent component.\n\n```js\nReactDOM.createPortal(child, container)\n```\n\nThe first argument (`child`) is any [renderable React child](/docs/react-component.html#render), such as an element, string, or fragment. The second argument (`container`) is a DOM element.\n\n## Usage {#usage}\n\nNormally, when you return an element from a component's render method, it's mounted into the DOM as a child of the nearest parent node:\n\n```js{4,6}\nrender() {\n  // React mounts a new div and renders the children into it\n  return (\n    \u003cdiv\u003e\n      {this.props.children}\n    \u003c/div\u003e\n  );\n}\n```\n\nHowever, sometimes it's useful to insert a child into a different location in the DOM:\n\n```js{6}\nrender() {\n  // React does *not* create a new div. It renders the children into `domNode`.\n  // `domNode` is any valid DOM node, regardless of its location in the DOM.\n  return ReactDOM.createPortal(\n    this.props.children,\n    domNode\n  );\n}\n```\n\nA typical use case for portals is when a parent component has an `overflow: hidden` or `z-index` style, but you need the child to visually \"break out\" of its container. For example, dialogs, hovercards, and tooltips.\n\n\u003e Note:\n\u003e\n\u003e When working with portals, remember that [managing keyboard focus](/docs/accessibility.html#programmatically-managing-focus) becomes very important.\n\u003e\n\u003e For modal dialogs, ensure that everyone can interact with them by following the [WAI-ARIA Modal Authoring Practices](https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal).\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/yzMaBd)\n\n## Event Bubbling Through Portals {#event-bubbling-through-portals}\n\nEven though a portal can be anywhere in the DOM tree, it behaves like a normal React child in every other way. Features like context work exactly the same regardless of whether the child is a portal, as the portal still exists in the *React tree* regardless of position in the *DOM tree*.\n\nThis includes event bubbling. An event fired from inside a portal will propagate to ancestors in the containing *React tree*, even if those elements are not ancestors in the *DOM tree*. Assuming the following HTML structure:\n\n```html\n\u003chtml\u003e\n  \u003cbody\u003e\n    \u003cdiv id=\"app-root\"\u003e\u003c/div\u003e\n    \u003cdiv id=\"modal-root\"\u003e\u003c/div\u003e\n  \u003c/body\u003e\n\u003c/html\u003e\n```\n\nA `Parent` component in `#app-root` would be able to catch an uncaught, bubbling event from the sibling node `#modal-root`.\n\n```js{28-31,42-49,53,61-63,70-71,74}\n// These two containers are siblings in the DOM\nconst appRoot = document.getElementById('app-root');\nconst modalRoot = document.getElementById('modal-root');\n\nclass Modal extends React.Component {\n  constructor(props) {\n    super(props);\n    this.el = document.createElement('div');\n  }\n\n  componentDidMount() {\n    // The portal element is inserted in the DOM tree after\n    // the Modal's children are mounted, meaning that children\n    // will be mounted on a detached DOM node. If a child\n    // component requires to be attached to the DOM tree\n    // immediately when mounted, for example to measure a\n    // DOM node, or uses 'autoFocus' in a descendant, add\n    // state to Modal and only render the children when Modal\n    // is inserted in the DOM tree.\n    modalRoot.appendChild(this.el);\n  }\n\n  componentWillUnmount() {\n    modalRoot.removeChild(this.el);\n  }\n\n  render() {\n    return ReactDOM.createPortal(\n      this.props.children,\n      this.el\n    );\n  }\n}\n\nclass Parent extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = {clicks: 0};\n    this.handleClick = this.handleClick.bind(this);\n  }\n\n  handleClick() {\n    // This will fire when the button in Child is clicked,\n    // updating Parent's state, even though button\n    // is not direct descendant in the DOM.\n    this.setState(state =\u003e ({\n      clicks: state.clicks + 1\n    }));\n  }\n\n  render() {\n    return (\n      \u003cdiv onClick={this.handleClick}\u003e\n        \u003cp\u003eNumber of clicks: {this.state.clicks}\u003c/p\u003e\n        \u003cp\u003e\n          Open up the browser DevTools\n          to observe that the button\n          is not a child of the div\n          with the onClick handler.\n        \u003c/p\u003e\n        \u003cModal\u003e\n          \u003cChild /\u003e\n        \u003c/Modal\u003e\n      \u003c/div\u003e\n    );\n  }\n}\n\nfunction Child() {\n  // The click event on this button will bubble up to parent,\n  // because there is no 'onClick' attribute defined\n  return (\n    \u003cdiv className=\"modal\"\u003e\n      \u003cbutton\u003eClick\u003c/button\u003e\n    \u003c/div\u003e\n  );\n}\n\nReactDOM.render(\u003cParent /\u003e, appRoot);\n```\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/jGBWpE)\n\nCatching an event bubbling up from a portal in a parent component allows the development of more flexible abstractions that are not inherently reliant on portals. For example, if you render a `\u003cModal /\u003e` component, the parent can capture its events regardless of whether it's implemented using portals.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_portals.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

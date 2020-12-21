@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: discussions
+title: Database schema
+[meta]-->
+<h1>Database schema</h1>
+<p>Keystone models its data using <code>Lists</code>, which comprise of <code>Fields</code>.
+In order to store data we need to translate the Keystone data model into an appropriate form for the underlying data store.
+This transformation is handled by the <a href="/docs/quick-start/adapters.md">database adapters</a>.</p>
+<p>This transformation is generally reasonably simple.
+A <code>List</code> called <code>User</code> in Keystone will have table called <code>Users</code> in PostgreSQL or a collection called <code>users</code> in MongoDB.
+For most field types there is also a one to to correspondence between a Keystone <code>Field</code> and a PostgreSQL column or MongoDB field.
+Each field type is responsible for articulating the exact correspondence, which includes the storage types and any auxiliary data that needs to be stored.</p>
+<p>The most complicated aspect of the database schema is the representation of relationships.
+To understand the storage of relationships you should first make sure you understand the basic ideas behind <a href="/docs/discussions/relationships.md">Keystone relationships</a>.</p>
+<h2>One-to-many</h2>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    author: { type: Relationship, ref: 'User', many: false },
+  },
+});
+</code></pre>
+<p>If we consider the above <code>one-to-many</code> relationship we know that each <code>Post</code> has a single <code>author</code> of type <code>User</code>.
+This means that we <code>Post</code> needs to store a reference to a single <code>User</code>.</p>
+<p>In PostgreSQL this is stored as a <a href="https://www.postgresql.org/docs/12/ddl-constraints.html#DDL-CONSTRAINTS-FK">foreign key column</a> called <code>author</code> on the <code>Posts</code> table,
+In MongoDB it is stored as a field called <code>author</code> on the <code>posts</code> collection with type <code>ObjectID</code>.</p>
+<p>The two-sided cases is handled identically to the one-sided case.</p>
+<h2>Many-to-many</h2>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    authors: { type: Relationship, ref: 'User', many: true },
+  },
+});
+</code></pre>
+<p>If we consider the above <code>many-to-many</code> relationship we know that each <code>Post</code> has multiple <code>authors</code> of type <code>User</code>.
+This means that <code>Post</code> needs to store multiple references to <code>Users</code>, and also each <code>User</code> can be referenced by multiple <code>Posts</code>.</p>
+<p>To store this information we use a join table with two columns.
+One column holds a reference to <code>Posts</code> and the other holds a reference to <code>Users</code>.
+In PostgreSQL this is implemented as a table where the contents of each column is a <a href="https://www.postgresql.org/docs/12/ddl-constraints.html#DDL-CONSTRAINTS-FK">foreign key</a> referencing the respective table.</p>
+<p>In MongoDB this is implemented as a collection where the contents of each field is an <code>ObjectID</code> referencing the respective <a href="https://docs.mongodb.com/manual/core/document/">document</a>. The above many-to-many example would result in a collection named <code>post_authors_manies</code> with a joining document of this format:</p>
+<pre><code class="language-javascript">{
+  &quot;_id&quot;: ObjectID,
+  &quot;Post_left_id&quot;: ObjectID,
+  &quot;User_right_id&quot;: ObjectID,
+}
+</code></pre>
+<p>The two-sided cases is handled using the same pattern, however the generated table/collection and column/fields names will be different.</p>
+<h2>One-to-one</h2>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    post: { type: Relationship, ref: 'Post.author', many: false },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    author: { type: Relationship, ref: 'User.post', many: false },
+  },
+});
+</code></pre>
+<p>If we consider the above <code>one-to-one</code> relationship we know that each <code>Post</code> has a single <code>author</code>, and each <code>User</code> is the author of a single <code>Post</code>.
+This is similar to the <code>one-to-many</code> case, however now because of the symmetry of the configuration it is possible to store the data on either the <code>Post</code> or <code>User</code> table.</p>
+<p>To break this symmetry we pick the list with the name that comes first alphabetically, so in this case <code>Post</code>.
+Just as in the <code>one-to-many</code> case, in PostgreSQL the data is stored as a <a href="https://www.postgresql.org/docs/12/ddl-constraints.html#DDL-CONSTRAINTS-FK">foreign key column</a> called <code>author</code> on the <code>Posts</code> table.
+In MongoDB it is stored as a field called <code>author</code> on the <code>posts</code> collection with type <code>ObjectID</code>.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: discussions\ntitle: Database schema\n[meta]--\u003e\n\n# Database schema\n\nKeystone models its data using `Lists`, which comprise of `Fields`.\nIn order to store data we need to translate the Keystone data model into an appropriate form for the underlying data store.\nThis transformation is handled by the [database adapters](/docs/quick-start/adapters.md).\n\nThis transformation is generally reasonably simple.\nA `List` called `User` in Keystone will have table called `Users` in PostgreSQL or a collection called `users` in MongoDB.\nFor most field types there is also a one to to correspondence between a Keystone `Field` and a PostgreSQL column or MongoDB field.\nEach field type is responsible for articulating the exact correspondence, which includes the storage types and any auxiliary data that needs to be stored.\n\nThe most complicated aspect of the database schema is the representation of relationships.\nTo understand the storage of relationships you should first make sure you understand the basic ideas behind [Keystone relationships](/docs/discussions/relationships.md).\n\n## One-to-many\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    author: { type: Relationship, ref: 'User', many: false },\n  },\n});\n```\n\nIf we consider the above `one-to-many` relationship we know that each `Post` has a single `author` of type `User`.\nThis means that we `Post` needs to store a reference to a single `User`.\n\nIn PostgreSQL this is stored as a [foreign key column](https://www.postgresql.org/docs/12/ddl-constraints.html#DDL-CONSTRAINTS-FK) called `author` on the `Posts` table,\nIn MongoDB it is stored as a field called `author` on the `posts` collection with type `ObjectID`.\n\nThe two-sided cases is handled identically to the one-sided case.\n\n## Many-to-many\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    authors: { type: Relationship, ref: 'User', many: true },\n  },\n});\n```\n\nIf we consider the above `many-to-many` relationship we know that each `Post` has multiple `authors` of type `User`.\nThis means that `Post` needs to store multiple references to `Users`, and also each `User` can be referenced by multiple `Posts`.\n\nTo store this information we use a join table with two columns.\nOne column holds a reference to `Posts` and the other holds a reference to `Users`.\nIn PostgreSQL this is implemented as a table where the contents of each column is a [foreign key](https://www.postgresql.org/docs/12/ddl-constraints.html#DDL-CONSTRAINTS-FK) referencing the respective table.\n\nIn MongoDB this is implemented as a collection where the contents of each field is an `ObjectID` referencing the respective [document](https://docs.mongodb.com/manual/core/document/). The above many-to-many example would result in a collection named `post_authors_manies` with a joining document of this format:\n\n```javascript\n{\n  \"_id\": ObjectID,\n  \"Post_left_id\": ObjectID,\n  \"User_right_id\": ObjectID,\n}\n```\n\nThe two-sided cases is handled using the same pattern, however the generated table/collection and column/fields names will be different.\n\n## One-to-one\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    post: { type: Relationship, ref: 'Post.author', many: false },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    author: { type: Relationship, ref: 'User.post', many: false },\n  },\n});\n```\n\nIf we consider the above `one-to-one` relationship we know that each `Post` has a single `author`, and each `User` is the author of a single `Post`.\nThis is similar to the `one-to-many` case, however now because of the symmetry of the configuration it is possible to store the data on either the `Post` or `User` table.\n\nTo break this symmetry we pick the list with the name that comes first alphabetically, so in this case `Post`.\nJust as in the `one-to-many` case, in PostgreSQL the data is stored as a [foreign key column](https://www.postgresql.org/docs/12/ddl-constraints.html#DDL-CONSTRAINTS-FK) called `author` on the `Posts` table.\nIn MongoDB it is stored as a field called `author` on the `posts` collection with type `ObjectID`.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_discussions_database-schema.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

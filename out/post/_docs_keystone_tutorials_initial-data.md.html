@@ -1,0 +1,254 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: tutorials
+title: Seeding data
+order: 3
+[meta]-->
+<h1>Seeding data</h1>
+<p>This guide will show you how to create a <code>User</code> list and add initial data to it
+using the <code>createItems</code> function. This process is also called <code>seeding</code>.</p>
+<blockquote>
+<p><strong>Note:</strong> In a previous chapter the code was split up over separate files, while this is preferred in a real code base, in this part everything is put in one file for clarity reasons.</p>
+</blockquote>
+<h2>List setup</h2>
+<h3>Install packages</h3>
+<p>This chapter will use a different <code>User</code> schema than previous chapters and instead
+of a <code>Todo</code> list, there will be a <code>Post</code> list. It is best to start from a fresh
+project and start from an empty database (delete data from previous chapters).
+Also, make sure to have all of the following packages installed:</p>
+<pre><code class="language-shell allowCopy=false showLanguage=false">yarn add @keystonejs/keystone
+yarn add @keystonejs/adapter-mongoose
+yarn add @keystonejs/app-graphql
+yarn add @keystonejs/fields
+yarn add @keystonejs/app-admin-ui
+yarn add @keystonejs/auth-password
+yarn add @keystonejs/server-side-graphql-client
+</code></pre>
+<h3>Preparation</h3>
+<p>First let's create a <code>User</code> list and add a <code>PasswordAuthStrategy</code>. The code in <code>index.js</code>:</p>
+<pre><code class="language-javascript">const { Keystone } = require('@keystonejs/keystone');
+const { PasswordAuthStrategy } = require('@keystonejs/auth-password');
+const { Text, Checkbox, Password } = require('@keystonejs/fields');
+const { GraphQLApp } = require('@keystonejs/app-graphql');
+const { AdminUIApp } = require('@keystonejs/app-admin-ui');
+const { MongooseAdapter } = require('@keystonejs/adapter-mongoose');
+
+const keystone = new Keystone({
+  adapter: new MongooseAdapter(),
+});
+
+keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: {
+      type: Text,
+      isUnique: true,
+    },
+    isAdmin: { type: Checkbox },
+    password: {
+      type: Password,
+    },
+  },
+});
+
+const authStrategy = keystone.createAuthStrategy({
+  type: PasswordAuthStrategy,
+  list: 'User',
+});
+
+module.exports = {
+  keystone,
+  apps: [
+    new GraphQLApp(),
+    new AdminUIApp({ name: 'example-project', enableDefaultRoute: true, authStrategy }),
+  ],
+};
+</code></pre>
+<blockquote>
+<p><strong>Tip:</strong> A similar setup can be achieved by running the Keystone CLI <code>yarn create keystone-app</code> and selecting <code>Starter (Users + Authentication)</code>. This starter project has a <code>User</code> list, <code>PasswordAuthStrategy</code> and seeding of the database already configured. For now, we will proceed manually.</p>
+</blockquote>
+<h2>Creating items</h2>
+<p>The <a href="https://www.keystonejs.com/keystonejs/server-side-graphql-client/#createitems"><code>createItems</code></a> utility function requires a config object argument. It has the following <code>required</code> keys:</p>
+<ul>
+<li><code>keystone</code>: a Keystone instance</li>
+<li><code>listKey</code>: the Keystone list name</li>
+<li><code>items</code>: the array of objects to be created.</li>
+</ul>
+<pre><code class="language-javascript">const { createItems } = require('@keystonejs/server-side-graphql-client');
+
+createItems({
+  keystone,
+  listKey: 'User',
+  items: [
+    { data: { name: 'John Duck', email: 'john@duck.com', password: 'dolphins' } },
+    { data: { name: 'Barry', email: 'bartduisters@bartduisters.com', password: 'dolphins' } },
+  ],
+});
+</code></pre>
+<p><strong>Note</strong>: The format of the objects in the <code>items</code> array must align with the schema setup of the corresponding list name.
+As an example in our schema, the <code>email</code> field has <code>isUnique:true</code> constraint, therefore it would not be possible for the above code to generate users with exactly same email.</p>
+<p>Example on how to <code>seed</code> the data upon database connection:</p>
+<pre><code class="language-javascript">const { createItems } = require('@keystonejs/server-side-graphql-client');
+
+const keystone = new Keystone({
+  adapter: new MongooseAdapter(),
+  onConnect: async keystone =&gt; {
+    await createItems({
+      keystone,
+      listKey: 'User',
+      items: [
+        { data: { name: 'John Duck', email: 'john@duck.com', password: 'dolphins' } },
+        { data: { name: 'Barry', email: 'bartduisters@bartduisters.com', password: 'dolphins' } },
+      ],
+    });
+  },
+});
+</code></pre>
+<p>Start the application and visit the Admin UI, two users are available on startup.</p>
+<blockquote>
+<p><strong>Note:</strong> In this example the same two users would be generated <em>every</em> startup. Since email should be unique, this will cause a duplicate error to show up. To avoid this, clear the database before starting Keystone.</p>
+</blockquote>
+<h2>Relationships</h2>
+<p>The <code>items</code> in the <code>createItems</code> config object has the data type of GraphQL <code>[listKey]sCreateInput</code>. In our example, it's the <code>UsersCreateInput</code> which keystone created for us as part of the schema.</p>
+<p>Consequently, while seeding it's possible to create relationships between items using keystone <code>connect</code> <a href="https://www.keystonejs.com/keystonejs/fields/src/types/relationship/#nested-mutations">nested mutations</a>.</p>
+<h3>Single relationships</h3>
+<p>Add the <code>Relationship</code> field to the imports:</p>
+<pre><code class="language-javascript">const { Text, Checkbox, Password, Relationship } = require('@keystonejs/fields');
+</code></pre>
+<p>Create a list with a relationship to another list:</p>
+<pre><code class="language-javascript">keystone.createList('Post', {
+  fields: {
+    title: {
+      type: Text,
+    },
+    author: {
+      type: Relationship,
+      ref: 'User',
+    },
+  },
+});
+</code></pre>
+<p>As part of <code>connect</code> nested mutation, we need to provide the id of the item for which the single relationship is required. This implies that we need to extract the id of the previously created items.</p>
+<p>Example on how to seed an item with a relationship using <code>connect</code> nested mutation:</p>
+<pre><code class="language-javascript"> await createItems({
+      keystone,
+      listKey: 'Post',
+      items: [
+         {data: {
+            title: 'Hello World',
+            author: {
+              // Extracting the id from `users` array
+              connect: { id: users.find(user =&gt; user.name === 'John Duck').id },
+            },
+           }
+        },
+      ],
+   },
+  })
+</code></pre>
+<p>The full example:</p>
+<pre><code class="language-javascript">const keystone = new Keystone({
+  adapter: new MongooseAdapter(),
+  onConnect: async keystone =&gt; {
+
+  // 1. Insert the user list first as it has no associated relationship.
+    const users = await createItems({
+      keystone,
+      listKey: 'User',
+      items: [
+        {data: { name: 'John Duck', email: 'john@duck.com', password: 'dolphins' } },
+        {data: { name: 'Barry', email: 'bartduisters@bartduisters.com', password: 'dolphins' } },
+      ],
+      returnFields: 'id, name',
+    });
+
+  // 2. Insert `Post` data, with the required relationships, via `connect` nested mutation.
+   await createItems({
+      keystone,
+      listKey: 'Post',
+      items: [
+         {data: {
+            title: 'Hello World',
+            author: {
+              // Extracting the id of the User list item
+              connect: { id: users.find(user =&gt; user.name === 'John Duck').id },
+            },
+           }
+        },
+      ],
+   },
+  });
+</code></pre>
+<p>Clear the database, then start Keystone and visit the Admin UI to see that two users are generated and one post is generated. The post has an <code>author</code> named <code>John Duck</code>. In the database <code>author</code> will be the ID of the user with name John Duck</p>
+<h3>Many relationships</h3>
+<p>A user can have many posts, add the <code>to-many</code> relationship field <code>posts</code> to the <code>User</code>:</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    email: {
+      type: Text,
+      isUnique: true,
+    },
+    isAdmin: { type: Checkbox },
+    password: {
+      type: Password,
+    },
+    posts: {
+      type: Relationship,
+      ref: 'Post',
+      many: true,
+    },
+  },
+});
+</code></pre>
+<p>Following the same pattern as discussed above, we can easily establish a <code>to-many</code> relationship via <code>connect</code> <a href="https://www.keystonejs.com/keystonejs/fields/src/types/relationship/#nested-mutations">nested mutations</a> approach. Instead of passing a single item id, we are required to pass an array of item ids.</p>
+<p><strong>Note</strong>: We need to create posts first as it has no relationship, and we require the post ids to create <code>to-many</code> relationship with user items.</p>
+<p>To associate all the posts where <code>title</code> contains the word <code>React</code>:</p>
+<p>In action:</p>
+<pre><code class="language-javascript">const keystone = new Keystone({
+  adapter: new MongooseAdapter(),
+  onConnect: async keystone =&gt; {
+    // 1. Create posts first as we need generated ids to establish relationship with user items.
+    const posts = await createItems({
+      keystone,
+      listKey: 'Post',
+      items: [
+        { data: { title: 'Hello Everyone' } },
+        { data: { title: 'Talking about React' } },
+        { data: { title: 'React is the Best' } },
+        { data: { title: 'Keystone Rocks' } },
+      ],
+      returnFields: 'id, title',
+    });
+
+    // 2. Insert User data with required relationship via nested mutations. `connect` requires an array of post item ids.
+    await createItems({
+      keystone,
+      listKey: 'User',
+      items: [
+        {
+          data: {
+            name: 'John Duck',
+            email: 'john@duck.com',
+            password: 'dolphins',
+            posts: {
+              // Filtering list of items where title contains the word `React`
+              connect: posts.filter(p =&gt; /\bReact\b/i.test(p.title)).map(i =&gt; ({ id: i.id })),
+            },
+          },
+        },
+        {
+          data: {
+            name: 'Barry',
+            email: 'bartduisters@bartduisters.com',
+            password: 'dolphins',
+            isAdmin: true,
+          },
+        },
+      ],
+    });
+  },
+});
+</code></pre>
+<p>Clear the database, start the Keystone application and visit the Admin UI. Take a look at the user <code>John Duck</code>, he has two posts associated with him (there were two posts with the word <code>React</code> in the <code>title</code>).</p>
+<p>If you want to explore other utility functions for <code>CRUD</code> operations, please refer to <a href="https://www.keystonejs.com/keystonejs/server-side-graphql-client">server-side GraphQL client</a> API for more details.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: tutorials\ntitle: Seeding data\norder: 3\n[meta]--\u003e\n\n# Seeding data\n\nThis guide will show you how to create a `User` list and add initial data to it\nusing the `createItems` function. This process is also called `seeding`.\n\n\u003e **Note:** In a previous chapter the code was split up over separate files, while this is preferred in a real code base, in this part everything is put in one file for clarity reasons.\n\n## List setup\n\n### Install packages\n\nThis chapter will use a different `User` schema than previous chapters and instead\nof a `Todo` list, there will be a `Post` list. It is best to start from a fresh\nproject and start from an empty database (delete data from previous chapters).\nAlso, make sure to have all of the following packages installed:\n\n```shell allowCopy=false showLanguage=false\nyarn add @keystonejs/keystone\nyarn add @keystonejs/adapter-mongoose\nyarn add @keystonejs/app-graphql\nyarn add @keystonejs/fields\nyarn add @keystonejs/app-admin-ui\nyarn add @keystonejs/auth-password\nyarn add @keystonejs/server-side-graphql-client\n```\n\n### Preparation\n\nFirst let's create a `User` list and add a `PasswordAuthStrategy`. The code in `index.js`:\n\n```javascript\nconst { Keystone } = require('@keystonejs/keystone');\nconst { PasswordAuthStrategy } = require('@keystonejs/auth-password');\nconst { Text, Checkbox, Password } = require('@keystonejs/fields');\nconst { GraphQLApp } = require('@keystonejs/app-graphql');\nconst { AdminUIApp } = require('@keystonejs/app-admin-ui');\nconst { MongooseAdapter } = require('@keystonejs/adapter-mongoose');\n\nconst keystone = new Keystone({\n  adapter: new MongooseAdapter(),\n});\n\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: {\n      type: Text,\n      isUnique: true,\n    },\n    isAdmin: { type: Checkbox },\n    password: {\n      type: Password,\n    },\n  },\n});\n\nconst authStrategy = keystone.createAuthStrategy({\n  type: PasswordAuthStrategy,\n  list: 'User',\n});\n\nmodule.exports = {\n  keystone,\n  apps: [\n    new GraphQLApp(),\n    new AdminUIApp({ name: 'example-project', enableDefaultRoute: true, authStrategy }),\n  ],\n};\n```\n\n\u003e **Tip:** A similar setup can be achieved by running the Keystone CLI `yarn create keystone-app` and selecting `Starter (Users + Authentication)`. This starter project has a `User` list, `PasswordAuthStrategy` and seeding of the database already configured. For now, we will proceed manually.\n\n## Creating items\n\nThe [`createItems`](https://www.keystonejs.com/keystonejs/server-side-graphql-client/#createitems) utility function requires a config object argument. It has the following `required` keys:\n\n- `keystone`: a Keystone instance\n- `listKey`: the Keystone list name\n- `items`: the array of objects to be created.\n\n```javascript\nconst { createItems } = require('@keystonejs/server-side-graphql-client');\n\ncreateItems({\n  keystone,\n  listKey: 'User',\n  items: [\n    { data: { name: 'John Duck', email: 'john@duck.com', password: 'dolphins' } },\n    { data: { name: 'Barry', email: 'bartduisters@bartduisters.com', password: 'dolphins' } },\n  ],\n});\n```\n\n**Note**: The format of the objects in the `items` array must align with the schema setup of the corresponding list name.\nAs an example in our schema, the `email` field has `isUnique:true` constraint, therefore it would not be possible for the above code to generate users with exactly same email.\n\nExample on how to `seed` the data upon database connection:\n\n```javascript\nconst { createItems } = require('@keystonejs/server-side-graphql-client');\n\nconst keystone = new Keystone({\n  adapter: new MongooseAdapter(),\n  onConnect: async keystone =\u003e {\n    await createItems({\n      keystone,\n      listKey: 'User',\n      items: [\n        { data: { name: 'John Duck', email: 'john@duck.com', password: 'dolphins' } },\n        { data: { name: 'Barry', email: 'bartduisters@bartduisters.com', password: 'dolphins' } },\n      ],\n    });\n  },\n});\n```\n\nStart the application and visit the Admin UI, two users are available on startup.\n\n\u003e **Note:** In this example the same two users would be generated _every_ startup. Since email should be unique, this will cause a duplicate error to show up. To avoid this, clear the database before starting Keystone.\n\n## Relationships\n\nThe `items` in the `createItems` config object has the data type of GraphQL `[listKey]sCreateInput`. In our example, it's the `UsersCreateInput` which keystone created for us as part of the schema.\n\nConsequently, while seeding it's possible to create relationships between items using keystone `connect` [nested mutations](https://www.keystonejs.com/keystonejs/fields/src/types/relationship/#nested-mutations).\n\n### Single relationships\n\nAdd the `Relationship` field to the imports:\n\n```javascript\nconst { Text, Checkbox, Password, Relationship } = require('@keystonejs/fields');\n```\n\nCreate a list with a relationship to another list:\n\n```javascript\nkeystone.createList('Post', {\n  fields: {\n    title: {\n      type: Text,\n    },\n    author: {\n      type: Relationship,\n      ref: 'User',\n    },\n  },\n});\n```\n\nAs part of `connect` nested mutation, we need to provide the id of the item for which the single relationship is required. This implies that we need to extract the id of the previously created items.\n\nExample on how to seed an item with a relationship using `connect` nested mutation:\n\n```javascript\n await createItems({\n      keystone,\n      listKey: 'Post',\n      items: [\n         {data: {\n            title: 'Hello World',\n            author: {\n              // Extracting the id from `users` array\n              connect: { id: users.find(user =\u003e user.name === 'John Duck').id },\n            },\n           }\n        },\n      ],\n   },\n  })\n```\n\nThe full example:\n\n```javascript\nconst keystone = new Keystone({\n  adapter: new MongooseAdapter(),\n  onConnect: async keystone =\u003e {\n\n  // 1. Insert the user list first as it has no associated relationship.\n    const users = await createItems({\n      keystone,\n      listKey: 'User',\n      items: [\n        {data: { name: 'John Duck', email: 'john@duck.com', password: 'dolphins' } },\n        {data: { name: 'Barry', email: 'bartduisters@bartduisters.com', password: 'dolphins' } },\n      ],\n      returnFields: 'id, name',\n    });\n\n  // 2. Insert `Post` data, with the required relationships, via `connect` nested mutation.\n   await createItems({\n      keystone,\n      listKey: 'Post',\n      items: [\n         {data: {\n            title: 'Hello World',\n            author: {\n              // Extracting the id of the User list item\n              connect: { id: users.find(user =\u003e user.name === 'John Duck').id },\n            },\n           }\n        },\n      ],\n   },\n  });\n```\n\nClear the database, then start Keystone and visit the Admin UI to see that two users are generated and one post is generated. The post has an `author` named `John Duck`. In the database `author` will be the ID of the user with name John Duck\n\n### Many relationships\n\nA user can have many posts, add the `to-many` relationship field `posts` to the `User`:\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    email: {\n      type: Text,\n      isUnique: true,\n    },\n    isAdmin: { type: Checkbox },\n    password: {\n      type: Password,\n    },\n    posts: {\n      type: Relationship,\n      ref: 'Post',\n      many: true,\n    },\n  },\n});\n```\n\nFollowing the same pattern as discussed above, we can easily establish a `to-many` relationship via `connect` [nested mutations](https://www.keystonejs.com/keystonejs/fields/src/types/relationship/#nested-mutations) approach. Instead of passing a single item id, we are required to pass an array of item ids.\n\n**Note**: We need to create posts first as it has no relationship, and we require the post ids to create `to-many` relationship with user items.\n\nTo associate all the posts where `title` contains the word `React`:\n\nIn action:\n\n```javascript\nconst keystone = new Keystone({\n  adapter: new MongooseAdapter(),\n  onConnect: async keystone =\u003e {\n    // 1. Create posts first as we need generated ids to establish relationship with user items.\n    const posts = await createItems({\n      keystone,\n      listKey: 'Post',\n      items: [\n        { data: { title: 'Hello Everyone' } },\n        { data: { title: 'Talking about React' } },\n        { data: { title: 'React is the Best' } },\n        { data: { title: 'Keystone Rocks' } },\n      ],\n      returnFields: 'id, title',\n    });\n\n    // 2. Insert User data with required relationship via nested mutations. `connect` requires an array of post item ids.\n    await createItems({\n      keystone,\n      listKey: 'User',\n      items: [\n        {\n          data: {\n            name: 'John Duck',\n            email: 'john@duck.com',\n            password: 'dolphins',\n            posts: {\n              // Filtering list of items where title contains the word `React`\n              connect: posts.filter(p =\u003e /\\bReact\\b/i.test(p.title)).map(i =\u003e ({ id: i.id })),\n            },\n          },\n        },\n        {\n          data: {\n            name: 'Barry',\n            email: 'bartduisters@bartduisters.com',\n            password: 'dolphins',\n            isAdmin: true,\n          },\n        },\n      ],\n    });\n  },\n});\n```\n\nClear the database, start the Keystone application and visit the Admin UI. Take a look at the user `John Duck`, he has two posts associated with him (there were two posts with the word `React` in the `title`).\n\nIf you want to explore other utility functions for `CRUD` operations, please refer to [server-side GraphQL client](https://www.keystonejs.com/keystonejs/server-side-graphql-client) API for more details.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_tutorials_initial-data.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

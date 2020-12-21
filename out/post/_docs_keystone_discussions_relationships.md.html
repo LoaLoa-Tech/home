@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: discussions
+title: Relationships
+[meta]-->
+<h1>Relationships</h1>
+<p>Keystone allows you to model your data as a collection of related <code>Lists</code>.
+For example, a blogging application might have lists called <code>Post</code> and <code>User</code>, where each post has a single author.
+This would be represented in Keystone by a relationship between the <code>Post</code> and <code>User</code> lists.</p>
+<h2>Defining a relationship</h2>
+<p>Relationships are implemented using the <code>Relationship</code> field type and defined along with other fields in <code>createLists</code>.
+For our blog example, we could define:</p>
+<pre><code class="language-javascript">keystone.createList('User', { fields: { name: { type: Text } } });
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    author: { type: Relationship, ref: 'User', many: false },
+  },
+});
+</code></pre>
+<p>The <code>Relationship</code> field type takes a config option <code>ref</code> which is able to reference another list in the application.
+In this case, the <code>author</code> field will hold a reference to the <code>User</code> list.</p>
+<p>If we wanted to allow a post to have multiple authors we could change our definition to</p>
+<pre><code class="language-javascript">    authors: { type: Relationship, ref: 'User', many: true },
+</code></pre>
+<p>We have used <code>many: true</code> to indicate that the post relates to multiple <code>Users</code>, who are the <code>authors</code> of that post.
+The default configuration is <code>many: false</code>, which indicates that each post is related to exactly one user.</p>
+<h3>One-sided vs two-sided</h3>
+<p>In our example we know the authors of each post.
+We can access this information from our GraphQL API by querying for the <code>authors</code> field of a post.</p>
+<pre><code class="language-graphql">Query {
+  allPosts {
+    title
+    content
+    authors {
+      name
+    }
+  }
+}
+</code></pre>
+<p>If we can find all <code>authors</code> of a post, this implies there is enough information available to find all posts written by a particular user.
+To access to this information from the <code>Users</code> list as well, we update our list definitions as such:</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    posts: { type: Relationship, ref: 'Post.authors', many: true },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    authors: { type: Relationship, ref: 'User.posts', many: true },
+  },
+});
+</code></pre>
+<p>We have now added a <code>posts</code> field to the <code>User</code> list, and changed the <code>ref</code> config of the <code>authors</code> field.
+We now have two <code>Relationship</code> fields, but importantly, we still <strong>only have one relationship</strong>.
+The two fields simply represent different sides of the one relationship.</p>
+<p>This type of configuration is called a <em>two-sided</em> relationship, while the original configuration without <code>posts</code> was a <em>one-sided</em> relationship.</p>
+<p>We can now write the following query to find all the posts written by each user:</p>
+<pre><code class="language-graphql">Query {
+  allUsers {
+    name
+    posts {
+      title
+      content
+    }
+  }
+}
+</code></pre>
+<p>There are some important things to remember when defining a two-sided relationship:</p>
+<ul>
+<li>Even though there are two fields, there is only one relationship between the lists.</li>
+<li>The <code>ref</code> config must be formatted as <code>&lt;listName&gt;.&lt;fieldName&gt;</code> and both sides must refer to each other.</li>
+<li>Both fields are sharing the same data. If you change the author of a post, that post will no longer show up in the original author's <code>posts</code>.</li>
+</ul>
+<h2>Self-referential lists</h2>
+<p>In the above examples we defined relationships between two different lists, <code>Users</code> and <code>Posts</code>.
+It is also possible to define relationships which refer to the same list.
+For example if we wanted to implement a Twitter style following relationship we could define:</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    follows: { type: Relationship, ref: 'User', many: true },
+  },
+});
+</code></pre>
+<p>This one-sided relationship allows us to keep track of who each user is following.
+We could turn this into a two-sided relationship to also access the followers of each user:</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    follows: { type: Relationship, ref: 'User.followers', many: true },
+    followers: { type: Relationship, ref: 'User.follows', many: true },
+  },
+});
+</code></pre>
+<p>The only relationship configuration not currently supported is having a field reference <em>itself</em>, e.g. <code>friends: { type: Relationship, ref: 'User.friends', many: true }</code>.</p>
+<h2>Cardinality</h2>
+<p>The <em>cardinality</em> of a relationship is the number items which can exist on either side of the relationship.
+In general, each side can have either <code>one</code> or <code>many</code> related items.
+Since each relationship has two sides this means we can have <code>one-to-one</code>, <code>one-to-many</code> and <code>many-to-many</code> relationships.</p>
+<p>The cardinality of your relationship is controlled by the use of the <code>many</code> config option.
+In two-sided relationships the <code>many</code> option on both sides must be considered.
+The follow examples will demonstrate how to set up each type of cardinality in the context of our blog.</p>
+<h3>One-sided</h3>
+<h4>One-to-many</h4>
+<p>Each post has a single author, and each user can have multiple posts, however we cannot directly access a users' posts.</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    author: { type: Relationship, ref: 'User', many: false },
+  },
+});
+</code></pre>
+<h4>Many-to-many</h4>
+<p>Each post has multiple authors, and each user can have multiple posts, however we cannot directly access a users' posts.</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    authors: { type: Relationship, ref: 'User', many: true },
+  },
+});
+</code></pre>
+<h3>Twos-sided</h3>
+<h4>One-to-one</h4>
+<p>Each post has a single author, and each user is only allowed to write one post.</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    post: { type: Relationship, ref: 'Post.author', many: false },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    author: { type: Relationship, ref: 'User.post', many: false },
+  },
+});
+</code></pre>
+<h4>One-to-many</h4>
+<p>Each post has a single author, and each user can have multiple posts.</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    posts: { type: Relationship, ref: 'Post.author', many: true },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    author: { type: Relationship, ref: 'User.posts', many: false },
+  },
+});
+</code></pre>
+<h4>Many-to-many</h4>
+<p>Each post can have multiple authors, and each user can have multiple posts.</p>
+<pre><code class="language-javascript">keystone.createList('User', {
+  fields: {
+    name: { type: Text },
+    posts: { type: Relationship, ref: 'Post.authors', many: true },
+  },
+});
+
+keystone.createList('Post', {
+  fields: {
+    title: { type: Text },
+    content: { type: Text },
+    authors: { type: Relationship, ref: 'User.posts', many: true },
+  },
+});
+</code></pre>
+<h2>Summary</h2>
+<p>Keystone relationships are managed using the <code>Relationship</code> field type.
+They can be configured as one-sided or two-sided by the <code>ref</code> config option, and the cardinality can be set using the <code>many</code> flag.
+If you need help deciding which options to use, please consult the <a href="/docs/guides/relationships.md">relationship configuration guide</a>.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: discussions\ntitle: Relationships\n[meta]--\u003e\n\n# Relationships\n\nKeystone allows you to model your data as a collection of related `Lists`.\nFor example, a blogging application might have lists called `Post` and `User`, where each post has a single author.\nThis would be represented in Keystone by a relationship between the `Post` and `User` lists.\n\n## Defining a relationship\n\nRelationships are implemented using the `Relationship` field type and defined along with other fields in `createLists`.\nFor our blog example, we could define:\n\n```javascript\nkeystone.createList('User', { fields: { name: { type: Text } } });\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    author: { type: Relationship, ref: 'User', many: false },\n  },\n});\n```\n\nThe `Relationship` field type takes a config option `ref` which is able to reference another list in the application.\nIn this case, the `author` field will hold a reference to the `User` list.\n\nIf we wanted to allow a post to have multiple authors we could change our definition to\n\n```javascript\n    authors: { type: Relationship, ref: 'User', many: true },\n```\n\nWe have used `many: true` to indicate that the post relates to multiple `Users`, who are the `authors` of that post.\nThe default configuration is `many: false`, which indicates that each post is related to exactly one user.\n\n### One-sided vs two-sided\n\nIn our example we know the authors of each post.\nWe can access this information from our GraphQL API by querying for the `authors` field of a post.\n\n```graphql\nQuery {\n  allPosts {\n    title\n    content\n    authors {\n      name\n    }\n  }\n}\n```\n\nIf we can find all `authors` of a post, this implies there is enough information available to find all posts written by a particular user.\nTo access to this information from the `Users` list as well, we update our list definitions as such:\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    posts: { type: Relationship, ref: 'Post.authors', many: true },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    authors: { type: Relationship, ref: 'User.posts', many: true },\n  },\n});\n```\n\nWe have now added a `posts` field to the `User` list, and changed the `ref` config of the `authors` field.\nWe now have two `Relationship` fields, but importantly, we still **only have one relationship**.\nThe two fields simply represent different sides of the one relationship.\n\nThis type of configuration is called a _two-sided_ relationship, while the original configuration without `posts` was a _one-sided_ relationship.\n\nWe can now write the following query to find all the posts written by each user:\n\n```graphql\nQuery {\n  allUsers {\n    name\n    posts {\n      title\n      content\n    }\n  }\n}\n```\n\nThere are some important things to remember when defining a two-sided relationship:\n\n- Even though there are two fields, there is only one relationship between the lists.\n- The `ref` config must be formatted as `\u003clistName\u003e.\u003cfieldName\u003e` and both sides must refer to each other.\n- Both fields are sharing the same data. If you change the author of a post, that post will no longer show up in the original author's `posts`.\n\n## Self-referential lists\n\nIn the above examples we defined relationships between two different lists, `Users` and `Posts`.\nIt is also possible to define relationships which refer to the same list.\nFor example if we wanted to implement a Twitter style following relationship we could define:\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    follows: { type: Relationship, ref: 'User', many: true },\n  },\n});\n```\n\nThis one-sided relationship allows us to keep track of who each user is following.\nWe could turn this into a two-sided relationship to also access the followers of each user:\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    follows: { type: Relationship, ref: 'User.followers', many: true },\n    followers: { type: Relationship, ref: 'User.follows', many: true },\n  },\n});\n```\n\nThe only relationship configuration not currently supported is having a field reference _itself_, e.g. `friends: { type: Relationship, ref: 'User.friends', many: true }`.\n\n## Cardinality\n\nThe _cardinality_ of a relationship is the number items which can exist on either side of the relationship.\nIn general, each side can have either `one` or `many` related items.\nSince each relationship has two sides this means we can have `one-to-one`, `one-to-many` and `many-to-many` relationships.\n\nThe cardinality of your relationship is controlled by the use of the `many` config option.\nIn two-sided relationships the `many` option on both sides must be considered.\nThe follow examples will demonstrate how to set up each type of cardinality in the context of our blog.\n\n### One-sided\n\n#### One-to-many\n\nEach post has a single author, and each user can have multiple posts, however we cannot directly access a users' posts.\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    author: { type: Relationship, ref: 'User', many: false },\n  },\n});\n```\n\n#### Many-to-many\n\nEach post has multiple authors, and each user can have multiple posts, however we cannot directly access a users' posts.\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    authors: { type: Relationship, ref: 'User', many: true },\n  },\n});\n```\n\n### Twos-sided\n\n#### One-to-one\n\nEach post has a single author, and each user is only allowed to write one post.\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    post: { type: Relationship, ref: 'Post.author', many: false },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    author: { type: Relationship, ref: 'User.post', many: false },\n  },\n});\n```\n\n#### One-to-many\n\nEach post has a single author, and each user can have multiple posts.\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    posts: { type: Relationship, ref: 'Post.author', many: true },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    author: { type: Relationship, ref: 'User.posts', many: false },\n  },\n});\n```\n\n#### Many-to-many\n\nEach post can have multiple authors, and each user can have multiple posts.\n\n```javascript\nkeystone.createList('User', {\n  fields: {\n    name: { type: Text },\n    posts: { type: Relationship, ref: 'Post.authors', many: true },\n  },\n});\n\nkeystone.createList('Post', {\n  fields: {\n    title: { type: Text },\n    content: { type: Text },\n    authors: { type: Relationship, ref: 'User.posts', many: true },\n  },\n});\n```\n\n## Summary\n\nKeystone relationships are managed using the `Relationship` field type.\nThey can be configured as one-sided or two-sided by the `ref` config option, and the cardinality can be set using the `many` flag.\nIf you need help deciding which options to use, please consult the [relationship configuration guide](/docs/guides/relationships.md).\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_discussions_relationships.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

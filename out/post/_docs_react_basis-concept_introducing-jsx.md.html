@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: introducing-jsx
+title: Introducing JSX
+permalink: docs/introducing-jsx.html
+prev: hello-world.html
+next: rendering-elements.html</p>
+<hr>
+<p>Consider this variable declaration:</p>
+<pre><code class="language-js">const element = &lt;h1&gt;Hello, world!&lt;/h1&gt;;
+</code></pre>
+<p>This funny tag syntax is neither a string nor HTML.</p>
+<p>It is called JSX, and it is a syntax extension to JavaScript. We recommend using it with React to describe what the UI should look like. JSX may remind you of a template language, but it comes with the full power of JavaScript.</p>
+<p>JSX produces React &quot;elements&quot;. We will explore rendering them to the DOM in the <a href="/docs/rendering-elements.html">next section</a>. Below, you can find the basics of JSX necessary to get you started.</p>
+<h3>Why JSX? {#why-jsx}</h3>
+<p>React embraces the fact that rendering logic is inherently coupled with other UI logic: how events are handled, how the state changes over time, and how the data is prepared for display.</p>
+<p>Instead of artificially separating <em>technologies</em> by putting markup and logic in separate files, React <a href="https://en.wikipedia.org/wiki/Separation_of_concerns">separates <em>concerns</em></a> with loosely coupled units called &quot;components&quot; that contain both. We will come back to components in a <a href="/docs/components-and-props.html">further section</a>, but if you're not yet comfortable putting markup in JS, <a href="https://www.youtube.com/watch?v=x7cQ3mrcKaY">this talk</a> might convince you otherwise.</p>
+<p>React <a href="/docs/react-without-jsx.html">doesn't require</a> using JSX, but most people find it helpful as a visual aid when working with UI inside the JavaScript code. It also allows React to show more useful error and warning messages.</p>
+<p>With that out of the way, let's get started!</p>
+<h3>Embedding Expressions in JSX {#embedding-expressions-in-jsx}</h3>
+<p>In the example below, we declare a variable called <code>name</code> and then use it inside JSX by wrapping it in curly braces:</p>
+<pre><code class="language-js{1,2}">const name = 'Josh Perez';
+const element = &lt;h1&gt;Hello, {name}&lt;/h1&gt;;
+
+ReactDOM.render(
+  element,
+  document.getElementById('root')
+);
+</code></pre>
+<p>You can put any valid <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_Operators#Expressions">JavaScript expression</a> inside the curly braces in JSX. For example, <code>2 + 2</code>, <code>user.firstName</code>, or <code>formatName(user)</code> are all valid JavaScript expressions.</p>
+<p>In the example below, we embed the result of calling a JavaScript function, <code>formatName(user)</code>, into an <code>&lt;h1&gt;</code> element.</p>
+<pre><code class="language-js{12}">function formatName(user) {
+  return user.firstName + ' ' + user.lastName;
+}
+
+const user = {
+  firstName: 'Harper',
+  lastName: 'Perez'
+};
+
+const element = (
+  &lt;h1&gt;
+    Hello, {formatName(user)}!
+  &lt;/h1&gt;
+);
+
+ReactDOM.render(
+  element,
+  document.getElementById('root')
+);
+</code></pre>
+<p><a href="codepen://introducing-jsx"></a></p>
+<p>We split JSX over multiple lines for readability. While it isn't required, when doing this, we also recommend wrapping it in parentheses to avoid the pitfalls of <a href="https://stackoverflow.com/q/2846283">automatic semicolon insertion</a>.</p>
+<h3>JSX is an Expression Too {#jsx-is-an-expression-too}</h3>
+<p>After compilation, JSX expressions become regular JavaScript function calls and evaluate to JavaScript objects.</p>
+<p>This means that you can use JSX inside of <code>if</code> statements and <code>for</code> loops, assign it to variables, accept it as arguments, and return it from functions:</p>
+<pre><code class="language-js{3,5}">function getGreeting(user) {
+  if (user) {
+    return &lt;h1&gt;Hello, {formatName(user)}!&lt;/h1&gt;;
+  }
+  return &lt;h1&gt;Hello, Stranger.&lt;/h1&gt;;
+}
+</code></pre>
+<h3>Specifying Attributes with JSX {#specifying-attributes-with-jsx}</h3>
+<p>You may use quotes to specify string literals as attributes:</p>
+<pre><code class="language-js">const element = &lt;div tabIndex=&quot;0&quot;&gt;&lt;/div&gt;;
+</code></pre>
+<p>You may also use curly braces to embed a JavaScript expression in an attribute:</p>
+<pre><code class="language-js">const element = &lt;img src={user.avatarUrl}&gt;&lt;/img&gt;;
+</code></pre>
+<p>Don't put quotes around curly braces when embedding a JavaScript expression in an attribute. You should either use quotes (for string values) or curly braces (for expressions), but not both in the same attribute.</p>
+<blockquote>
+<p><strong>Warning:</strong></p>
+<p>Since JSX is closer to JavaScript than to HTML, React DOM uses <code>camelCase</code> property naming convention instead of HTML attribute names.</p>
+<p>For example, <code>class</code> becomes <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/className"><code>className</code></a> in JSX, and <code>tabindex</code> becomes <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/tabIndex"><code>tabIndex</code></a>.</p>
+</blockquote>
+<h3>Specifying Children with JSX {#specifying-children-with-jsx}</h3>
+<p>If a tag is empty, you may close it immediately with <code>/&gt;</code>, like XML:</p>
+<pre><code class="language-js">const element = &lt;img src={user.avatarUrl} /&gt;;
+</code></pre>
+<p>JSX tags may contain children:</p>
+<pre><code class="language-js">const element = (
+  &lt;div&gt;
+    &lt;h1&gt;Hello!&lt;/h1&gt;
+    &lt;h2&gt;Good to see you here.&lt;/h2&gt;
+  &lt;/div&gt;
+);
+</code></pre>
+<h3>JSX Prevents Injection Attacks {#jsx-prevents-injection-attacks}</h3>
+<p>It is safe to embed user input in JSX:</p>
+<pre><code class="language-js">const title = response.potentiallyMaliciousInput;
+// This is safe:
+const element = &lt;h1&gt;{title}&lt;/h1&gt;;
+</code></pre>
+<p>By default, React DOM <a href="https://stackoverflow.com/questions/7381974/which-characters-need-to-be-escaped-on-html">escapes</a> any values embedded in JSX before rendering them. Thus it ensures that you can never inject anything that's not explicitly written in your application. Everything is converted to a string before being rendered. This helps prevent <a href="https://en.wikipedia.org/wiki/Cross-site_scripting">XSS (cross-site-scripting)</a> attacks.</p>
+<h3>JSX Represents Objects {#jsx-represents-objects}</h3>
+<p>Babel compiles JSX down to <code>React.createElement()</code> calls.</p>
+<p>These two examples are identical:</p>
+<pre><code class="language-js">const element = (
+  &lt;h1 className=&quot;greeting&quot;&gt;
+    Hello, world!
+  &lt;/h1&gt;
+);
+</code></pre>
+<pre><code class="language-js">const element = React.createElement(
+  'h1',
+  {className: 'greeting'},
+  'Hello, world!'
+);
+</code></pre>
+<p><code>React.createElement()</code> performs a few checks to help you write bug-free code but essentially it creates an object like this:</p>
+<pre><code class="language-js">// Note: this structure is simplified
+const element = {
+  type: 'h1',
+  props: {
+    className: 'greeting',
+    children: 'Hello, world!'
+  }
+};
+</code></pre>
+<p>These objects are called &quot;React elements&quot;. You can think of them as descriptions of what you want to see on the screen. React reads these objects and uses them to construct the DOM and keep it up to date.</p>
+<p>We will explore rendering React elements to the DOM in the <a href="/docs/rendering-elements.html">next section</a>.</p>
+<blockquote>
+<p><strong>Tip:</strong></p>
+<p>We recommend using the <a href="https://babeljs.io/docs/en/next/editors">&quot;Babel&quot; language definition</a> for your editor of choice so that both ES6 and JSX code is properly highlighted.</p>
+</blockquote>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: introducing-jsx\ntitle: Introducing JSX\npermalink: docs/introducing-jsx.html\nprev: hello-world.html\nnext: rendering-elements.html\n---\n\nConsider this variable declaration:\n\n```js\nconst element = \u003ch1\u003eHello, world!\u003c/h1\u003e;\n```\n\nThis funny tag syntax is neither a string nor HTML.\n\nIt is called JSX, and it is a syntax extension to JavaScript. We recommend using it with React to describe what the UI should look like. JSX may remind you of a template language, but it comes with the full power of JavaScript.\n\nJSX produces React \"elements\". We will explore rendering them to the DOM in the [next section](/docs/rendering-elements.html). Below, you can find the basics of JSX necessary to get you started.\n\n### Why JSX? {#why-jsx}\n\nReact embraces the fact that rendering logic is inherently coupled with other UI logic: how events are handled, how the state changes over time, and how the data is prepared for display.\n\nInstead of artificially separating *technologies* by putting markup and logic in separate files, React [separates *concerns*](https://en.wikipedia.org/wiki/Separation_of_concerns) with loosely coupled units called \"components\" that contain both. We will come back to components in a [further section](/docs/components-and-props.html), but if you're not yet comfortable putting markup in JS, [this talk](https://www.youtube.com/watch?v=x7cQ3mrcKaY) might convince you otherwise.\n\nReact [doesn't require](/docs/react-without-jsx.html) using JSX, but most people find it helpful as a visual aid when working with UI inside the JavaScript code. It also allows React to show more useful error and warning messages.\n\nWith that out of the way, let's get started!\n\n### Embedding Expressions in JSX {#embedding-expressions-in-jsx}\n\nIn the example below, we declare a variable called `name` and then use it inside JSX by wrapping it in curly braces:\n\n```js{1,2}\nconst name = 'Josh Perez';\nconst element = \u003ch1\u003eHello, {name}\u003c/h1\u003e;\n\nReactDOM.render(\n  element,\n  document.getElementById('root')\n);\n```\n\nYou can put any valid [JavaScript expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_Operators#Expressions) inside the curly braces in JSX. For example, `2 + 2`, `user.firstName`, or `formatName(user)` are all valid JavaScript expressions.\n\nIn the example below, we embed the result of calling a JavaScript function, `formatName(user)`, into an `\u003ch1\u003e` element.\n\n```js{12}\nfunction formatName(user) {\n  return user.firstName + ' ' + user.lastName;\n}\n\nconst user = {\n  firstName: 'Harper',\n  lastName: 'Perez'\n};\n\nconst element = (\n  \u003ch1\u003e\n    Hello, {formatName(user)}!\n  \u003c/h1\u003e\n);\n\nReactDOM.render(\n  element,\n  document.getElementById('root')\n);\n```\n\n[](codepen://introducing-jsx)\n\nWe split JSX over multiple lines for readability. While it isn't required, when doing this, we also recommend wrapping it in parentheses to avoid the pitfalls of [automatic semicolon insertion](https://stackoverflow.com/q/2846283).\n\n### JSX is an Expression Too {#jsx-is-an-expression-too}\n\nAfter compilation, JSX expressions become regular JavaScript function calls and evaluate to JavaScript objects.\n\nThis means that you can use JSX inside of `if` statements and `for` loops, assign it to variables, accept it as arguments, and return it from functions:\n\n```js{3,5}\nfunction getGreeting(user) {\n  if (user) {\n    return \u003ch1\u003eHello, {formatName(user)}!\u003c/h1\u003e;\n  }\n  return \u003ch1\u003eHello, Stranger.\u003c/h1\u003e;\n}\n```\n\n### Specifying Attributes with JSX {#specifying-attributes-with-jsx}\n\nYou may use quotes to specify string literals as attributes:\n\n```js\nconst element = \u003cdiv tabIndex=\"0\"\u003e\u003c/div\u003e;\n```\n\nYou may also use curly braces to embed a JavaScript expression in an attribute:\n\n```js\nconst element = \u003cimg src={user.avatarUrl}\u003e\u003c/img\u003e;\n```\n\nDon't put quotes around curly braces when embedding a JavaScript expression in an attribute. You should either use quotes (for string values) or curly braces (for expressions), but not both in the same attribute.\n\n\u003e**Warning:**\n\u003e\n\u003eSince JSX is closer to JavaScript than to HTML, React DOM uses `camelCase` property naming convention instead of HTML attribute names.\n\u003e\n\u003eFor example, `class` becomes [`className`](https://developer.mozilla.org/en-US/docs/Web/API/Element/className) in JSX, and `tabindex` becomes [`tabIndex`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/tabIndex).\n\n### Specifying Children with JSX {#specifying-children-with-jsx}\n\nIf a tag is empty, you may close it immediately with `/\u003e`, like XML:\n\n```js\nconst element = \u003cimg src={user.avatarUrl} /\u003e;\n```\n\nJSX tags may contain children:\n\n```js\nconst element = (\n  \u003cdiv\u003e\n    \u003ch1\u003eHello!\u003c/h1\u003e\n    \u003ch2\u003eGood to see you here.\u003c/h2\u003e\n  \u003c/div\u003e\n);\n```\n\n### JSX Prevents Injection Attacks {#jsx-prevents-injection-attacks}\n\nIt is safe to embed user input in JSX:\n\n```js\nconst title = response.potentiallyMaliciousInput;\n// This is safe:\nconst element = \u003ch1\u003e{title}\u003c/h1\u003e;\n```\n\nBy default, React DOM [escapes](https://stackoverflow.com/questions/7381974/which-characters-need-to-be-escaped-on-html) any values embedded in JSX before rendering them. Thus it ensures that you can never inject anything that's not explicitly written in your application. Everything is converted to a string before being rendered. This helps prevent [XSS (cross-site-scripting)](https://en.wikipedia.org/wiki/Cross-site_scripting) attacks.\n\n### JSX Represents Objects {#jsx-represents-objects}\n\nBabel compiles JSX down to `React.createElement()` calls.\n\nThese two examples are identical:\n\n```js\nconst element = (\n  \u003ch1 className=\"greeting\"\u003e\n    Hello, world!\n  \u003c/h1\u003e\n);\n```\n\n```js\nconst element = React.createElement(\n  'h1',\n  {className: 'greeting'},\n  'Hello, world!'\n);\n```\n\n`React.createElement()` performs a few checks to help you write bug-free code but essentially it creates an object like this:\n\n```js\n// Note: this structure is simplified\nconst element = {\n  type: 'h1',\n  props: {\n    className: 'greeting',\n    children: 'Hello, world!'\n  }\n};\n```\n\nThese objects are called \"React elements\". You can think of them as descriptions of what you want to see on the screen. React reads these objects and uses them to construct the DOM and keep it up to date.\n\nWe will explore rendering React elements to the DOM in the [next section](/docs/rendering-elements.html).\n\n\u003e**Tip:**\n\u003e\n\u003eWe recommend using the [\"Babel\" language definition](https://babeljs.io/docs/en/next/editors) for your editor of choice so that both ES6 and JSX code is properly highlighted.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_introducing-jsx.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

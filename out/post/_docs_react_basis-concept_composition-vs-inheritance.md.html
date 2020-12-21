@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><hr>
+<p>id: composition-vs-inheritance
+title: Composition vs Inheritance
+permalink: docs/composition-vs-inheritance.html
+redirect_from:</p>
+<ul>
+<li>&quot;docs/multiple-components.html&quot;
+prev: lifting-state-up.html
+next: thinking-in-react.html</li>
+</ul>
+<hr>
+<p>React has a powerful composition model, and we recommend using composition instead of inheritance to reuse code between components.</p>
+<p>In this section, we will consider a few problems where developers new to React often reach for inheritance, and show how we can solve them with composition.</p>
+<h2>Containment {#containment}</h2>
+<p>Some components don't know their children ahead of time. This is especially common for components like <code>Sidebar</code> or <code>Dialog</code> that represent generic &quot;boxes&quot;.</p>
+<p>We recommend that such components use the special <code>children</code> prop to pass children elements directly into their output:</p>
+<pre><code class="language-js{4}">function FancyBorder(props) {
+  return (
+    &lt;div className={'FancyBorder FancyBorder-' + props.color}&gt;
+      {props.children}
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>This lets other components pass arbitrary children to them by nesting the JSX:</p>
+<pre><code class="language-js{4-9}">function WelcomeDialog() {
+  return (
+    &lt;FancyBorder color=&quot;blue&quot;&gt;
+      &lt;h1 className=&quot;Dialog-title&quot;&gt;
+        Welcome
+      &lt;/h1&gt;
+      &lt;p className=&quot;Dialog-message&quot;&gt;
+        Thank you for visiting our spacecraft!
+      &lt;/p&gt;
+    &lt;/FancyBorder&gt;
+  );
+}
+</code></pre>
+<p><strong><a href="https://codepen.io/gaearon/pen/ozqNOV?editors=0010">Try it on CodePen</a></strong></p>
+<p>Anything inside the <code>&lt;FancyBorder&gt;</code> JSX tag gets passed into the <code>FancyBorder</code> component as a <code>children</code> prop. Since <code>FancyBorder</code> renders <code>{props.children}</code> inside a <code>&lt;div&gt;</code>, the passed elements appear in the final output.</p>
+<p>While this is less common, sometimes you might need multiple &quot;holes&quot; in a component. In such cases you may come up with your own convention instead of using <code>children</code>:</p>
+<pre><code class="language-js{5,8,18,21}">function SplitPane(props) {
+  return (
+    &lt;div className=&quot;SplitPane&quot;&gt;
+      &lt;div className=&quot;SplitPane-left&quot;&gt;
+        {props.left}
+      &lt;/div&gt;
+      &lt;div className=&quot;SplitPane-right&quot;&gt;
+        {props.right}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+function App() {
+  return (
+    &lt;SplitPane
+      left={
+        &lt;Contacts /&gt;
+      }
+      right={
+        &lt;Chat /&gt;
+      } /&gt;
+  );
+}
+</code></pre>
+<p><a href="https://codepen.io/gaearon/pen/gwZOJp?editors=0010"><strong>Try it on CodePen</strong></a></p>
+<p>React elements like <code>&lt;Contacts /&gt;</code> and <code>&lt;Chat /&gt;</code> are just objects, so you can pass them as props like any other data. This approach may remind you of &quot;slots&quot; in other libraries but there are no limitations on what you can pass as props in React.</p>
+<h2>Specialization {#specialization}</h2>
+<p>Sometimes we think about components as being &quot;special cases&quot; of other components. For example, we might say that a <code>WelcomeDialog</code> is a special case of <code>Dialog</code>.</p>
+<p>In React, this is also achieved by composition, where a more &quot;specific&quot; component renders a more &quot;generic&quot; one and configures it with props:</p>
+<pre><code class="language-js{5,8,16-18}">function Dialog(props) {
+  return (
+    &lt;FancyBorder color=&quot;blue&quot;&gt;
+      &lt;h1 className=&quot;Dialog-title&quot;&gt;
+        {props.title}
+      &lt;/h1&gt;
+      &lt;p className=&quot;Dialog-message&quot;&gt;
+        {props.message}
+      &lt;/p&gt;
+    &lt;/FancyBorder&gt;
+  );
+}
+
+function WelcomeDialog() {
+  return (
+    &lt;Dialog
+      title=&quot;Welcome&quot;
+      message=&quot;Thank you for visiting our spacecraft!&quot; /&gt;
+  );
+}
+</code></pre>
+<p><a href="https://codepen.io/gaearon/pen/kkEaOZ?editors=0010"><strong>Try it on CodePen</strong></a></p>
+<p>Composition works equally well for components defined as classes:</p>
+<pre><code class="language-js{10,27-31}">function Dialog(props) {
+  return (
+    &lt;FancyBorder color=&quot;blue&quot;&gt;
+      &lt;h1 className=&quot;Dialog-title&quot;&gt;
+        {props.title}
+      &lt;/h1&gt;
+      &lt;p className=&quot;Dialog-message&quot;&gt;
+        {props.message}
+      &lt;/p&gt;
+      {props.children}
+    &lt;/FancyBorder&gt;
+  );
+}
+
+class SignUpDialog extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSignUp = this.handleSignUp.bind(this);
+    this.state = {login: ''};
+  }
+
+  render() {
+    return (
+      &lt;Dialog title=&quot;Mars Exploration Program&quot;
+              message=&quot;How should we refer to you?&quot;&gt;
+        &lt;input value={this.state.login}
+               onChange={this.handleChange} /&gt;
+        &lt;button onClick={this.handleSignUp}&gt;
+          Sign Me Up!
+        &lt;/button&gt;
+      &lt;/Dialog&gt;
+    );
+  }
+
+  handleChange(e) {
+    this.setState({login: e.target.value});
+  }
+
+  handleSignUp() {
+    alert(`Welcome aboard, ${this.state.login}!`);
+  }
+}
+</code></pre>
+<p><a href="https://codepen.io/gaearon/pen/gwZbYa?editors=0010"><strong>Try it on CodePen</strong></a></p>
+<h2>So What About Inheritance? {#so-what-about-inheritance}</h2>
+<p>At Facebook, we use React in thousands of components, and we haven't found any use cases where we would recommend creating component inheritance hierarchies.</p>
+<p>Props and composition give you all the flexibility you need to customize a component's look and behavior in an explicit and safe way. Remember that components may accept arbitrary props, including primitive values, React elements, or functions.</p>
+<p>If you want to reuse non-UI functionality between components, we suggest extracting it into a separate JavaScript module. The components may import it and use that function, object, or a class, without extending it.</p>
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"---\nid: composition-vs-inheritance\ntitle: Composition vs Inheritance\npermalink: docs/composition-vs-inheritance.html\nredirect_from:\n  - \"docs/multiple-components.html\"\nprev: lifting-state-up.html\nnext: thinking-in-react.html\n---\n\nReact has a powerful composition model, and we recommend using composition instead of inheritance to reuse code between components.\n\nIn this section, we will consider a few problems where developers new to React often reach for inheritance, and show how we can solve them with composition.\n\n## Containment {#containment}\n\nSome components don't know their children ahead of time. This is especially common for components like `Sidebar` or `Dialog` that represent generic \"boxes\".\n\nWe recommend that such components use the special `children` prop to pass children elements directly into their output:\n\n```js{4}\nfunction FancyBorder(props) {\n  return (\n    \u003cdiv className={'FancyBorder FancyBorder-' + props.color}\u003e\n      {props.children}\n    \u003c/div\u003e\n  );\n}\n```\n\nThis lets other components pass arbitrary children to them by nesting the JSX:\n\n```js{4-9}\nfunction WelcomeDialog() {\n  return (\n    \u003cFancyBorder color=\"blue\"\u003e\n      \u003ch1 className=\"Dialog-title\"\u003e\n        Welcome\n      \u003c/h1\u003e\n      \u003cp className=\"Dialog-message\"\u003e\n        Thank you for visiting our spacecraft!\n      \u003c/p\u003e\n    \u003c/FancyBorder\u003e\n  );\n}\n```\n\n**[Try it on CodePen](https://codepen.io/gaearon/pen/ozqNOV?editors=0010)**\n\nAnything inside the `\u003cFancyBorder\u003e` JSX tag gets passed into the `FancyBorder` component as a `children` prop. Since `FancyBorder` renders `{props.children}` inside a `\u003cdiv\u003e`, the passed elements appear in the final output.\n\nWhile this is less common, sometimes you might need multiple \"holes\" in a component. In such cases you may come up with your own convention instead of using `children`:\n\n```js{5,8,18,21}\nfunction SplitPane(props) {\n  return (\n    \u003cdiv className=\"SplitPane\"\u003e\n      \u003cdiv className=\"SplitPane-left\"\u003e\n        {props.left}\n      \u003c/div\u003e\n      \u003cdiv className=\"SplitPane-right\"\u003e\n        {props.right}\n      \u003c/div\u003e\n    \u003c/div\u003e\n  );\n}\n\nfunction App() {\n  return (\n    \u003cSplitPane\n      left={\n        \u003cContacts /\u003e\n      }\n      right={\n        \u003cChat /\u003e\n      } /\u003e\n  );\n}\n```\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/gwZOJp?editors=0010)\n\nReact elements like `\u003cContacts /\u003e` and `\u003cChat /\u003e` are just objects, so you can pass them as props like any other data. This approach may remind you of \"slots\" in other libraries but there are no limitations on what you can pass as props in React.\n\n## Specialization {#specialization}\n\nSometimes we think about components as being \"special cases\" of other components. For example, we might say that a `WelcomeDialog` is a special case of `Dialog`.\n\nIn React, this is also achieved by composition, where a more \"specific\" component renders a more \"generic\" one and configures it with props:\n\n```js{5,8,16-18}\nfunction Dialog(props) {\n  return (\n    \u003cFancyBorder color=\"blue\"\u003e\n      \u003ch1 className=\"Dialog-title\"\u003e\n        {props.title}\n      \u003c/h1\u003e\n      \u003cp className=\"Dialog-message\"\u003e\n        {props.message}\n      \u003c/p\u003e\n    \u003c/FancyBorder\u003e\n  );\n}\n\nfunction WelcomeDialog() {\n  return (\n    \u003cDialog\n      title=\"Welcome\"\n      message=\"Thank you for visiting our spacecraft!\" /\u003e\n  );\n}\n```\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/kkEaOZ?editors=0010)\n\nComposition works equally well for components defined as classes:\n\n```js{10,27-31}\nfunction Dialog(props) {\n  return (\n    \u003cFancyBorder color=\"blue\"\u003e\n      \u003ch1 className=\"Dialog-title\"\u003e\n        {props.title}\n      \u003c/h1\u003e\n      \u003cp className=\"Dialog-message\"\u003e\n        {props.message}\n      \u003c/p\u003e\n      {props.children}\n    \u003c/FancyBorder\u003e\n  );\n}\n\nclass SignUpDialog extends React.Component {\n  constructor(props) {\n    super(props);\n    this.handleChange = this.handleChange.bind(this);\n    this.handleSignUp = this.handleSignUp.bind(this);\n    this.state = {login: ''};\n  }\n\n  render() {\n    return (\n      \u003cDialog title=\"Mars Exploration Program\"\n              message=\"How should we refer to you?\"\u003e\n        \u003cinput value={this.state.login}\n               onChange={this.handleChange} /\u003e\n        \u003cbutton onClick={this.handleSignUp}\u003e\n          Sign Me Up!\n        \u003c/button\u003e\n      \u003c/Dialog\u003e\n    );\n  }\n\n  handleChange(e) {\n    this.setState({login: e.target.value});\n  }\n\n  handleSignUp() {\n    alert(`Welcome aboard, ${this.state.login}!`);\n  }\n}\n```\n\n[**Try it on CodePen**](https://codepen.io/gaearon/pen/gwZbYa?editors=0010)\n\n## So What About Inheritance? {#so-what-about-inheritance}\n\nAt Facebook, we use React in thousands of components, and we haven't found any use cases where we would recommend creating component inheritance hierarchies.\n\nProps and composition give you all the flexibility you need to customize a component's look and behavior in an explicit and safe way. Remember that components may accept arbitrary props, including primitive values, React elements, or functions.\n\nIf you want to reuse non-UI functionality between components, we suggest extracting it into a separate JavaScript module. The components may import it and use that function, object, or a class, without extending it.\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_react_basis-concept_composition-vs-inheritance.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"/><meta property="og:type" content="website"/><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png?h=cf681ecd5bbf6d03e3056673d0122646"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23"/><link rel="icon" type="image/png" sizes="180x180" href="/assets/img/apple-icon-180x180.png?h=b5b7d59e89a4d05d1aca1c00dfe1b70f"/><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/android-icon-192x192.png?h=033de9a23d4cfa21fd3383f727564736"/><link rel="icon" type="image/png" sizes="310x310" href="/assets/img/ms-icon-310x310.png?h=f9285fe98206007e11710305c82d9ea2"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/united/bootstrap.min.css"/><link rel="stylesheet" href="/assets/css/styles.min.css?h=69c29b29303563e0ebbd0e0e69162409"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/css/2f26bb9842d84a608fa3.css" as="style"/><link rel="stylesheet" href="/_next/static/css/2f26bb9842d84a608fa3.css" data-n-g=""/><noscript data-n-css=""></noscript><link rel="preload" href="/_next/static/chunks/main-71dd292baef5e0c3d163.js" as="script"/><link rel="preload" href="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" as="script"/><link rel="preload" href="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" as="script"/><link rel="preload" href="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" as="script"/></head><body><header><img data-aos="fade-down" class="img-wave" src="/assets/img/wave(1).svg" alt="Nền"/><nav class="navbar navbar-light navbar-expand-md navigation-clean py-2"><div class="container"><img class="mr-3" src="/assets/img/favicon-32x32.png?h=dada6ed6c75053e6f84520a87241cd23" alt="logo" width="32" height="32"/><a class="navbar-brand p-0" href="/"><h6 class="text-uppercase m-0 p-0">loa loa team</h6> </a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navcol-1"><ul class="nav navbar-nav ml-auto"><li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li><li class="nav-item"><a class="nav-link" href="/projects">Dự án</a></li><li class="nav-item"><a class="nav-link" href="/docs">Tài liệu</a></li><li class="nav-item"><a class="nav-link" href="/blogs">Bài viết</a></li></ul></div></div></nav></header><div id="__next"><section class="container"><div><!--[meta]
+section: guides
+title: Hooks
+[meta]-->
+<h1>Hooks</h1>
+<p>Hooks give developers a way to add custom logic to the framework of lists, fields and operations Keystone provides.</p>
+<p>This document provides an overview of the concepts, patterns and function of the Keystone hook system.
+The <a href="/docs/api/hooks.md">Hooks API docs</a> describe the specific arguments and usage information.</p>
+<h2>Conceptual organisation</h2>
+<p>There are several categorisations that can be applied to hooks and are useful for understanding what is run and when.</p>
+<blockquote>
+<p><strong>Note:</strong> the concepts listed here have some exceptions.
+See the <a href="#gotchas">Gotchas section</a>.</p>
+</blockquote>
+<h3>Stage</h3>
+<p>Keystone defines several <em>stages</em> within the <a href="#intra-hook-execution-order">hook execution order</a>.
+These stages are intended to be used for different purposes; they help organise your hook functionality.</p>
+<ul>
+<li>Input resolution - modify the values supplied</li>
+<li>Data validation - check the values are valid</li>
+<li>Before operation - perform side effects <em>before</em> the primary operation</li>
+<li>After operation - perform side effects <em>after</em> the primary operation</li>
+</ul>
+<h3>Operation</h3>
+<p>Hooks are available for these core operations:</p>
+<ul>
+<li><code>create</code></li>
+<li><code>update</code></li>
+<li><code>delete</code></li>
+<li><code>authenticate</code></li>
+<li><code>unauthenticate</code></li>
+</ul>
+<p>These operations are used for both &quot;single&quot; and &quot;many&quot; modes.
+E.g. the <code>deleteUser</code> (singular) and <code>deleteUsers</code> (plural) mutations are both considered to be <code>delete</code> operations.</p>
+<p>Hooks for these operations have different signatures due to the nature of the operations being performed.
+See the <a href="/docs/api/hooks.md">Hook API docs</a> for specifics.</p>
+<blockquote>
+<p><strong>Note:</strong> Keystone does not currently implement <code>read</code> hooks.</p>
+</blockquote>
+<h3>Hook type</h3>
+<p>A hook <em>type</em> is defined by where it is attached.
+Keystone recognises three <em>types</em> of hook:</p>
+<ul>
+<li><a href="/docs/api/hooks.md#field-type-hooks">Field Type hooks</a> -
+Field Type hooks are associated with a particular <em>field type</em> and are applied to all fields of that type across all lists.</li>
+<li><a href="/docs/api/hooks.md#field-hooks">Field hooks</a> -
+Field hooks can be defined by the app developer by specifying the <code>hooks</code> attribute of a field configuration when calling <code>createList()</code>.</li>
+<li><a href="/docs/api/hooks.md#list-hooks">List hooks</a> -
+List hooks can be defined by the app developer by specifying the <code>hooks</code> attribute of a list configuration when calling <code>createList()</code>.</li>
+</ul>
+<h3>Hook set</h3>
+<p>For most <em>stage</em> and <em>operation</em> combinations, different functions (hooks) can be supplied for each <em>hook type</em>.
+This group of distinct but related hooks are referred to as a <em>hook set</em>.</p>
+<p>E.g. a <code>beforeDelete</code> function could be supplied for a list, several specific fields on the list and a field type used by the list.
+All hooks in a hook set share the same functional signature but are invoked at different times.
+See the <a href="/docs/api/hooks.md">Hooks API docs</a> and <a href="#intra-hook-execution-order">Intra-Hook Execution Order section</a> for more information.</p>
+<h3>Putting it together</h3>
+<p>In total there are 13 <em>hook sets</em> available.
+This table shows the <em>hook set</em> relevant to each combination of <em>stage</em> and <em>operation</em>:</p>
+<table>
+<thead>
+<tr><th>Stage</th><th><code>create</code></th><th><code>update</code></th><th><code>delete</code></th><th><code>authenticate</code></th><th><code>unauthenticate</code></th></tr>
+</thead>
+<tbody>
+<tr><td>Input resolution</td><td><code>resolveInput</code></td><td><code>resolveInput</code></td><td>n/a</td><td><code>resolveAuthInput</code></td><td></td></tr>
+<tr><td>Data validation</td><td><code>validateInput</code></td><td><code>validateInput</code></td><td><code>validateDelete</code></td><td><code>validateAuthInput</code></td><td></td></tr>
+<tr><td>Before operation</td><td><code>beforeChange</code></td><td><code>beforeChange</code></td><td><code>beforeDelete</code></td><td><code>beforeAuth</code></td><td><code>beforeUnauth</code></td></tr>
+<tr><td>After operation</td><td><code>afterChange</code></td><td><code>afterChange</code></td><td><code>afterDelete</code></td><td><code>afterAuth</code></td><td><code>afterUnauth</code></td></tr>
+</tbody>
+</table>
+<p>The <code>create</code>, <code>update</code> and <code>delete</code> <em>hook sets</em> can be attached as <em>list</em>, <em>field</em> or <em>field type</em> hooks.
+The <code>authenticate</code> and <code>unauthenticate</code> hook sets are unique in that they can only be defined when creating an authentication strategy.</p>
+<p>Due to their similarity, the <code>create</code> and <code>update</code> operations share a single set of hooks.
+To implement different logic for these operations make it conditional on either the <code>operation</code> or <code>existingItem</code> arguments;
+for create operations <code>existingItem</code> will be <code>undefined</code>.</p>
+<p>See the <a href="/docs/api/hooks.md">Hooks API docs</a> for argument details and usage.</p>
+<h2>Execution order</h2>
+<p>The hooks are invoked in a specific order during an operation.
+For full details of the mutation lifecycle, and where hooks fit within this, see the <a href="/docs/guides/mutation-lifecycle.md">Mutation Lifecycle Guide</a>.</p>
+<h3>Create/Update</h3>
+<ol>
+<li>Access control checks</li>
+<li>Field defaults applied</li>
+<li><code>resolveInput</code> called on all fields, even if they are not defined in the supplied data</li>
+<li><code>validateInput</code> called on all fields which have a resolved value (after all <code>resolveInput</code> calls have returned)</li>
+<li><code>beforeChange</code> called on all fields which have a resolved value (after all <code>validateInput</code> calls have returned)</li>
+<li>Database operation</li>
+<li><code>afterChange</code> called on all fields, even if their value was not changed</li>
+</ol>
+<h3>Delete</h3>
+<ol>
+<li>Access control checks</li>
+<li><code>validateDelete</code> called on all fields</li>
+<li><code>beforeDelete</code> called on all fields (after all <code>validateDelete</code> calls have returned)</li>
+<li>Database operation (after all <code>beforeDelete</code> calls have returned)</li>
+<li><code>afterDelete</code> called on all fields (after the DB operation has completed)</li>
+</ol>
+<h3>Authentication</h3>
+<ol>
+<li>Access control checks</li>
+<li><code>resolveAuthInput</code> called for the list</li>
+<li><code>validateAuthInput</code> called for the list</li>
+<li><code>beforeAuth</code> called for the list</li>
+<li>Auth strategy <code>validate()</code> is called</li>
+<li><code>afterAuth</code> called for the list</li>
+</ol>
+<h3>Unauthentication</h3>
+<ol>
+<li>Access control checks</li>
+<li><code>beforeAuth</code> called for the list</li>
+<li><code>context.endAuthedSession()</code> is called</li>
+<li><code>afterAuth</code> called for the list</li>
+</ol>
+<h3>Intra-hook execution order</h3>
+<p>Within each hook set, the different <a href="#hook-type">hook types</a> are invoked in a specific order.</p>
+<ol>
+<li>All relevant and defined <a href="/docs/api/hooks.md#field-type-hooks">field type hooks</a> are invoked in <strong>parallel</strong></li>
+<li>All relevant and defined <a href="/docs/api/hooks.md#field-hooks">field hooks</a> are invoked in <strong>parallel</strong></li>
+<li>If defined the <a href="/docs/api/hooks.md#list-hooks">list hook</a> is invoked</li>
+</ol>
+<h2>Gotchas</h2>
+<p>The hook system is powerful but its breadth and flexibility introduce some complexity.
+A few of the main stumbling blocks are:</p>
+<ul>
+<li>The <code>create</code> and <code>update</code> operations share a single set of hooks.
+To implement different logic for these operations make it conditional on either the <code>operation</code> or <code>existingItem</code> arguments;
+for create operations <code>existingItem</code> will be <code>undefined</code>.</li>
+<li>As per the table above, the <code>delete</code> operations have no hook set for the <em>input resolution</em> stage.
+This operation doesn't accept any input (other than the target IDs).</li>
+<li>Keystone does not currently implement <code>read</code> hooks.</li>
+<li>Field type hooks and field hooks are run in parallel.</li>
+<li>The <code>authenticate</code> and <code>unauthenticate</code> hook sets are unique in that they can only be defined when creating an authentication strategy.</li>
+</ul>
+<p>These nuances aren't bugs per se -- they generally exist for good reason --
+but they can make understanding the hook system difficult.</p>
+<!-- TODO: ## Error Handling -->
+</div></section></div><footer class="footer-clean"><div class="container"><div class="row justify-content-center"><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Dịch vụ</h3><ul class="list-unstyled"><li><a class="text-body" href="#">Thiết kế website</a></li><li><a class="text-body" href="#">Phát triển phần mềm</a></li><li><a class="text-body" href="#">Hosting</a></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Phát triển bởi</h3><ul class="list-inline d-inline"><li class="list-inline-item d-inline-block">Sinh viên trường ĐH Bách Khoa Đà Nẵng.</li></ul><h3 class="text-primary">Công ty</h3><ul class="list-unstyled"><li>Công ty TNHH Công Nghệ Điện Tử Quảng Đà.</li><li>Mã số thuế: 4001202704.</li><li>Địa chỉ: Thôn 2, Xã Bình Đào, Huyện Thăng Bình, Tỉnh Quảng Nam.<br/></li><li></li></ul></div><div class="col-sm-4 col-md-3 item"><h3 class="text-primary">Liên hệ</h3><ul class="list-unstyled"><li>Leader: Trần Ngọc Huy</li><li>Điện thoại/Zalo: 0332813077</li><li>Địa chỉ: 54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.</li><li></li></ul><img class="w-100" src="/assets/img/zalo.jpg?h=614debe3b6ec66917ebd818aa1c50b6e" loading="lazy" alt="Zalo"/></div></div></div><img src="/assets/img/wave(2).svg?h=5ad7ab1ad1557422fec002e92b1ae54b" alt="Nền"/></footer><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"markdownPost":{"name":null,"url":null,"content":"\u003c!--[meta]\nsection: guides\ntitle: Hooks\n[meta]--\u003e\n\n# Hooks\n\nHooks give developers a way to add custom logic to the framework of lists, fields and operations Keystone provides.\n\nThis document provides an overview of the concepts, patterns and function of the Keystone hook system.\nThe [Hooks API docs](/docs/api/hooks.md) describe the specific arguments and usage information.\n\n## Conceptual organisation\n\nThere are several categorisations that can be applied to hooks and are useful for understanding what is run and when.\n\n\u003e **Note:** the concepts listed here have some exceptions.\n\u003e See the [Gotchas section](#gotchas).\n\n### Stage\n\nKeystone defines several _stages_ within the [hook execution order](#intra-hook-execution-order).\nThese stages are intended to be used for different purposes; they help organise your hook functionality.\n\n- Input resolution - modify the values supplied\n- Data validation - check the values are valid\n- Before operation - perform side effects _before_ the primary operation\n- After operation - perform side effects _after_ the primary operation\n\n### Operation\n\nHooks are available for these core operations:\n\n- `create`\n- `update`\n- `delete`\n- `authenticate`\n- `unauthenticate`\n\nThese operations are used for both \"single\" and \"many\" modes.\nE.g. the `deleteUser` (singular) and `deleteUsers` (plural) mutations are both considered to be `delete` operations.\n\nHooks for these operations have different signatures due to the nature of the operations being performed.\nSee the [Hook API docs](/docs/api/hooks.md) for specifics.\n\n\u003e **Note:** Keystone does not currently implement `read` hooks.\n\n### Hook type\n\nA hook _type_ is defined by where it is attached.\nKeystone recognises three _types_ of hook:\n\n- [Field Type hooks](/docs/api/hooks.md#field-type-hooks) -\n  Field Type hooks are associated with a particular _field type_ and are applied to all fields of that type across all lists.\n- [Field hooks](/docs/api/hooks.md#field-hooks) -\n  Field hooks can be defined by the app developer by specifying the `hooks` attribute of a field configuration when calling `createList()`.\n- [List hooks](/docs/api/hooks.md#list-hooks) -\n  List hooks can be defined by the app developer by specifying the `hooks` attribute of a list configuration when calling `createList()`.\n\n### Hook set\n\nFor most _stage_ and _operation_ combinations, different functions (hooks) can be supplied for each _hook type_.\nThis group of distinct but related hooks are referred to as a _hook set_.\n\nE.g. a `beforeDelete` function could be supplied for a list, several specific fields on the list and a field type used by the list.\nAll hooks in a hook set share the same functional signature but are invoked at different times.\nSee the [Hooks API docs](/docs/api/hooks.md) and [Intra-Hook Execution Order section](#intra-hook-execution-order) for more information.\n\n### Putting it together\n\nIn total there are 13 _hook sets_ available.\nThis table shows the _hook set_ relevant to each combination of _stage_ and _operation_:\n\n| Stage            | `create`        | `update`        | `delete`         | `authenticate`      | `unauthenticate` |\n| ---------------- | --------------- | --------------- | ---------------- | ------------------- | ---------------- |\n| Input resolution | `resolveInput`  | `resolveInput`  | n/a              | `resolveAuthInput`  |                  |\n| Data validation  | `validateInput` | `validateInput` | `validateDelete` | `validateAuthInput` |                  |\n| Before operation | `beforeChange`  | `beforeChange`  | `beforeDelete`   | `beforeAuth`        | `beforeUnauth`   |\n| After operation  | `afterChange`   | `afterChange`   | `afterDelete`    | `afterAuth`         | `afterUnauth`    |\n\nThe `create`, `update` and `delete` _hook sets_ can be attached as _list_, _field_ or _field type_ hooks.\nThe `authenticate` and `unauthenticate` hook sets are unique in that they can only be defined when creating an authentication strategy.\n\nDue to their similarity, the `create` and `update` operations share a single set of hooks.\nTo implement different logic for these operations make it conditional on either the `operation` or `existingItem` arguments;\nfor create operations `existingItem` will be `undefined`.\n\nSee the [Hooks API docs](/docs/api/hooks.md) for argument details and usage.\n\n## Execution order\n\nThe hooks are invoked in a specific order during an operation.\nFor full details of the mutation lifecycle, and where hooks fit within this, see the [Mutation Lifecycle Guide](/docs/guides/mutation-lifecycle.md).\n\n### Create/Update\n\n1. Access control checks\n2. Field defaults applied\n3. `resolveInput` called on all fields, even if they are not defined in the supplied data\n4. `validateInput` called on all fields which have a resolved value (after all `resolveInput` calls have returned)\n5. `beforeChange` called on all fields which have a resolved value (after all `validateInput` calls have returned)\n6. Database operation\n7. `afterChange` called on all fields, even if their value was not changed\n\n### Delete\n\n1. Access control checks\n2. `validateDelete` called on all fields\n3. `beforeDelete` called on all fields (after all `validateDelete` calls have returned)\n4. Database operation (after all `beforeDelete` calls have returned)\n5. `afterDelete` called on all fields (after the DB operation has completed)\n\n### Authentication\n\n1. Access control checks\n2. `resolveAuthInput` called for the list\n3. `validateAuthInput` called for the list\n4. `beforeAuth` called for the list\n5. Auth strategy `validate()` is called\n6. `afterAuth` called for the list\n\n### Unauthentication\n\n1. Access control checks\n2. `beforeAuth` called for the list\n3. `context.endAuthedSession()` is called\n4. `afterAuth` called for the list\n\n### Intra-hook execution order\n\nWithin each hook set, the different [hook types](#hook-type) are invoked in a specific order.\n\n1. All relevant and defined [field type hooks](/docs/api/hooks.md#field-type-hooks) are invoked in **parallel**\n2. All relevant and defined [field hooks](/docs/api/hooks.md#field-hooks) are invoked in **parallel**\n3. If defined the [list hook](/docs/api/hooks.md#list-hooks) is invoked\n\n## Gotchas\n\nThe hook system is powerful but its breadth and flexibility introduce some complexity.\nA few of the main stumbling blocks are:\n\n- The `create` and `update` operations share a single set of hooks.\n  To implement different logic for these operations make it conditional on either the `operation` or `existingItem` arguments;\n  for create operations `existingItem` will be `undefined`.\n- As per the table above, the `delete` operations have no hook set for the _input resolution_ stage.\n  This operation doesn't accept any input (other than the target IDs).\n- Keystone does not currently implement `read` hooks.\n- Field type hooks and field hooks are run in parallel.\n- The `authenticate` and `unauthenticate` hook sets are unique in that they can only be defined when creating an authentication strategy.\n\nThese nuances aren't bugs per se -- they generally exist for good reason --\nbut they can make understanding the hook system difficult.\n\n\u003c!-- TODO: ## Error Handling --\u003e\n"}},"__N_SSG":true},"page":"/post/[path]","query":{"path":"_docs_keystone_guides_hooks.md"},"buildId":"IU2MQGFEli_aRg5UtGR53","nextExport":false,"isFallback":false,"gsp":true}</script><script nomodule="" src="/_next/static/chunks/polyfills-4beebf4ac9054f0bf4e6.js"></script><script src="/_next/static/chunks/main-71dd292baef5e0c3d163.js" async=""></script><script src="/_next/static/chunks/webpack-e067438c4cf4ef2ef178.js" async=""></script><script src="/_next/static/chunks/framework.9116e7bff2bfccdffa19.js" async=""></script><script src="/_next/static/chunks/8638dade453fc283329f8b8dee6f6817b55b3944.9475e511f211dbecfbed.js" async=""></script><script src="/_next/static/chunks/pages/_app-de7ed68c6e8649dd556c.js" async=""></script><script src="/_next/static/chunks/pages/post/%5Bpath%5D-98a2b37c69fbc1053078.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_buildManifest.js" async=""></script><script src="/_next/static/IU2MQGFEli_aRg5UtGR53/_ssgManifest.js" async=""></script></body></html>
